@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>DBP Coach — AI training coach for cyclists</title>
+<meta name="description" content="AI-powered training and nutrition coach built for cyclists, by Durango Bike Project. Daily prescriptions tuned to your WHOOP and Strava data.">
+<style>
+  :root{
+    --bg:#0a0a0a; --bg-card:#111; --border:#1f1f1f;
+    --text:#f5f5f5; --muted:#888; --accent:#4ade80;
+    --orange:#f97316; --yellow:#facc15; --blue:#60a5fa;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sans-serif;line-height:1.5;font-size:16px;-webkit-font-smoothing:antialiased}
+  a{color:inherit;text-decoration:none}
+  .container{max-width:1100px;margin:0 auto;padding:0 24px}
+  .nav{display:flex;justify-content:space-between;align-items:center;padding:20px 0;border-bottom:1px solid var(--border)}
+  .nav-brand{font-weight:700;letter-spacing:-0.02em;font-size:1.1rem}
+  .nav-brand span{color:var(--accent)}
+  .nav-actions{display:flex;gap:12px;align-items:center}
+  .btn{display:inline-block;padding:10px 18px;border-radius:8px;font-weight:600;font-size:0.92rem;cursor:pointer;border:none;font-family:inherit;transition:transform 0.1s}
+  .btn:active{transform:scale(0.97)}
+  .btn-ghost{background:transparent;color:var(--text);border:1px solid var(--border)}
+  .btn-primary{background:var(--accent);color:#000}
+  .btn-secondary{background:#1a1a1a;color:#fff;border:1px solid var(--border)}
+  .btn-lg{padding:14px 28px;font-size:1rem}
+
+  .hero{padding:80px 0 60px;text-align:center}
+  .hero h1{font-size:clamp(2rem,5vw,3.5rem);font-weight:700;letter-spacing:-0.03em;margin:0 0 16px;line-height:1.1}
+  .hero h1 .accent{color:var(--accent)}
+  .hero .sub{font-size:1.15rem;color:var(--muted);max-width:620px;margin:0 auto 28px}
+  .hero-cta{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+
+  .features{padding:60px 0;border-top:1px solid var(--border)}
+  .section-title{text-align:center;margin-bottom:40px}
+  .section-title h2{font-size:2rem;font-weight:700;letter-spacing:-0.02em;margin:0 0 8px}
+  .section-title p{color:var(--muted);margin:0}
+
+  .feature-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px}
+  .feature{background:var(--bg-card);border:1px solid var(--border);border-radius:14px;padding:22px}
+  .feature .ico{font-size:1.6rem;margin-bottom:10px}
+  .feature h3{margin:0 0 6px;font-size:1.05rem}
+  .feature p{color:var(--muted);margin:0;font-size:0.92rem;line-height:1.55}
+
+  .pricing{padding:60px 0;border-top:1px solid var(--border)}
+  .price-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px}
+  .price-card{background:var(--bg-card);border:1px solid var(--border);border-radius:16px;padding:28px;display:flex;flex-direction:column;position:relative}
+  .price-card.popular{border-color:var(--accent)}
+  .badge{position:absolute;top:-10px;right:20px;background:var(--accent);color:#000;font-size:0.7rem;font-weight:700;padding:4px 10px;border-radius:6px;letter-spacing:0.04em;text-transform:uppercase}
+  .price-card h3{margin:0 0 4px;font-size:1.3rem}
+  .price-card .tagline{color:var(--muted);font-size:0.9rem;margin-bottom:18px}
+  .price{font-size:2.2rem;font-weight:700;letter-spacing:-0.02em;margin-bottom:4px}
+  .price .per{font-size:0.95rem;color:var(--muted);font-weight:400}
+  .price-card ul{list-style:none;padding:0;margin:18px 0;font-size:0.92rem;flex:1}
+  .price-card li{padding:7px 0;color:#ddd;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:8px;line-height:1.45}
+  .price-card li:last-child{border-bottom:none}
+  .price-card li::before{content:"✓";color:var(--accent);flex-shrink:0;font-weight:700}
+  .price-card li.muted{color:var(--muted)}
+  .price-card li.muted::before{content:"·";color:var(--muted)}
+
+  .signup-form{padding:60px 0;border-top:1px solid var(--border);text-align:center}
+  .signup-form input{width:100%;max-width:380px;padding:14px 16px;font-size:1rem;background:var(--bg-card);border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:inherit;margin-bottom:14px}
+  .signup-form input:focus{outline:none;border-color:var(--accent)}
+
+  .footer{padding:40px 0;border-top:1px solid var(--border);text-align:center;color:var(--muted);font-size:0.85rem}
+  .footer a{color:var(--muted)}
+  .footer a:hover{color:var(--text)}
+
+  .toggle-billing{display:inline-flex;background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:4px;margin-bottom:24px}
+  .toggle-billing button{background:none;border:none;color:var(--muted);padding:8px 16px;border-radius:6px;cursor:pointer;font-family:inherit;font-size:0.88rem;font-weight:600}
+  .toggle-billing button.active{background:var(--accent);color:#000}
+  .save-badge{font-size:0.7rem;color:var(--accent);margin-left:6px}
+
+  @media (max-width:640px){
+    .hero{padding:48px 0 36px}
+    .features,.pricing,.signup-form{padding:40px 0}
+  }
+</style>
+</head>
+<body>
+
+<nav class="nav container">
+  <div class="nav-brand">🚴 DBP <span>Coach</span></div>
+  <div class="nav-actions">
+    <a class="btn btn-ghost" href="/login">Log in</a>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="container">
+    <h1>Train smarter.<br/><span class="accent">Recover better.</span></h1>
+    <p class="sub">AI training and nutrition coach for cyclists, built into your DBP membership. Daily prescriptions tuned to your WHOOP recovery and Strava activity. Real coaching, not generic plans.</p>
+    <div class="hero-cta">
+      <a class="btn btn-primary btn-lg" href="#pricing">Start 7-day free trial</a>
+      <a class="btn btn-ghost btn-lg" href="#features">How it works</a>
+    </div>
+  </div>
+</section>
+
+<section id="features" class="features">
+  <div class="container">
+    <div class="section-title">
+      <h2>Built for how cyclists actually train</h2>
+      <p>Every morning, your data tells us exactly what your body needs.</p>
+    </div>
+    <div class="feature-grid">
+      <div class="feature">
+        <div class="ico">📊</div>
+        <h3>Real recovery science</h3>
+        <p>WHOOP recovery score, HRV, sleep stages, and acute:chronic load ratio drive every prescription. No guesswork.</p>
+      </div>
+      <div class="feature">
+        <div class="ico">🚴</div>
+        <h3>Specific workouts, not platitudes</h3>
+        <p>"3×8 min @ 270–290W with 4 min recovery" — actual targets based on your FTP, with route suggestions for Durango.</p>
+      </div>
+      <div class="feature">
+        <div class="ico">🍽️</div>
+        <h3>Nutrition that matches the day</h3>
+        <p>Carbs scaled to load, protein for recovery, supplements timed for sleep. What to eat, when, why.</p>
+      </div>
+      <div class="feature">
+        <div class="ico">🏋️</div>
+        <h3>Strength built in</h3>
+        <p>Cycling-focused strength prescribed 2× per week, never on the wrong day. Single-leg, posterior chain, core.</p>
+      </div>
+      <div class="feature">
+        <div class="ico">🧠</div>
+        <h3>Learns from what you actually did</h3>
+        <p>Tap "did it / modified / skipped" each day. The AI adapts. After 4 weeks, it's tuned to your body.</p>
+      </div>
+      <div class="feature">
+        <div class="ico">☕</div>
+        <h3>Membership perks at DBP</h3>
+        <p>Elite tier: free Sunday recovery drink, priority service, free flat fixes, monthly group rides, more.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="pricing" class="pricing">
+  <div class="container">
+    <div class="section-title">
+      <h2>Pricing</h2>
+      <p>7-day free trial on all paid plans. Cancel anytime.</p>
+      <div class="toggle-billing" style="margin-top:16px">
+        <button id="bill-monthly" class="active" onclick="setBilling('monthly')">Monthly</button>
+        <button id="bill-annual" onclick="setBilling('annual')">Annual <span class="save-badge">save 20%+</span></button>
+      </div>
+    </div>
+    <div class="price-grid">
+      <div class="price-card">
+        <h3>Free</h3>
+        <div class="tagline">Get on the list</div>
+        <div class="price">$0<span class="per">/mo</span></div>
+        <ul>
+          <li>DBP newsletter</li>
+          <li>Member directory</li>
+          <li>Basic Strava club access</li>
+          <li class="muted">No AI coach</li>
+          <li class="muted">No perks</li>
+        </ul>
+        <a class="btn btn-secondary" href="/login">Sign up free</a>
+      </div>
+
+      <div class="price-card popular">
+        <span class="badge">Most popular</span>
+        <h3>Coach</h3>
+        <div class="tagline">Daily AI training + nutrition</div>
+        <div class="price"><span data-price="coach">$19</span><span class="per" data-per="coach">/mo</span></div>
+        <ul>
+          <li>Daily AI workout + nutrition prescription</li>
+          <li>WHOOP + Strava integration</li>
+          <li>Recovery, HRV, sleep, training load tracking</li>
+          <li>Workout history with feedback loop</li>
+          <li>Weather-aware route suggestions</li>
+          <li>Email + in-app delivery</li>
+        </ul>
+        <button class="btn btn-primary" onclick="checkout('coach')">Start 7-day trial</button>
+      </div>
+
+      <div class="price-card">
+        <h3>Elite</h3>
+        <div class="tagline">Coach + DBP membership perks</div>
+        <div class="price"><span data-price="elite">$39</span><span class="per" data-per="elite">/mo</span></div>
+        <ul>
+          <li>Everything in Coach</li>
+          <li>Free Sunday recovery drink, every week</li>
+          <li>10% off all retail and consignment</li>
+          <li>Free flat fix anytime</li>
+          <li>Priority service appointments</li>
+          <li>1 free tune-up per year</li>
+          <li>Monthly DBP group ride</li>
+          <li>Birthday month: free coffee</li>
+          <li>Private DBP Coach Strava club</li>
+          <li>Featured on DBP Instagram for monthly winners</li>
+        </ul>
+        <button class="btn btn-primary" onclick="checkout('elite')">Start 7-day trial</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="signup-form">
+  <div class="container">
+    <div class="section-title">
+      <h2>Already a member?</h2>
+      <p>Sign in with a one-tap email link — no password.</p>
+    </div>
+    <a class="btn btn-primary btn-lg" href="/login">Sign in</a>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container">
+    <div>Durango Bike Project · 225 E 8th Ave, Durango, CO</div>
+    <div style="margin-top:8px">
+      <a href="/privacy">Privacy</a> · <a href="/terms">Terms</a> · <a href="mailto:ccroberts10@gmail.com">Contact</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+let billing = 'monthly';
+const prices = {
+  coach: { monthly: { amount: '$19', per: '/mo' }, annual: { amount: '$15', per: '/mo, billed annually' } },
+  elite: { monthly: { amount: '$39', per: '/mo' }, annual: { amount: '$29', per: '/mo, billed annually' } },
+};
+function setBilling(mode){
+  billing = mode;
+  document.getElementById('bill-monthly').classList.toggle('active', mode === 'monthly');
+  document.getElementById('bill-annual').classList.toggle('active', mode === 'annual');
+  document.querySelectorAll('[data-price]').forEach(el => {
+    const tier = el.dataset.price;
+    el.textContent = prices[tier][mode].amount;
+  });
+  document.querySelectorAll('[data-per]').forEach(el => {
+    const tier = el.dataset.per;
+    el.textContent = prices[tier][mode].per;
+  });
+}
+
+async function checkout(tier){
+  const email = prompt(`Sign up for DBP ${tier === 'elite' ? 'Elite' : 'Coach'} — what's your email?`);
+  if (!email) return;
+  const priceKey = `${tier}_${billing}`;
+  try {
+    const r = await fetch('/billing/checkout', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ priceKey, email }),
+    });
+    const data = await r.json();
+    if (data.url) window.location = data.url;
+    else alert('Error: ' + (data.error || 'unknown'));
+  } catch (e) { alert('Error: ' + e.message); }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Sign in · DBP Coach</title>
+<style>
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:#0a0a0a;color:#f5f5f5;font-family:-apple-system,BlinkMacSystemFont,sans-serif;line-height:1.5;min-height:100vh}
+  .container{max-width:420px;margin:0 auto;padding:60px 24px}
+  .brand{font-weight:700;font-size:1.1rem;letter-spacing:-0.02em;margin-bottom:32px}
+  .brand span{color:#4ade80}
+  h1{font-size:1.8rem;font-weight:700;letter-spacing:-0.02em;margin:0 0 8px}
+  .sub{color:#888;margin-bottom:32px}
+  label{display:block;font-size:0.85rem;color:#aaa;margin-bottom:8px;font-weight:500}
+  input{width:100%;padding:14px 16px;font-size:1rem;background:#111;border:1px solid #1f1f1f;border-radius:10px;color:#fff;font-family:inherit;margin-bottom:16px}
+  input:focus{outline:none;border-color:#4ade80}
+  .btn{width:100%;padding:14px;font-size:1rem;font-weight:600;background:#4ade80;color:#000;border:none;border-radius:10px;cursor:pointer;font-family:inherit}
+  .btn:active{transform:scale(0.98)}
+  .btn:disabled{opacity:0.6;cursor:wait}
+  .msg{padding:14px;border-radius:10px;margin-top:18px;font-size:0.92rem;line-height:1.5;display:none}
+  .msg.success{background:#0d2818;color:#4ade80;border:1px solid #1f5a35;display:block}
+  .msg.error{background:#3a1212;color:#f87171;border:1px solid #5a2828;display:block}
+  .back{display:inline-block;margin-top:24px;color:#888;font-size:0.88rem;text-decoration:none}
+  .back:hover{color:#fff}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="brand">🚴 DBP <span>Coach</span></div>
+
+  <h1>Sign in</h1>
+  <p class="sub">We'll email you a one-tap sign-in link. No password.</p>
+
+  <form id="loginForm">
+    <label for="email">Email address</label>
+    <input type="email" id="email" name="email" required autocomplete="email" placeholder="you@example.com">
+    <button type="submit" class="btn" id="submitBtn">Send sign-in link</button>
+  </form>
+
+  <div id="msg" class="msg"></div>
+
+  <a href="/" class="back">← Back to home</a>
+</div>
+
+<script>
+document.getElementById('loginForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const email = document.getElementById('email').value.trim();
+  const btn = document.getElementById('submitBtn');
+  const msg = document.getElementById('msg');
+  btn.disabled = true;
+  btn.textContent = 'Sending…';
+  msg.className = 'msg';
+  msg.textContent = '';
+
+  try {
+    const r = await fetch('/auth/request', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email }),
+    });
+    const data = await r.json();
+    if (data.sent) {
+      msg.className = 'msg success';
+      msg.innerHTML = `<strong>Check your email.</strong><br>Tap the link in the email we just sent to <b>${email}</b>. The link is good for 15 minutes.`;
+      btn.textContent = 'Link sent ✓';
+    } else {
+      msg.className = 'msg error';
+      msg.textContent = data.error || 'Something went wrong. Try again.';
+      btn.disabled = false;
+      btn.textContent = 'Send sign-in link';
+    }
+  } catch (e) {
+    msg.className = 'msg error';
+    msg.textContent = e.message;
+    btn.disabled = false;
+    btn.textContent = 'Send sign-in link';
+  }
+});
+</script>
+</body>
+</html>

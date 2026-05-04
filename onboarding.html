@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Set up · DBP Coach</title>
+<style>
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:#0a0a0a;color:#f5f5f5;font-family:-apple-system,BlinkMacSystemFont,sans-serif;line-height:1.5;min-height:100vh}
+  .container{max-width:560px;margin:0 auto;padding:40px 20px 80px}
+  .brand{font-weight:700;font-size:1.05rem;letter-spacing:-0.02em;margin-bottom:24px;color:#aaa}
+  .brand span{color:#4ade80}
+  .progress{display:flex;gap:6px;margin-bottom:32px}
+  .progress div{flex:1;height:4px;border-radius:2px;background:#222}
+  .progress div.active{background:#4ade80}
+  h1{font-size:1.6rem;font-weight:700;letter-spacing:-0.02em;margin:0 0 8px}
+  .step-sub{color:#888;margin-bottom:28px;font-size:0.95rem}
+  label{display:block;font-size:0.85rem;color:#aaa;margin-bottom:6px;font-weight:500;margin-top:14px}
+  input,select,textarea{width:100%;padding:12px 14px;font-size:1rem;background:#111;border:1px solid #1f1f1f;border-radius:10px;color:#fff;font-family:inherit}
+  input:focus,select:focus,textarea:focus{outline:none;border-color:#4ade80}
+  .field-help{font-size:0.78rem;color:#666;margin-top:4px}
+  .btn{padding:14px 18px;font-size:1rem;font-weight:600;border-radius:10px;cursor:pointer;border:none;font-family:inherit}
+  .btn-primary{background:#4ade80;color:#000}
+  .btn-secondary{background:#1a1a1a;color:#fff;border:1px solid #2a2a2a}
+  .btn:active{transform:scale(0.98)}
+  .btn:disabled{opacity:0.5;cursor:wait}
+  .actions{display:flex;justify-content:space-between;gap:10px;margin-top:32px}
+  .actions .btn{flex:1}
+
+  .integration-card{background:#111;border:1px solid #1f1f1f;border-radius:14px;padding:18px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;gap:14px}
+  .integration-card.connected{border-color:#1f5a35;background:#0d2818}
+  .integration-info{flex:1}
+  .integration-info strong{display:block;font-size:1.05rem}
+  .integration-info span{color:#888;font-size:0.85rem}
+
+  .options{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin-top:8px}
+  .option{padding:11px 12px;background:#111;border:1px solid #1f1f1f;border-radius:10px;cursor:pointer;text-align:center;font-size:0.9rem;font-weight:500;transition:all 0.15s}
+  .option.selected{background:#0d2818;border-color:#4ade80;color:#4ade80}
+  .option:active{transform:scale(0.97)}
+
+  .checkbox{display:flex;align-items:center;gap:10px;padding:12px;background:#111;border:1px solid #1f1f1f;border-radius:10px;cursor:pointer;margin-top:8px;font-size:0.92rem}
+  .checkbox input{width:auto;margin:0}
+  .checkbox.checked{border-color:#4ade80}
+
+  .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .err{color:#f87171;font-size:0.85rem;margin-top:8px;display:none}
+  .err.show{display:block}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="brand">🚴 DBP <span>Coach</span></div>
+  <div class="progress" id="progress">
+    <div class="active"></div><div></div><div></div><div></div>
+  </div>
+
+  <!-- STEP 1: Personal info -->
+  <div class="step" id="step1">
+    <h1>About you</h1>
+    <p class="step-sub">Quick basics so Coach can personalize.</p>
+
+    <label>Name</label>
+    <input type="text" id="name" placeholder="Your name">
+
+    <label>Birthdate <span style="color:#666">(unlocks birthday perks if you go Elite)</span></label>
+    <input type="date" id="birthdate">
+
+    <div class="row">
+      <div>
+        <label>Bodyweight (kg)</label>
+        <input type="number" id="bodyweight_kg" placeholder="e.g. 80" step="0.1">
+      </div>
+      <div>
+        <label>City</label>
+        <input type="text" id="location_name" placeholder="Durango, CO">
+      </div>
+    </div>
+
+    <div class="actions">
+      <button class="btn btn-secondary" disabled>Back</button>
+      <button class="btn btn-primary" onclick="nextStep()">Continue</button>
+    </div>
+  </div>
+
+  <!-- STEP 2: Connect data sources -->
+  <div class="step" id="step2" style="display:none">
+    <h1>Connect your data</h1>
+    <p class="step-sub">Coach reads your WHOOP for recovery and Strava for activity. Both required.</p>
+
+    <div class="integration-card" id="whoop-card">
+      <div class="integration-info">
+        <strong>WHOOP</strong>
+        <span id="whoop-status">Not connected</span>
+      </div>
+      <a class="btn btn-primary" href="/integrations/whoop/connect" id="whoop-btn">Connect</a>
+    </div>
+
+    <div class="integration-card" id="strava-card">
+      <div class="integration-info">
+        <strong>Strava</strong>
+        <span id="strava-status">Not connected</span>
+      </div>
+      <a class="btn btn-primary" href="/integrations/strava/connect" id="strava-btn">Connect</a>
+    </div>
+
+    <div class="err" id="connectErr">Both accounts required to continue.</div>
+
+    <div class="actions">
+      <button class="btn btn-secondary" onclick="prevStep()">Back</button>
+      <button class="btn btn-primary" onclick="nextStep()">Continue</button>
+    </div>
+  </div>
+
+  <!-- STEP 3: Training -->
+  <div class="step" id="step3" style="display:none">
+    <h1>Training context</h1>
+    <p class="step-sub">Helps Coach prescribe the right balance of work.</p>
+
+    <label>Primary focus</label>
+    <div class="options" id="focus-options">
+      <div class="option" data-value="cycling">Cycling performance</div>
+      <div class="option" data-value="cycling-balanced">Cycling + strength</div>
+      <div class="option" data-value="general">General fitness</div>
+      <div class="option" data-value="aerobic_base">Build aerobic base</div>
+    </div>
+
+    <div class="row" style="margin-top:14px">
+      <div>
+        <label>Weekly training hours</label>
+        <input type="number" id="weekly_hours_target" placeholder="e.g. 8" step="0.5" min="2" max="20">
+      </div>
+      <div>
+        <label>Strength sessions / week</label>
+        <select id="strength_target_per_week">
+          <option value="0">0</option>
+          <option value="1">1</option>
+          <option value="2" selected>2</option>
+          <option value="3">3</option>
+        </select>
+      </div>
+    </div>
+
+    <label>FTP (cycling threshold watts)</label>
+    <input type="number" id="ftp_watts" placeholder="If unknown, leave blank — we'll estimate from your Strava">
+    <div class="field-help">Tip: do a 20-min FTP test in Zwift or outside. Until then, we estimate from your best 20-min normalized power.</div>
+
+    <div class="actions">
+      <button class="btn btn-secondary" onclick="prevStep()">Back</button>
+      <button class="btn btn-primary" onclick="nextStep()">Continue</button>
+    </div>
+  </div>
+
+  <!-- STEP 4: Equipment -->
+  <div class="step" id="step4" style="display:none">
+    <h1>Equipment</h1>
+    <p class="step-sub">For strength prescriptions.</p>
+
+    <label>Home gym equipment (select all available)</label>
+    <div class="options" id="equipment-options">
+      <div class="option" data-value="barbell">Barbell + plates</div>
+      <div class="option" data-value="rack">Squat rack</div>
+      <div class="option" data-value="bench">Bench</div>
+      <div class="option" data-value="dumbbells">Dumbbells</div>
+      <div class="option" data-value="kettlebells">Kettlebells</div>
+      <div class="option" data-value="pullup_bar">Pull-up bar</div>
+      <div class="option" data-value="bands">Bands</div>
+      <div class="option" data-value="machines">Cable/machines</div>
+    </div>
+
+    <label class="checkbox">
+      <input type="checkbox" id="has_indoor_trainer">
+      <span>I have an indoor trainer (Wahoo, Tacx, Zwift, etc.)</span>
+    </label>
+
+    <div class="actions">
+      <button class="btn btn-secondary" onclick="prevStep()">Back</button>
+      <button class="btn btn-primary" onclick="finish()" id="finishBtn">Finish setup</button>
+    </div>
+    <div class="err" id="finishErr"></div>
+  </div>
+</div>
+
+<script>
+let currentStep = 1;
+let state = { benchmarks: {}, integrations: [] };
+
+async function loadState(){
+  try {
+    const r = await fetch('/onboarding/state');
+    const data = await r.json();
+    state = data;
+    if (data.benchmarks) {
+      document.getElementById('name').value = data.user.name || '';
+      document.getElementById('bodyweight_kg').value = data.benchmarks.bodyweight_kg || '';
+      document.getElementById('location_name').value = data.benchmarks.location_name || '';
+      document.getElementById('weekly_hours_target').value = data.benchmarks.weekly_hours_target || '';
+      document.getElementById('ftp_watts').value = data.benchmarks.ftp_watts || '';
+      if (data.benchmarks.strength_target_per_week != null) {
+        document.getElementById('strength_target_per_week').value = data.benchmarks.strength_target_per_week;
+      }
+      if (data.benchmarks.primary_focus) {
+        const focus = document.querySelector(`#focus-options [data-value="${data.benchmarks.primary_focus}"]`);
+        if (focus) focus.classList.add('selected');
+      }
+      if (data.benchmarks.home_gym_equipment) {
+        const eq = data.benchmarks.home_gym_equipment;
+        eq.forEach(v => {
+          const el = document.querySelector(`#equipment-options [data-value="${v}"]`);
+          if (el) el.classList.add('selected');
+        });
+      }
+      if (data.benchmarks.has_indoor_trainer) {
+        document.getElementById('has_indoor_trainer').checked = true;
+      }
+    }
+    renderIntegrations();
+    // If user came back via OAuth callback, jump to step 2
+    const params = new URLSearchParams(location.search);
+    if (params.get('step') === 'integrations' || params.get('whoop') || params.get('strava')) {
+      goTo(2);
+    }
+  } catch(e) { console.error(e); }
+}
+
+function renderIntegrations(){
+  const whoop = state.integrations?.find(i => i.service === 'whoop');
+  const strava = state.integrations?.find(i => i.service === 'strava');
+  if (whoop && whoop.status === 'connected') {
+    document.getElementById('whoop-status').textContent = '✓ Connected';
+    document.getElementById('whoop-card').classList.add('connected');
+    document.getElementById('whoop-btn').textContent = 'Reconnect';
+  }
+  if (strava && strava.status === 'connected') {
+    document.getElementById('strava-status').textContent = '✓ Connected';
+    document.getElementById('strava-card').classList.add('connected');
+    document.getElementById('strava-btn').textContent = 'Reconnect';
+  }
+}
+
+document.querySelectorAll('#focus-options .option').forEach(el => {
+  el.addEventListener('click', () => {
+    document.querySelectorAll('#focus-options .option').forEach(x => x.classList.remove('selected'));
+    el.classList.add('selected');
+  });
+});
+
+document.querySelectorAll('#equipment-options .option').forEach(el => {
+  el.addEventListener('click', () => {
+    el.classList.toggle('selected');
+  });
+});
+
+async function saveStep(){
+  const data = {};
+  if (currentStep === 1) {
+    data.name = document.getElementById('name').value.trim();
+    data.birthdate = document.getElementById('birthdate').value || null;
+    data.bodyweight_kg = parseFloat(document.getElementById('bodyweight_kg').value) || null;
+    data.location_name = document.getElementById('location_name').value.trim();
+    // If Durango, hardcode lat/lng
+    if (/durango/i.test(data.location_name)) {
+      data.location_lat = 37.2753;
+      data.location_lng = -107.8801;
+    }
+  } else if (currentStep === 3) {
+    const focusEl = document.querySelector('#focus-options .option.selected');
+    data.primary_focus = focusEl ? focusEl.dataset.value : null;
+    data.weekly_hours_target = parseFloat(document.getElementById('weekly_hours_target').value) || null;
+    data.strength_target_per_week = parseInt(document.getElementById('strength_target_per_week').value);
+    const ftp = parseInt(document.getElementById('ftp_watts').value);
+    if (ftp) data.ftp_watts = ftp;
+  } else if (currentStep === 4) {
+    const equipment = [...document.querySelectorAll('#equipment-options .option.selected')].map(el => el.dataset.value);
+    data.home_gym_equipment = equipment;
+    data.has_indoor_trainer = document.getElementById('has_indoor_trainer').checked;
+  }
+  await fetch('/onboarding/save', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  });
+}
+
+async function nextStep(){
+  await saveStep();
+  if (currentStep === 2) {
+    // Verify both integrations
+    await loadState();
+    const whoop = state.integrations?.find(i => i.service === 'whoop' && i.status === 'connected');
+    const strava = state.integrations?.find(i => i.service === 'strava' && i.status === 'connected');
+    if (!whoop || !strava) {
+      document.getElementById('connectErr').classList.add('show');
+      return;
+    }
+  }
+  goTo(currentStep + 1);
+}
+
+function prevStep(){ goTo(currentStep - 1); }
+
+function goTo(n){
+  if (n < 1 || n > 4) return;
+  document.querySelectorAll('.step').forEach(s => s.style.display = 'none');
+  document.getElementById('step' + n).style.display = 'block';
+  document.querySelectorAll('#progress div').forEach((d, i) => {
+    d.classList.toggle('active', i < n);
+  });
+  currentStep = n;
+  window.scrollTo(0, 0);
+}
+
+async function finish(){
+  const btn = document.getElementById('finishBtn');
+  const err = document.getElementById('finishErr');
+  btn.disabled = true;
+  btn.textContent = 'Setting up…';
+  await saveStep();
+  try {
+    const r = await fetch('/onboarding/complete', { method: 'POST' });
+    const data = await r.json();
+    if (!data.success) {
+      err.textContent = data.error || 'Could not complete setup';
+      err.classList.add('show');
+      btn.disabled = false;
+      btn.textContent = 'Finish setup';
+      return;
+    }
+    window.location = '/dashboard';
+  } catch(e) {
+    err.textContent = e.message;
+    err.classList.add('show');
+    btn.disabled = false;
+    btn.textContent = 'Finish setup';
+  }
+}
+
+loadState();
+</script>
+</body>
+</html>
