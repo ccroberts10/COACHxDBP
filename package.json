@@ -1,0 +1,24 @@
+{
+  "name": "dbp-coach",
+  "version": "1.0.0",
+  "description": "DBP Coach — AI training & nutrition coach with Elite member perks",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "migrate": "node -e \"require('./db/client').ensureSchema().then(()=>process.exit(0))\""
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.30.0",
+    "cookie-parser": "^1.4.6",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.0",
+    "node-cron": "^3.0.3",
+    "node-fetch": "^3.3.2",
+    "pg": "^8.13.0",
+    "stripe": "^17.0.0"
+  }
+}

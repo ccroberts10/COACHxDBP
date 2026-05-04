@@ -1,0 +1,182 @@
+// lib/email.js
+// Transactional email via Resend (https://resend.com)
+
+const fetch = (...args) => import('node-fetch').then(({default: f}) => f(...args));
+const db = require('../db/client');
+
+const RESEND_API_KEY = process.env.RESEND_API_KEY;
+const FROM_EMAIL = process.env.FROM_EMAIL || 'DBP Coach <coach@durangobikeproject.com>';
+const REPLY_TO = process.env.REPLY_TO || 'ccroberts10@gmail.com';
+
+async function sendEmail({ to, subject, html, template = 'unknown', userId = null }) {
+  if (!RESEND_API_KEY) {
+    console.warn('[email] RESEND_API_KEY not set, logging email instead:');
+    console.log({ to, subject, template });
+    return { mock: true };
+  }
+  try {
+    const res = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${RESEND_API_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        from: FROM_EMAIL,
+        to: [to],
+        reply_to: REPLY_TO,
+        subject,
+        html,
+      }),
+    });
+    const data = await res.json();
+    await db.query(
+      `INSERT INTO notifications (user_id, channel, template, recipient, subject, payload, status)
+       VALUES ($1, 'email', $2, $3, $4, $5, $6)`,
+      [userId, template, to, subject, JSON.stringify({ resend_id: data.id }), res.ok ? 'sent' : 'failed']
+    );
+    if (!res.ok) console.error('[email] Send failed:', data);
+    return data;
+  } catch (e) {
+    console.error('[email] Exception:', e.message);
+    throw e;
+  }
+}
+
+// ===== Email templates =====
+
+function wrap(content, ctaUrl = null, ctaLabel = null) {
+  return `<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><title>DBP Coach</title></head>
+<body style="margin:0;padding:0;background:#f5f5f5;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
+  <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="background:#f5f5f5;padding:24px 0;">
+    <tr><td align="center">
+      <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="560" style="background:#ffffff;border-radius:12px;padding:32px;max-width:560px;">
+        <tr><td>
+          <div style="font-size:14px;color:#888;text-transform:uppercase;letter-spacing:0.1em;font-weight:600;margin-bottom:18px;">🚴 DBP Coach</div>
+          ${content}
+          ${ctaUrl ? `<div style="margin:28px 0 12px"><a href="${ctaUrl}" style="display:inline-block;background:#000;color:#fff;text-decoration:none;padding:12px 28px;border-radius:8px;font-weight:600;font-size:15px;">${ctaLabel}</a></div>` : ''}
+          <div style="border-top:1px solid #eee;margin-top:32px;padding-top:18px;color:#888;font-size:12px;line-height:1.5;">
+            Durango Bike Project · 225 E 8th Ave, Durango, CO<br>
+            Questions? Reply to this email.
+          </div>
+        </td></tr>
+      </table>
+    </td></tr>
+  </table>
+</body></html>`;
+}
+
+async function sendMagicLinkEmail(email, link, expiresMin) {
+  const html = wrap(
+    `<h1 style="font-size:24px;color:#000;margin:0 0 12px;letter-spacing:-0.02em;">Sign in to DBP Coach</h1>
+     <p style="color:#444;font-size:15px;line-height:1.5;margin:0 0 8px;">Tap the button below to sign in. This link is good for ${expiresMin} minutes and can only be used once.</p>
+     <p style="color:#888;font-size:13px;margin:14px 0 0;">If you didn't request this, you can safely ignore it.</p>`,
+    link, 'Sign in'
+  );
+  return sendEmail({ to: email, subject: 'Your DBP Coach sign-in link', html, template: 'magic_link' });
+}
+
+async function sendWelcomeEmail(email, userName) {
+  const html = wrap(
+    `<h1 style="font-size:24px;color:#000;margin:0 0 12px;letter-spacing:-0.02em;">Welcome to DBP Coach${userName ? ', ' + userName : ''}</h1>
+     <p style="color:#444;font-size:15px;line-height:1.5;">You're in. Let's get you set up — connect your WHOOP and Strava, tell us a bit about your training, and your first AI prescription will be ready tomorrow at 6:30 AM.</p>
+     <p style="color:#444;font-size:15px;line-height:1.5;margin-top:14px;">Have a question, or want to chat about how to use Coach? Reply to this email — it goes straight to Casey.</p>`,
+    `${process.env.PUBLIC_URL}/onboarding`, 'Set up your account'
+  );
+  return sendEmail({ to: email, subject: 'Welcome to DBP Coach', html, template: 'welcome' });
+}
+
+async function sendSundayDrinkEmail(email, userName, code, recoveryPct) {
+  const recoveryNote = recoveryPct >= 67 ? "Recovery is high — treat yourself to a cortado or that espresso tonic."
+    : recoveryPct >= 34 ? "Moderate recovery — a flat white or matcha is the move."
+    : "Low recovery — herbal tea or a calm chai. Take it easy today.";
+  const html = wrap(
+    `<h1 style="font-size:24px;color:#000;margin:0 0 12px;letter-spacing:-0.02em;">☕ Sunday drink, on us</h1>
+     <p style="color:#444;font-size:15px;line-height:1.5;">${recoveryNote}</p>
+     <div style="background:#f5f5f5;border-radius:12px;padding:20px;margin:18px 0;text-align:center;">
+       <div style="font-size:11px;color:#888;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:6px;">Show this code at the bar</div>
+       <div style="font-size:36px;font-weight:700;letter-spacing:0.04em;font-family:monospace;color:#000;">${code}</div>
+       <div style="font-size:12px;color:#888;margin-top:8px;">Valid today only · 9 AM – 4 PM</div>
+     </div>
+     <p style="color:#888;font-size:13px;line-height:1.5;">225 E 8th Ave, Durango. See you there.</p>`,
+    `${process.env.PUBLIC_URL}/dashboard`, 'Open Coach'
+  );
+  return sendEmail({ to: email, subject: '☕ Your Sunday drink is on us', html, template: 'sunday_drink' });
+}
+
+async function sendBirthdayEmail(email, userName, code) {
+  const html = wrap(
+    `<h1 style="font-size:24px;color:#000;margin:0 0 12px;letter-spacing:-0.02em;">🎂 Happy birthday, ${userName || 'rider'}</h1>
+     <p style="color:#444;font-size:15px;line-height:1.5;">Stop in this month for a free coffee on the house — your DBP family appreciates you.</p>
+     <div style="background:#f5f5f5;border-radius:12px;padding:20px;margin:18px 0;text-align:center;">
+       <div style="font-size:11px;color:#888;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:6px;">Birthday code</div>
+       <div style="font-size:36px;font-weight:700;letter-spacing:0.04em;font-family:monospace;color:#000;">${code}</div>
+       <div style="font-size:12px;color:#888;margin-top:8px;">Valid through end of month</div>
+     </div>`,
+    `${process.env.PUBLIC_URL}/dashboard`, 'Open Coach'
+  );
+  return sendEmail({ to: email, subject: `🎂 Birthday coffee on us`, html, template: 'birthday' });
+}
+
+async function sendServiceReminderEmail(email, userName, totalKm) {
+  const html = wrap(
+    `<h1 style="font-size:24px;color:#000;margin:0 0 12px;letter-spacing:-0.02em;">Time for a tune-up</h1>
+     <p style="color:#444;font-size:15px;line-height:1.5;">Your bike has logged about ${Math.round(totalKm).toLocaleString()} km since your last tune-up. That's the typical service interval for cable, drivetrain, and brake check.</p>
+     <p style="color:#444;font-size:15px;line-height:1.5;">As an Elite member, you get priority booking. Tap below to claim your slot.</p>`,
+    `${process.env.PUBLIC_URL}/service/book`, 'Book service'
+  );
+  return sendEmail({ to: email, subject: 'Tune-up reminder · priority booking inside', html, template: 'service_reminder' });
+}
+
+async function sendCompetitionWinnerEmail(email, userName, compName, prize) {
+  const html = wrap(
+    `<h1 style="font-size:24px;color:#000;margin:0 0 12px;letter-spacing:-0.02em;">🏆 You won, ${userName || 'rider'}</h1>
+     <p style="color:#444;font-size:15px;line-height:1.5;">First place in <strong>${compName}</strong>. Stop by DBP this week to claim your prize: ${prize}.</p>
+     <p style="color:#444;font-size:15px;line-height:1.5;">We'll tag you on Instagram tonight. Thanks for showing up.</p>`,
+    `${process.env.PUBLIC_URL}/dashboard`, 'Open Coach'
+  );
+  return sendEmail({ to: email, subject: `🏆 You won ${compName}`, html, template: 'competition_winner' });
+}
+
+async function sendDailyPrescriptionEmail(email, userName, prescription, recoveryPct) {
+  const w = prescription.workout || {};
+  const n = prescription.nutrition || {};
+  const recCol = recoveryPct >= 67 ? '#16a34a' : recoveryPct >= 34 ? '#ca8a04' : '#dc2626';
+  const html = wrap(
+    `<div style="text-align:center;background:#f5f5f5;border-radius:12px;padding:22px;margin-bottom:18px;">
+       <div style="font-size:11px;color:#888;text-transform:uppercase;letter-spacing:0.1em;">Recovery</div>
+       <div style="font-size:48px;font-weight:700;color:${recCol};line-height:1;margin:6px 0;">${recoveryPct ?? '—'}<span style="font-size:18px;">%</span></div>
+       <div style="font-size:14px;color:#444;">${prescription.headline || ''}</div>
+     </div>
+
+     <h2 style="font-size:14px;color:#888;text-transform:uppercase;letter-spacing:0.08em;margin:20px 0 8px;">Today's Workout · ${w.duration_min || '—'} min</h2>
+     <div style="background:#f5f5f5;border-radius:12px;padding:16px;font-size:14px;color:#444;line-height:1.55;">
+       ${w.intensity_zone ? `<div style="color:#666;font-size:12px;margin-bottom:8px;">🎯 ${w.intensity_zone}</div>` : ''}
+       ${(w.specific_workout || '').replace(/\n/g, '<br>')}
+       ${w.route_suggestion ? `<div style="margin-top:10px;color:#666;">📍 ${w.route_suggestion}</div>` : ''}
+     </div>
+
+     <h2 style="font-size:14px;color:#888;text-transform:uppercase;letter-spacing:0.08em;margin:20px 0 8px;">Nutrition</h2>
+     <div style="background:#f5f5f5;border-radius:12px;padding:16px;font-size:14px;color:#444;line-height:1.55;">
+       ${n.breakfast ? `<div><strong style="color:#000;">Breakfast:</strong> ${n.breakfast}</div>` : ''}
+       ${n.lunch ? `<div style="margin-top:6px;"><strong style="color:#000;">Lunch:</strong> ${n.lunch}</div>` : ''}
+       ${n.dinner ? `<div style="margin-top:6px;"><strong style="color:#000;">Dinner:</strong> ${n.dinner}</div>` : ''}
+       ${n.supplements ? `<div style="margin-top:6px;"><strong style="color:#000;">Supps:</strong> ${n.supplements}</div>` : ''}
+     </div>`,
+    `${process.env.PUBLIC_URL}/dashboard`, 'Open in app'
+  );
+  return sendEmail({ to: email, subject: `🚴 Today's plan · ${prescription.headline || 'Coach'}`, html, template: 'daily_prescription' });
+}
+
+module.exports = {
+  sendEmail,
+  sendMagicLinkEmail,
+  sendWelcomeEmail,
+  sendSundayDrinkEmail,
+  sendBirthdayEmail,
+  sendServiceReminderEmail,
+  sendCompetitionWinnerEmail,
+  sendDailyPrescriptionEmail,
+};
