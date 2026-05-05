@@ -186,7 +186,29 @@ CREATE TABLE IF NOT EXISTS workout_feedback (
   date                    DATE NOT NULL,
   status                  TEXT NOT NULL,              -- 'did_it' | 'modified' | 'skipped'
   note                    TEXT,
-  rpe                     INTEGER,
+  rpe                     INTEGER,                     -- 1-10
+  actual_workout_type     TEXT,                        -- if modified: 'cycling' | 'strength' | 'run' | 'yoga' | 'hike' | 'other'
+  actual_workout_detail   TEXT,                        -- e.g. "60 min easy spin instead"
+  skip_reason             TEXT,                        -- if skipped: 'too_tired' | 'no_time' | 'weather' | 'sick' | 'other'
+  created_at              TIMESTAMPTZ DEFAULT NOW(),
+  updated_at              TIMESTAMPTZ DEFAULT NOW(),
+  PRIMARY KEY (user_id, date)
+);
+
+-- Migration: add new columns if not present (for existing tables)
+ALTER TABLE workout_feedback ADD COLUMN IF NOT EXISTS actual_workout_type TEXT;
+ALTER TABLE workout_feedback ADD COLUMN IF NOT EXISTS actual_workout_detail TEXT;
+ALTER TABLE workout_feedback ADD COLUMN IF NOT EXISTS skip_reason TEXT;
+
+-- Daily wellness check-in: morning, 4 tap-to-pick + optional note
+CREATE TABLE IF NOT EXISTS daily_checkins (
+  user_id                 UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  date                    DATE NOT NULL,
+  sleep_quality           INTEGER,                     -- 1-5 (1=terrible, 5=excellent)
+  legs_feel              TEXT,                         -- 'fresh' | 'normal' | 'heavy' | 'trashed'
+  alcohol_drinks          INTEGER,                     -- 0, 1, 2, 3, 4, 5+ (drinks last night)
+  stress_level            TEXT,                        -- 'low' | 'medium' | 'high'
+  note                    TEXT,
   created_at              TIMESTAMPTZ DEFAULT NOW(),
   updated_at              TIMESTAMPTZ DEFAULT NOW(),
   PRIMARY KEY (user_id, date)
