@@ -29,9 +29,9 @@ CREATE TABLE IF NOT EXISTS users (
   last_login_at           TIMESTAMPTZ
 );
 
-CREATE INDEX idx_users_email ON users(email);
-CREATE INDEX idx_users_stripe_customer ON users(stripe_customer_id);
-CREATE INDEX idx_users_active ON users(subscription_status) WHERE subscription_status IN ('active', 'trialing');
+CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
+CREATE INDEX IF NOT EXISTS idx_users_stripe_customer ON users(stripe_customer_id);
+CREATE INDEX IF NOT EXISTS idx_users_active ON users(subscription_status) WHERE subscription_status IN ('active', 'trialing');
 
 -- Magic link tokens for passwordless login
 CREATE TABLE IF NOT EXISTS auth_tokens (
@@ -43,8 +43,8 @@ CREATE TABLE IF NOT EXISTS auth_tokens (
   created_at    TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE INDEX idx_auth_tokens_user ON auth_tokens(user_id);
-CREATE INDEX idx_auth_tokens_expires ON auth_tokens(expires_at);
+CREATE INDEX IF NOT EXISTS idx_auth_tokens_user ON auth_tokens(user_id);
+CREATE INDEX IF NOT EXISTS idx_auth_tokens_expires ON auth_tokens(expires_at);
 
 -- Long-lived session cookies (30 days)
 CREATE TABLE IF NOT EXISTS sessions (
@@ -56,8 +56,8 @@ CREATE TABLE IF NOT EXISTS sessions (
   created_at    TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE INDEX idx_sessions_user ON sessions(user_id);
-CREATE INDEX idx_sessions_expires ON sessions(expires_at);
+CREATE INDEX IF NOT EXISTS idx_sessions_user ON sessions(user_id);
+CREATE INDEX IF NOT EXISTS idx_sessions_expires ON sessions(expires_at);
 
 -- ===================================================================
 -- USER PROFILE & BENCHMARKS
@@ -115,7 +115,7 @@ CREATE TABLE IF NOT EXISTS integrations (
   PRIMARY KEY (user_id, service)
 );
 
-CREATE INDEX idx_integrations_status ON integrations(status);
+CREATE INDEX IF NOT EXISTS idx_integrations_status ON integrations(status);
 
 -- ===================================================================
 -- TRAINING DATA
@@ -142,7 +142,7 @@ CREATE TABLE IF NOT EXISTS daily_snapshots (
   PRIMARY KEY (user_id, date)
 );
 
-CREATE INDEX idx_snapshots_user_date ON daily_snapshots(user_id, date DESC);
+CREATE INDEX IF NOT EXISTS idx_snapshots_user_date ON daily_snapshots(user_id, date DESC);
 
 CREATE TABLE IF NOT EXISTS activities (
   id                      TEXT NOT NULL,              -- Strava activity ID (string)
@@ -162,7 +162,7 @@ CREATE TABLE IF NOT EXISTS activities (
   PRIMARY KEY (user_id, id)
 );
 
-CREATE INDEX idx_activities_user_date ON activities(user_id, date DESC);
+CREATE INDEX IF NOT EXISTS idx_activities_user_date ON activities(user_id, date DESC);
 
 CREATE TABLE IF NOT EXISTS prescriptions (
   user_id                 UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
@@ -179,7 +179,7 @@ CREATE TABLE IF NOT EXISTS prescriptions (
   PRIMARY KEY (user_id, date)
 );
 
-CREATE INDEX idx_prescriptions_user_date ON prescriptions(user_id, date DESC);
+CREATE INDEX IF NOT EXISTS idx_prescriptions_user_date ON prescriptions(user_id, date DESC);
 
 CREATE TABLE IF NOT EXISTS workout_feedback (
   user_id                 UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
@@ -211,9 +211,9 @@ CREATE TABLE IF NOT EXISTS perk_redemptions (
   metadata                JSONB                        -- discount %, item type, etc.
 );
 
-CREATE INDEX idx_perks_user ON perk_redemptions(user_id);
-CREATE INDEX idx_perks_code ON perk_redemptions(code);
-CREATE INDEX idx_perks_unredeemed ON perk_redemptions(user_id, redeemed_at) WHERE redeemed_at IS NULL;
+CREATE INDEX IF NOT EXISTS idx_perks_user ON perk_redemptions(user_id);
+CREATE INDEX IF NOT EXISTS idx_perks_code ON perk_redemptions(code);
+CREATE INDEX IF NOT EXISTS idx_perks_unredeemed ON perk_redemptions(user_id, redeemed_at) WHERE redeemed_at IS NULL;
 
 -- Track service requests / priority queue
 CREATE TABLE IF NOT EXISTS service_requests (
@@ -228,8 +228,8 @@ CREATE TABLE IF NOT EXISTS service_requests (
   completed_at            TIMESTAMPTZ
 );
 
-CREATE INDEX idx_service_user ON service_requests(user_id);
-CREATE INDEX idx_service_open ON service_requests(status) WHERE status = 'open';
+CREATE INDEX IF NOT EXISTS idx_service_user ON service_requests(user_id);
+CREATE INDEX IF NOT EXISTS idx_service_open ON service_requests(status) WHERE status = 'open';
 
 -- Service interval tracking (km accumulator for tune-up reminders)
 CREATE TABLE IF NOT EXISTS service_intervals (
@@ -268,7 +268,7 @@ CREATE TABLE IF NOT EXISTS competition_participants (
   PRIMARY KEY (competition_id, user_id)
 );
 
-CREATE INDEX idx_comp_participants_score ON competition_participants(competition_id, current_score DESC);
+CREATE INDEX IF NOT EXISTS idx_comp_participants_score ON competition_participants(competition_id, current_score DESC);
 
 -- ===================================================================
 -- NOTIFICATIONS / EMAIL LOG
@@ -288,7 +288,7 @@ CREATE TABLE IF NOT EXISTS notifications (
   status                  TEXT DEFAULT 'sent'          -- 'sent' | 'delivered' | 'bounced' | 'failed'
 );
 
-CREATE INDEX idx_notifications_user ON notifications(user_id, sent_at DESC);
+CREATE INDEX IF NOT EXISTS idx_notifications_user ON notifications(user_id, sent_at DESC);
 
 -- ===================================================================
 -- ADMIN / OPERATIONAL
@@ -315,7 +315,7 @@ CREATE TABLE IF NOT EXISTS pipeline_runs (
   completed_at            TIMESTAMPTZ
 );
 
-CREATE INDEX idx_pipeline_runs_user ON pipeline_runs(user_id, started_at DESC);
+CREATE INDEX IF NOT EXISTS idx_pipeline_runs_user ON pipeline_runs(user_id, started_at DESC);
 
 -- ===================================================================
 -- HELPER VIEWS
