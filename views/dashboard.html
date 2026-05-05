@@ -44,7 +44,7 @@
 html, body { background: var(--bone); color: var(--ink); font-family: var(--maxi-mono); font-size: 14px; line-height: 1.5; -webkit-font-smoothing: antialiased; }
 
 /* ============= LAYOUT ============= */
-.container { max-width: 600px; margin: 0 auto; padding: 24px 20px 100px; }
+.container { max-width: 600px; margin: 0 auto; padding: 24px 20px 120px; }
 
 /* ============= HEADER ============= */
 .header {
@@ -818,30 +818,39 @@ html, body { background: var(--bone); color: var(--ink); font-family: var(--maxi
 /* ============= TAB BAR ============= */
 .tab-bar {
   position: fixed; bottom: 0; left: 0; right: 0;
-  background: var(--paper);
-  border-top: 1px solid var(--line-strong);
+  background: var(--ink);
+  border-top: 2px solid var(--ink);
   display: flex;
-  padding: 6px 0 calc(6px + env(safe-area-inset-bottom));
+  padding: 0;
+  padding-bottom: env(safe-area-inset-bottom);
   z-index: 100;
+  box-shadow: 0 -4px 16px rgba(0,0,0,0.15);
 }
 .tab {
   flex: 1; text-align: center;
-  padding: 8px 0;
+  padding: 16px 0 14px;
   background: none;
   border: none;
   cursor: pointer;
   font-family: var(--maxi-mono);
-  font-size: 0.6rem;
+  font-size: 0.78rem;
   letter-spacing: 0.18em;
   text-transform: uppercase;
   font-weight: 500;
-  color: var(--muted);
+  color: rgba(250,250,247,0.55);
+  border-top: 2px solid transparent;
+  margin-top: -2px;
+  transition: color 0.15s;
 }
-.tab.active { color: var(--ink); }
+.tab:active { transform: scale(0.97); }
+.tab.active {
+  color: var(--hi-vis);
+  border-top-color: var(--hi-vis);
+}
 .tab-indicator {
-  display: block; width: 24px; height: 2px;
+  display: block; width: 28px; height: 3px;
   background: transparent;
-  margin: 0 auto 4px;
+  margin: 0 auto 6px;
 }
 .tab.active .tab-indicator { background: var(--hi-vis); }
 
