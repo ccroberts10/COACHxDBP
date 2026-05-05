@@ -903,7 +903,7 @@ function fmtDay(s){return new Date(s+'T12:00:00').toLocaleDateString('en-US',{we
 function recColor(p){return p>=67?'green':p>=34?'yellow':'red'}
 function recState(p){return p>=67?'Recovered':p>=34?'Caution':'Strain'}
 function arrow(curr,base){if(curr==null||base==null)return'';const d=curr-base;if(Math.abs(d)<base*0.02)return'<span class="stat-arrow arrow-flat">→</span>';return d>0?'<span class="stat-arrow arrow-up">▲</span>':'<span class="stat-arrow arrow-down">▼</span>'}
-function todayStr(){return new Date().toISOString().slice(0,10)}
+function todayStr(){return appData?.today_date || new Date().toLocaleDateString('en-CA')}
 
 async function loadData(){
   document.getElementById('loadingView').style.display='block';
@@ -1128,6 +1128,7 @@ function renderToday(){
   // but today's in-progress typing isn't wiped on every re-render.
   if (window._lastFeedbackDate !== presc.date) {
     window._lastFeedbackDate = presc.date;
+    window._editFeedback = false;
     if (presc.feedback) {
       pendingFeedback = {
         status: presc.feedback.status,
@@ -1212,13 +1213,7 @@ function renderToday(){
           ${p.workout.skip_if ? `<div class="workout-skip">⚠ Skip if: ${p.workout.skip_if}</div>` : ''}
 
           <div class="feedback">
-            <div class="feedback-label">How did it go?</div>
-            <div class="feedback-buttons">
-              <button class="fb-btn did_it ${pendingFeedback.status === 'did_it' ? 'active' : ''}" onclick="setFeedbackStatus('did_it')">✓ Did it</button>
-              <button class="fb-btn modified ${pendingFeedback.status === 'modified' ? 'active' : ''}" onclick="setFeedbackStatus('modified')">⟳ Modified</button>
-              <button class="fb-btn skipped ${pendingFeedback.status === 'skipped' ? 'active' : ''}" onclick="setFeedbackStatus('skipped')">— Skipped</button>
-            </div>
-            <div class="fb-details ${pendingFeedback.status ? 'show' : ''}">${renderFeedbackDetails()}</div>
+            ${renderFeedbackBlock(presc)}
           </div>
         </div>
       </div>
@@ -1241,6 +1236,38 @@ function renderToday(){
     ${p?.rationale ? `<div class="section">${sectionHeader('06', 'Why this prescription', '')}<div class="rationale">${p.rationale}</div></div>` : ''}
 
     ${p?.flags?.length ? `<div class="section">${sectionHeader('07', 'Flags', `${p.flags.length} ACTIVE`)}<div class="flags">${p.flags.map(f => '<span class="flag">⚠ '+f.replace(/_/g, ' ')+'</span>').join('')}</div></div>` : ''}
+  `;
+}
+
+function renderFeedbackBlock(presc) {
+  const fb = presc.feedback;
+  // Show summary if feedback is saved AND user isn't editing
+  if (fb && fb.status && !window._editFeedback) {
+    const statusLabels = { did_it: '✓ Did it', modified: '⟳ Modified', skipped: '— Skipped' };
+    const skipLabels = { too_tired: 'Too tired', no_time: 'No time', weather: 'Weather', sick: 'Sick / sore', other: 'Other' };
+    return `
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+        <div class="feedback-label">Workout feedback</div>
+        <button class="checkin-edit" onclick="window._editFeedback=true; renderToday()">Edit →</button>
+      </div>
+      <div class="checkin-summary">
+        <span class="value">${statusLabels[fb.status] || fb.status}</span>
+        ${fb.rpe ? ` &nbsp;·&nbsp; <span class="label">RPE</span><span class="value">${fb.rpe}/10</span>` : ''}
+        ${fb.actual_workout_type ? `<br><span class="label">Did instead</span><span class="value">${fb.actual_workout_type}${fb.actual_workout_detail ? ' — ' + fb.actual_workout_detail : ''}</span>` : ''}
+        ${fb.skip_reason ? `<br><span class="label">Reason</span><span class="value">${skipLabels[fb.skip_reason] || fb.skip_reason}</span>` : ''}
+        ${fb.note ? `<div class="checkin-summary-note">"${fb.note}"</div>` : ''}
+      </div>
+    `;
+  }
+  // Editor view
+  return `
+    <div class="feedback-label">How did it go?</div>
+    <div class="feedback-buttons">
+      <button class="fb-btn did_it ${pendingFeedback.status === 'did_it' ? 'active' : ''}" onclick="setFeedbackStatus('did_it')">✓ Did it</button>
+      <button class="fb-btn modified ${pendingFeedback.status === 'modified' ? 'active' : ''}" onclick="setFeedbackStatus('modified')">⟳ Modified</button>
+      <button class="fb-btn skipped ${pendingFeedback.status === 'skipped' ? 'active' : ''}" onclick="setFeedbackStatus('skipped')">— Skipped</button>
+    </div>
+    <div class="fb-details ${pendingFeedback.status ? 'show' : ''}">${renderFeedbackDetails()}</div>
   `;
 }
 
@@ -1310,7 +1337,8 @@ async function saveFeedback(){
     btn.textContent = '✓ Saved';
     btn.classList.add('saved');
     if (appData.prescriptions[0]) appData.prescriptions[0].feedback = { ...pendingFeedback, date: todayStr() };
-    setTimeout(() => { btn.disabled = false; btn.textContent = 'Save feedback'; btn.classList.remove('saved'); }, 1500);
+    window._editFeedback = false;
+    setTimeout(() => renderToday(), 700);
   } catch(e){
     btn.disabled = false;
     btn.textContent = 'Save feedback';
