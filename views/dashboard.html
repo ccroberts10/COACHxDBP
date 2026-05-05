@@ -1123,15 +1123,23 @@ function renderToday(){
   const acStatus = snap.acute_chronic_ratio < 0.8 ? 'detraining' : snap.acute_chronic_ratio < 1.3 ? 'optimal' : snap.acute_chronic_ratio < 1.5 ? 'building' : 'overreaching';
   const isElite = appData.user?.tier === 'elite';
 
-  if (presc.feedback && pendingFeedback.status === null) {
-    pendingFeedback = {
-      status: presc.feedback.status,
-      rpe: presc.feedback.rpe || 7,
-      actual_workout_type: presc.feedback.actual_workout_type || null,
-      actual_workout_detail: presc.feedback.actual_workout_detail || '',
-      skip_reason: presc.feedback.skip_reason || null,
-      note: presc.feedback.note || '',
-    };
+  // Sync pendingFeedback to this prescription's feedback only when the date changes.
+  // This means: yesterday's typed-but-unsaved notes don't carry into today,
+  // but today's in-progress typing isn't wiped on every re-render.
+  if (window._lastFeedbackDate !== presc.date) {
+    window._lastFeedbackDate = presc.date;
+    if (presc.feedback) {
+      pendingFeedback = {
+        status: presc.feedback.status,
+        rpe: presc.feedback.rpe || 7,
+        actual_workout_type: presc.feedback.actual_workout_type || null,
+        actual_workout_detail: presc.feedback.actual_workout_detail || '',
+        skip_reason: presc.feedback.skip_reason || null,
+        note: presc.feedback.note || '',
+      };
+    } else {
+      pendingFeedback = { status: null, rpe: 7, actual_workout_type: null, actual_workout_detail: '', skip_reason: null, note: '' };
+    }
   }
 
   let perksHtml = '';
