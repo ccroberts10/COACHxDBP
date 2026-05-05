@@ -13,11 +13,12 @@ router.use(auth.requireAuthApi);
 router.get('/data', auth.requireActiveSubscription, async (req, res) => {
   const userId = req.user.id;
   try {
-    const [snapshots, prescriptions, activities, feedback, integrations, benchmarks, perks] = await Promise.all([
+    const [snapshots, prescriptions, activities, feedback, checkins, integrations, benchmarks, perks] = await Promise.all([
       db.many(`SELECT * FROM daily_snapshots WHERE user_id = $1 ORDER BY date DESC LIMIT 14`, [userId]),
       db.many(`SELECT * FROM prescriptions WHERE user_id = $1 ORDER BY date DESC LIMIT 14`, [userId]),
       db.many(`SELECT id, date, type, duration_sec, distance_m, avg_hr, max_hr, avg_power, normalized_power, elevation_gain_m, suffer_score FROM activities WHERE user_id = $1 ORDER BY date DESC LIMIT 14`, [userId]),
       db.many(`SELECT * FROM workout_feedback WHERE user_id = $1 ORDER BY date DESC LIMIT 14`, [userId]),
+      db.many(`SELECT * FROM daily_checkins WHERE user_id = $1 ORDER BY date DESC LIMIT 14`, [userId]),
       db.many(`SELECT service, status, error_message, last_synced_at FROM integrations WHERE user_id = $1`, [userId]),
       db.one(`SELECT * FROM user_benchmarks WHERE user_id = $1`, [userId]),
       db.many(`SELECT * FROM perk_redemptions WHERE user_id = $1 AND redeemed_at IS NULL AND (expires_at IS NULL OR expires_at > NOW()) ORDER BY issued_at DESC`, [userId]),
@@ -25,6 +26,8 @@ router.get('/data', auth.requireActiveSubscription, async (req, res) => {
 
     const fbByDate = {};
     feedback.forEach(f => { fbByDate[f.date] = f; });
+    const checkinByDate = {};
+    checkins.forEach(c => { checkinByDate[c.date] = c; });
 
     let weather = null;
     try {
@@ -45,6 +48,8 @@ router.get('/data', auth.requireActiveSubscription, async (req, res) => {
       benchmarks,
       perks,
       weather,
+      checkins,
+      today_checkin: checkinByDate[new Date().toISOString().slice(0, 10)] || null,
       connections,
     });
   } catch (e) {
@@ -65,15 +70,40 @@ router.post('/run', auth.requireActiveSubscription, async (req, res) => {
 
 // Save workout feedback
 router.post('/feedback', auth.requireActiveSubscription, async (req, res) => {
-  const { date, status, note, rpe } = req.body;
+  const { date, status, note, rpe, actual_workout_type, actual_workout_detail, skip_reason } = req.body;
   if (!date || !status) return res.status(400).json({ error: 'date and status required' });
   if (!['did_it', 'modified', 'skipped'].includes(status)) return res.status(400).json({ error: 'invalid status' });
   await db.query(
-    `INSERT INTO workout_feedback (user_id, date, status, note, rpe)
-     VALUES ($1, $2, $3, $4, $5)
+    `INSERT INTO workout_feedback (user_id, date, status, note, rpe, actual_workout_type, actual_workout_detail, skip_reason)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
      ON CONFLICT (user_id, date) DO UPDATE
-     SET status = EXCLUDED.status, note = EXCLUDED.note, rpe = EXCLUDED.rpe, updated_at = NOW()`,
-    [req.user.id, date, status, note || null, rpe || null]
+     SET status = EXCLUDED.status, note = EXCLUDED.note, rpe = EXCLUDED.rpe,
+         actual_workout_type = EXCLUDED.actual_workout_type,
+         actual_workout_detail = EXCLUDED.actual_workout_detail,
+         skip_reason = EXCLUDED.skip_reason,
+         updated_at = NOW()`,
+    [req.user.id, date, status, note || null, rpe || null,
+     actual_workout_type || null, actual_workout_detail || null, skip_reason || null]
+  );
+  res.json({ success: true });
+});
+
+// Save daily wellness check-in (morning)
+router.post('/checkin', auth.requireActiveSubscription, async (req, res) => {
+  const { date, sleep_quality, legs_feel, alcohol_drinks, stress_level, note } = req.body;
+  if (!date) return res.status(400).json({ error: 'date required' });
+  await db.query(
+    `INSERT INTO daily_checkins (user_id, date, sleep_quality, legs_feel, alcohol_drinks, stress_level, note)
+     VALUES ($1, $2, $3, $4, $5, $6, $7)
+     ON CONFLICT (user_id, date) DO UPDATE
+     SET sleep_quality = EXCLUDED.sleep_quality,
+         legs_feel = EXCLUDED.legs_feel,
+         alcohol_drinks = EXCLUDED.alcohol_drinks,
+         stress_level = EXCLUDED.stress_level,
+         note = EXCLUDED.note,
+         updated_at = NOW()`,
+    [req.user.id, date, sleep_quality || null, legs_feel || null,
+     alcohol_drinks != null ? alcohol_drinks : null, stress_level || null, note || null]
   );
   res.json({ success: true });
 });
