@@ -57,18 +57,58 @@
 
   .flag{display:inline-block;background:#3a1f1f;color:#f87171;padding:3px 9px;border-radius:6px;font-size:0.7rem;margin:2px 4px 2px 0;font-weight:500}
 
+  .checkin-card{background:linear-gradient(135deg,#0a1420 0%,#0a0a0a 100%);border:1px solid #1f3a5a;border-radius:16px;padding:18px;margin-bottom:10px}
+  .checkin-card.complete{border-color:#1f5a35;background:linear-gradient(135deg,#0d1f12 0%,#0a0a0a 100%)}
+  .checkin-card h3{margin:0 0 4px;font-size:1rem;color:#fff}
+  .checkin-sub{font-size:0.78rem;color:#888;margin-bottom:14px}
+  .checkin-row{margin-bottom:14px}
+  .checkin-row:last-child{margin-bottom:0}
+  .checkin-label{font-size:0.75rem;color:#aaa;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:6px;font-weight:500}
+  .checkin-options{display:flex;gap:6px;flex-wrap:wrap}
+  .checkin-opt{flex:1;min-width:60px;padding:10px 6px;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:10px;color:#bbb;font-size:0.8rem;cursor:pointer;font-family:inherit;text-align:center;font-weight:500;transition:all 0.15s}
+  .checkin-opt:active{transform:scale(0.96)}
+  .checkin-opt.selected{background:#0a1f30;border-color:#60a5fa;color:#60a5fa}
+  .checkin-opt.warning{background:#1f1810;border-color:#5a4a1f;color:#facc15}
+  .checkin-opt.danger{background:#1f0d0d;border-color:#5a2828;color:#f87171}
+  .star{font-size:1.05rem}
+  .checkin-note{width:100%;background:#0a0a0a;border:1px solid #2a2a2a;border-radius:10px;color:#ddd;padding:9px 11px;font-size:0.85rem;font-family:inherit;resize:none;margin-top:6px}
+  .checkin-note:focus{outline:none;border-color:#444}
+  .checkin-save{margin-top:12px;width:100%;padding:11px;background:#60a5fa;color:#000;border:none;border-radius:10px;font-weight:700;font-size:0.92rem;cursor:pointer;font-family:inherit}
+  .checkin-save.saved{background:#4ade80}
+  .checkin-save:active{transform:scale(0.98)}
+  .checkin-save:disabled{opacity:0.5}
+  .checkin-edit-btn{font-size:0.7rem;color:#60a5fa;background:none;border:none;cursor:pointer;font-family:inherit;padding:0}
+  .checkin-summary{font-size:0.88rem;color:#bbb;line-height:1.5}
+  .checkin-summary span{color:#fff;font-weight:500}
+
   .feedback-section{margin-top:14px;padding-top:14px;border-top:1px solid #1f1f1f}
-  .feedback-label{color:#666;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center}
-  .fb-saved{color:#4ade80;font-size:0.7rem;opacity:0;transition:opacity 0.3s}
-  .fb-saved.show{opacity:1}
+  .feedback-label{color:#666;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px}
   .feedback-buttons{display:flex;gap:6px;margin-bottom:8px}
   .fb-btn{flex:1;padding:9px 6px;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:10px;color:#aaa;font-size:0.8rem;cursor:pointer;font-family:inherit;font-weight:500}
   .fb-btn:active{transform:scale(0.97)}
   .fb-btn.active.did_it{background:#0d2818;border-color:#1f5a35;color:#4ade80}
   .fb-btn.active.modified{background:#1f1d0d;border-color:#5a4a1f;color:#facc15}
   .fb-btn.active.skipped{background:#1f0d0d;border-color:#5a2828;color:#f87171}
+
+  .fb-details{margin-top:10px;display:none}
+  .fb-details.show{display:block}
+  .fb-detail-label{font-size:0.75rem;color:#aaa;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:6px;font-weight:500;margin-top:10px}
+  .rpe-slider-wrap{display:flex;align-items:center;gap:12px;margin-top:6px}
+  .rpe-slider{flex:1;-webkit-appearance:none;appearance:none;height:6px;background:#1a1a1a;border-radius:3px;outline:none}
+  .rpe-slider::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:24px;height:24px;background:#facc15;border-radius:12px;cursor:pointer;border:2px solid #1a1a1a}
+  .rpe-slider::-moz-range-thumb{width:24px;height:24px;background:#facc15;border-radius:12px;cursor:pointer;border:2px solid #1a1a1a}
+  .rpe-value{font-size:1.3rem;font-weight:700;color:#facc15;min-width:40px;text-align:center}
   .fb-note{width:100%;background:#0a0a0a;border:1px solid #2a2a2a;border-radius:10px;color:#ddd;padding:9px 11px;font-size:0.85rem;font-family:inherit;resize:none;margin-top:6px}
   .fb-note:focus{outline:none;border-color:#444}
+  .fb-save{margin-top:10px;width:100%;padding:11px;background:#4ade80;color:#000;border:none;border-radius:10px;font-weight:700;font-size:0.92rem;cursor:pointer;font-family:inherit}
+  .fb-save:active{transform:scale(0.98)}
+  .fb-save:disabled{opacity:0.5}
+  .fb-save.saved{background:#1f5a35;color:#4ade80}
+
+  .pill-options{display:flex;gap:6px;flex-wrap:wrap}
+  .pill-opt{padding:8px 12px;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:8px;color:#bbb;font-size:0.82rem;cursor:pointer;font-family:inherit;font-weight:500}
+  .pill-opt:active{transform:scale(0.95)}
+  .pill-opt.selected{background:#1f1d0d;border-color:#facc15;color:#facc15}
 
   .perks-card{background:linear-gradient(135deg,#1f1810 0%,#0a0a0a 100%);border:1px solid #5a4a1f;border-radius:16px;padding:18px;margin-bottom:10px}
   .perks-card h3{margin:0 0 8px;color:#facc15;font-size:1rem}
@@ -136,37 +176,28 @@
 
   <div id="connectionBanners"></div>
 
-  <div class="view" id="todayView">
-    <div id="todayContent"></div>
-  </div>
-  <div class="view" id="trendsView">
-    <div id="trendsContent"></div>
-  </div>
-  <div class="view" id="historyView">
-    <div id="historyContent"></div>
-  </div>
+  <div class="view" id="todayView"><div id="todayContent"></div></div>
+  <div class="view" id="trendsView"><div id="trendsContent"></div></div>
+  <div class="view" id="historyView"><div id="historyContent"></div></div>
 </div>
 
 <div class="tab-bar">
-  <button class="tab active" data-view="today" onclick="switchView('today')">
-    <span class="tab-icon">📋</span>Today
-  </button>
-  <button class="tab" data-view="trends" onclick="switchView('trends')">
-    <span class="tab-icon">📈</span>Trends
-  </button>
-  <button class="tab" data-view="history" onclick="switchView('history')">
-    <span class="tab-icon">📅</span>History
-  </button>
+  <button class="tab active" data-view="today" onclick="switchView('today')"><span class="tab-icon">📋</span>Today</button>
+  <button class="tab" data-view="trends" onclick="switchView('trends')"><span class="tab-icon">📈</span>Trends</button>
+  <button class="tab" data-view="history" onclick="switchView('history')"><span class="tab-icon">📅</span>History</button>
 </div>
 
 <script>
 let appData = null;
+let pendingFeedback = { status: null, rpe: 7, actual_workout_type: null, actual_workout_detail: '', skip_reason: null, note: '' };
+let pendingCheckin = { sleep_quality: null, legs_feel: null, alcohol_drinks: null, stress_level: null, note: '' };
 
 function fmtDate(s){return new Date(s+'T12:00:00').toLocaleDateString('en-US',{weekday:'long',month:'short',day:'numeric'})}
 function fmtShortDate(s){return new Date(s+'T12:00:00').toLocaleDateString('en-US',{month:'numeric',day:'numeric'})}
 function fmtDay(s){return new Date(s+'T12:00:00').toLocaleDateString('en-US',{weekday:'short'})}
 function recColor(p){return p>=67?'green':p>=34?'yellow':'red'}
 function arrow(curr,base){if(curr==null||base==null)return'';const d=curr-base;if(Math.abs(d)<base*0.02)return'<span class="stat-arrow arrow-flat">→</span>';return d>0?'<span class="stat-arrow arrow-up">▲</span>':'<span class="stat-arrow arrow-down">▼</span>'}
+function todayStr(){return new Date().toISOString().slice(0,10)}
 
 async function loadData(){
   document.getElementById('loadingView').style.display='block';
@@ -174,6 +205,15 @@ async function loadData(){
     const r = await fetch('/api/data');
     if (r.status === 401) { window.location = '/login'; return; }
     appData = await r.json();
+    if (appData.today_checkin) {
+      pendingCheckin = {
+        sleep_quality: appData.today_checkin.sleep_quality,
+        legs_feel: appData.today_checkin.legs_feel,
+        alcohol_drinks: appData.today_checkin.alcohol_drinks,
+        stress_level: appData.today_checkin.stress_level,
+        note: appData.today_checkin.note || '',
+      };
+    }
     renderAll();
   }catch(e){
     document.getElementById('loadingView').innerHTML = '<div style="color:#f87171">Error: '+e.message+'</div>';
@@ -221,24 +261,113 @@ function renderBanners(){
   const banners = [];
   const c = appData.connections || {};
   if(c.whoop?.status === 'disconnected' || c.whoop?.status === 'error'){
-    banners.push(`<div class="reconnect-banner">
-      <div class="reconnect-text">
-        <strong>⚠ WHOOP needs reconnecting</strong>
-        ${c.whoop.error_message || 'Tap to reconnect.'}
-      </div>
-      <a href="/integrations/whoop/connect" class="reconnect-btn">Reconnect</a>
-    </div>`);
+    banners.push(`<div class="reconnect-banner"><div class="reconnect-text"><strong>⚠ WHOOP needs reconnecting</strong>${c.whoop.error_message || 'Tap to reconnect.'}</div><a href="/integrations/whoop/connect" class="reconnect-btn">Reconnect</a></div>`);
   }
   if(c.strava?.status === 'disconnected' || c.strava?.status === 'error'){
-    banners.push(`<div class="reconnect-banner">
-      <div class="reconnect-text">
-        <strong>⚠ Strava needs reconnecting</strong>
-        ${c.strava.error_message || 'Tap to reconnect.'}
-      </div>
-      <a href="/integrations/strava/connect" class="reconnect-btn">Reconnect</a>
-    </div>`);
+    banners.push(`<div class="reconnect-banner"><div class="reconnect-text"><strong>⚠ Strava needs reconnecting</strong>${c.strava.error_message || 'Tap to reconnect.'}</div><a href="/integrations/strava/connect" class="reconnect-btn">Reconnect</a></div>`);
   }
   el.innerHTML = banners.join('');
+}
+
+function renderCheckinCard(){
+  const isComplete = appData.today_checkin && appData.today_checkin.sleep_quality;
+  if (isComplete && !window._editCheckin){
+    const c = appData.today_checkin;
+    const legsLabels = { fresh:'Fresh ✨', normal:'Normal', heavy:'Heavy', trashed:'Trashed 💀' };
+    const stressLabels = { low:'Low', medium:'Medium', high:'High' };
+    const alcoholLabel = c.alcohol_drinks === 0 ? 'None' : c.alcohol_drinks >= 5 ? '5+ drinks' : `${c.alcohol_drinks} drink${c.alcohol_drinks > 1 ? 's' : ''}`;
+    return `<div class="checkin-card complete">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <h3>✓ Check-in logged</h3>
+        <button class="checkin-edit-btn" onclick="window._editCheckin = true; renderToday()">Edit</button>
+      </div>
+      <div class="checkin-summary">
+        Sleep <span>${'⭐'.repeat(c.sleep_quality)}</span> · Legs <span>${legsLabels[c.legs_feel] || c.legs_feel}</span><br>
+        Alcohol <span>${alcoholLabel}</span> · Stress <span>${stressLabels[c.stress_level] || c.stress_level}</span>
+        ${c.note ? `<div style="margin-top:8px;padding:8px 10px;background:#0a0a0a;border-radius:8px;color:#aaa;font-size:0.82rem;font-style:italic">"${c.note}"</div>` : ''}
+      </div>
+    </div>`;
+  }
+  const sq = pendingCheckin.sleep_quality;
+  const lf = pendingCheckin.legs_feel;
+  const ad = pendingCheckin.alcohol_drinks;
+  const sl = pendingCheckin.stress_level;
+  return `<div class="checkin-card">
+    <h3>How are you feeling?</h3>
+    <div class="checkin-sub">Quick check-in — last night's sleep, legs, drinks. Helps Coach calibrate today.</div>
+    <div class="checkin-row">
+      <div class="checkin-label">Sleep quality</div>
+      <div class="checkin-options">
+        ${[1,2,3,4,5].map(n => `<button class="checkin-opt ${sq===n?'selected':''}" onclick="setCheckin('sleep_quality',${n})"><span class="star">${'⭐'.repeat(n)}</span></button>`).join('')}
+      </div>
+    </div>
+    <div class="checkin-row">
+      <div class="checkin-label">Legs feel</div>
+      <div class="checkin-options">
+        <button class="checkin-opt ${lf==='fresh'?'selected':''}" onclick="setCheckin('legs_feel','fresh')">Fresh ✨</button>
+        <button class="checkin-opt ${lf==='normal'?'selected':''}" onclick="setCheckin('legs_feel','normal')">Normal</button>
+        <button class="checkin-opt ${lf==='heavy'?'selected warning':''}" onclick="setCheckin('legs_feel','heavy')">Heavy</button>
+        <button class="checkin-opt ${lf==='trashed'?'selected danger':''}" onclick="setCheckin('legs_feel','trashed')">Trashed 💀</button>
+      </div>
+    </div>
+    <div class="checkin-row">
+      <div class="checkin-label">Drinks last night</div>
+      <div class="checkin-options">
+        <button class="checkin-opt ${ad===0?'selected':''}" onclick="setCheckin('alcohol_drinks',0)">None</button>
+        <button class="checkin-opt ${ad===1?'selected':''}" onclick="setCheckin('alcohol_drinks',1)">1</button>
+        <button class="checkin-opt ${ad===2?'selected warning':''}" onclick="setCheckin('alcohol_drinks',2)">2</button>
+        <button class="checkin-opt ${ad===3?'selected warning':''}" onclick="setCheckin('alcohol_drinks',3)">3</button>
+        <button class="checkin-opt ${ad===4?'selected danger':''}" onclick="setCheckin('alcohol_drinks',4)">4</button>
+        <button class="checkin-opt ${ad===5?'selected danger':''}" onclick="setCheckin('alcohol_drinks',5)">5+</button>
+      </div>
+    </div>
+    <div class="checkin-row">
+      <div class="checkin-label">Stress level</div>
+      <div class="checkin-options">
+        <button class="checkin-opt ${sl==='low'?'selected':''}" onclick="setCheckin('stress_level','low')">Low</button>
+        <button class="checkin-opt ${sl==='medium'?'selected warning':''}" onclick="setCheckin('stress_level','medium')">Medium</button>
+        <button class="checkin-opt ${sl==='high'?'selected danger':''}" onclick="setCheckin('stress_level','high')">High</button>
+      </div>
+    </div>
+    <div class="checkin-row">
+      <div class="checkin-label">Anything else? (optional)</div>
+      <textarea class="checkin-note" id="checkinNote" placeholder="Soreness, mood, sickness, life stuff…" rows="2" oninput="pendingCheckin.note = this.value">${pendingCheckin.note || ''}</textarea>
+    </div>
+    <button class="checkin-save" id="checkinSaveBtn" onclick="saveCheckin()">Save check-in</button>
+  </div>`;
+}
+
+function setCheckin(key, val){ pendingCheckin[key] = val; renderToday(); }
+
+async function saveCheckin(){
+  const btn = document.getElementById('checkinSaveBtn');
+  btn.disabled = true;
+  btn.textContent = 'Saving…';
+  try {
+    const r = await fetch('/api/checkin', {
+      method: 'POST',
+      headers: { 'Content-Type':'application/json' },
+      body: JSON.stringify({
+        date: todayStr(),
+        sleep_quality: pendingCheckin.sleep_quality,
+        legs_feel: pendingCheckin.legs_feel,
+        alcohol_drinks: pendingCheckin.alcohol_drinks,
+        stress_level: pendingCheckin.stress_level,
+        note: pendingCheckin.note,
+      }),
+    });
+    const data = await r.json();
+    if (!data.success) throw new Error(data.error || 'Save failed');
+    btn.textContent = '✓ Saved';
+    btn.classList.add('saved');
+    appData.today_checkin = { ...pendingCheckin, date: todayStr() };
+    window._editCheckin = false;
+    setTimeout(() => renderToday(), 700);
+  } catch(e) {
+    btn.disabled = false;
+    btn.textContent = 'Save check-in';
+    alert('Save failed: ' + e.message);
+  }
 }
 
 function renderToday(){
@@ -247,7 +376,7 @@ function renderToday(){
   const presc = appData.prescriptions[0];
 
   if(!snap || !presc){
-    el.innerHTML = '<div class="empty"><div class="empty-icon">🌱</div><div>No data yet — tap <b>↻ Run</b> to pull from WHOOP and Strava.</div></div>';
+    el.innerHTML = `<div class="section"><div class="section-title"><h2>Daily Check-in</h2></div>${renderCheckinCard()}</div><div class="empty"><div class="empty-icon">🌱</div><div>No prescription yet — tap <b>↻ Run</b> to pull from WHOOP and Strava.</div></div>`;
     return;
   }
 
@@ -257,22 +386,20 @@ function renderToday(){
   const acCol = snap.acute_chronic_ratio < 1.3 ? 'green' : snap.acute_chronic_ratio < 1.5 ? 'yellow' : 'red';
   const isElite = appData.user?.tier === 'elite';
 
+  if (presc.feedback && pendingFeedback.status === null) {
+    pendingFeedback = {
+      status: presc.feedback.status,
+      rpe: presc.feedback.rpe || 7,
+      actual_workout_type: presc.feedback.actual_workout_type || null,
+      actual_workout_detail: presc.feedback.actual_workout_detail || '',
+      skip_reason: presc.feedback.skip_reason || null,
+      note: presc.feedback.note || '',
+    };
+  }
+
   let perksHtml = '';
-  if (isElite && appData.perks?.length) {
-    perksHtml = `
-    <div class="section">
-      <div class="section-title"><h2>Your Perks</h2></div>
-      <div class="perks-card">
-        <h3>🎁 ${appData.perks.length} active perk${appData.perks.length > 1 ? 's' : ''}</h3>
-        ${appData.perks.map(perk => `<div class="perk-item">
-          <div class="perk-info">
-            <strong>${perk.description || perk.perk_type}</strong>
-            <span>Show this code at DBP · expires ${perk.expires_at ? new Date(perk.expires_at).toLocaleDateString() : 'never'}</span>
-          </div>
-          <div class="perk-code">${perk.code}</div>
-        </div>`).join('')}
-      </div>
-    </div>`;
+  if (isElite && appData.perks?.length){
+    perksHtml = `<div class="section"><div class="section-title"><h2>Your Perks</h2></div><div class="perks-card"><h3>🎁 ${appData.perks.length} active perk${appData.perks.length>1?'s':''}</h3>${appData.perks.map(perk => `<div class="perk-item"><div class="perk-info"><strong>${perk.description||perk.perk_type}</strong><span>Show this code at DBP · expires ${perk.expires_at?new Date(perk.expires_at).toLocaleDateString():'never'}</span></div><div class="perk-code">${perk.code}</div></div>`).join('')}</div></div>`;
   }
 
   el.innerHTML = `
@@ -282,199 +409,107 @@ function renderToday(){
       <div class="recovery-headline">${p?.headline || ''}</div>
     </div>
 
-    ${appData.weather ? `
-    <div class="card" style="margin-bottom:12px;padding:12px 16px">
-      <div style="display:flex;justify-content:space-between;align-items:center">
-        <div>
-          <div style="font-size:0.7rem;color:#666;text-transform:uppercase;letter-spacing:0.08em">Weather</div>
-          <div style="font-size:0.95rem;color:#ddd;margin-top:2px">${appData.weather.current.temp}°F · ${appData.weather.current.description}</div>
-        </div>
-        <div style="text-align:right">
-          <div style="font-size:0.75rem;color:#888">Wind ${appData.weather.current.wind_mph}mph</div>
-          <div style="font-size:0.75rem;color:#888">Feels ${appData.weather.current.feels_like}°</div>
-        </div>
-      </div>
-      ${appData.weather.next_12h?.length ? `
-      <div style="display:flex;gap:8px;margin-top:10px;padding-top:10px;border-top:1px solid #1f1f1f">
-        ${appData.weather.next_12h.map(f => `<div style="flex:1;text-align:center;font-size:0.7rem">
-          <div style="color:#666">${f.time}</div>
-          <div style="color:#ddd;margin-top:2px;font-weight:500">${f.temp}°</div>
-          ${f.precip_chance_pct > 20 ? `<div style="color:#60a5fa;font-size:0.65rem">${f.precip_chance_pct}%💧</div>` : ''}
-        </div>`).join('')}
-      </div>` : ''}
-    </div>` : ''}
+    ${appData.weather ? `<div class="card" style="margin-bottom:12px;padding:12px 16px"><div style="display:flex;justify-content:space-between;align-items:center"><div><div style="font-size:0.7rem;color:#666;text-transform:uppercase;letter-spacing:0.08em">Weather</div><div style="font-size:0.95rem;color:#ddd;margin-top:2px">${appData.weather.current.temp}°F · ${appData.weather.current.description}</div></div><div style="text-align:right"><div style="font-size:0.75rem;color:#888">Wind ${appData.weather.current.wind_mph}mph</div><div style="font-size:0.75rem;color:#888">Feels ${appData.weather.current.feels_like}°</div></div></div>${appData.weather.next_12h?.length ? `<div style="display:flex;gap:8px;margin-top:10px;padding-top:10px;border-top:1px solid #1f1f1f">${appData.weather.next_12h.map(f => `<div style="flex:1;text-align:center;font-size:0.7rem"><div style="color:#666">${f.time}</div><div style="color:#ddd;margin-top:2px;font-weight:500">${f.temp}°</div>${f.precip_chance_pct > 20 ? `<div style="color:#60a5fa;font-size:0.65rem">${f.precip_chance_pct}%💧</div>` : ''}</div>`).join('')}</div>` : ''}</div>` : ''}
 
     <div class="stat-grid">
-      <div class="stat-tile">
-        <div class="stat-label">HRV</div>
-        <div class="stat-value">${snap.hrv?.toFixed?.(0) ?? '—'}${arrow(snap.hrv, appData.benchmarks?.hrv_baseline)}</div>
-        <div class="stat-sub">ms · base ${appData.benchmarks?.hrv_baseline ?? '—'}</div>
-      </div>
-      <div class="stat-tile">
-        <div class="stat-label">RHR</div>
-        <div class="stat-value">${snap.rhr ?? '—'}${arrow(appData.benchmarks?.rhr_baseline, snap.rhr)}</div>
-        <div class="stat-sub">bpm · base ${appData.benchmarks?.rhr_baseline ?? '—'}</div>
-      </div>
-      <div class="stat-tile">
-        <div class="stat-label">Sleep</div>
-        <div class="stat-value">${snap.sleep_hours?.toFixed?.(1) ?? '—'}<span style="font-size:0.85rem">h</span></div>
-        <div class="stat-sub">${snap.deep_sleep_min ?? '—'} deep</div>
-      </div>
-      <div class="stat-tile">
-        <div class="stat-label">Strain Yest</div>
-        <div class="stat-value blue">${snap.yesterday_strain?.toFixed?.(1) ?? '—'}</div>
-        <div class="stat-sub">/ 21</div>
-      </div>
-      <div class="stat-tile">
-        <div class="stat-label">AC Ratio</div>
-        <div class="stat-value ${acCol}">${snap.acute_chronic_ratio ?? '—'}</div>
-        <div class="stat-sub">${acStatus}</div>
-      </div>
-      <div class="stat-tile">
-        <div class="stat-label">Wkly Avg</div>
-        <div class="stat-value">${snap.weekly_strain_avg?.toFixed?.(1) ?? '—'}</div>
-        <div class="stat-sub">strain</div>
-      </div>
+      <div class="stat-tile"><div class="stat-label">HRV</div><div class="stat-value">${snap.hrv?.toFixed?.(0) ?? '—'}${arrow(snap.hrv, appData.benchmarks?.hrv_baseline)}</div><div class="stat-sub">ms · base ${appData.benchmarks?.hrv_baseline ?? '—'}</div></div>
+      <div class="stat-tile"><div class="stat-label">RHR</div><div class="stat-value">${snap.rhr ?? '—'}${arrow(appData.benchmarks?.rhr_baseline, snap.rhr)}</div><div class="stat-sub">bpm · base ${appData.benchmarks?.rhr_baseline ?? '—'}</div></div>
+      <div class="stat-tile"><div class="stat-label">Sleep</div><div class="stat-value">${snap.sleep_hours?.toFixed?.(1) ?? '—'}<span style="font-size:0.85rem">h</span></div><div class="stat-sub">${snap.deep_sleep_min ?? '—'} deep</div></div>
+      <div class="stat-tile"><div class="stat-label">Strain Yest</div><div class="stat-value blue">${snap.yesterday_strain?.toFixed?.(1) ?? '—'}</div><div class="stat-sub">/ 21</div></div>
+      <div class="stat-tile"><div class="stat-label">AC Ratio</div><div class="stat-value ${acCol}">${snap.acute_chronic_ratio ?? '—'}</div><div class="stat-sub">${acStatus}</div></div>
+      <div class="stat-tile"><div class="stat-label">Wkly Avg</div><div class="stat-value">${snap.weekly_strain_avg?.toFixed?.(1) ?? '—'}</div><div class="stat-sub">strain</div></div>
     </div>
+
+    <div class="section"><div class="section-title"><h2>Daily Check-in</h2></div>${renderCheckinCard()}</div>
 
     ${perksHtml}
 
-    ${p?.workout ? `
-    <div class="section">
-      <div class="section-title">
-        <h2>Today's Workout</h2>
-        <div class="meta">${p.workout.duration_min || '—'} min · ${p.workout.type || '—'}</div>
-      </div>
-      <div class="card">
-        <div class="card-header">
-          <div class="card-icon">${workoutEmoji(p.workout.primary_modality)}</div>
-          <div class="card-title" style="flex:1;margin-left:12px">${(p.workout.primary_modality || '').toUpperCase()}</div>
-        </div>
-        <div class="workout-meta">
-          ${p.workout.intensity_zone ? '<span>🎯 '+p.workout.intensity_zone+'</span>' : ''}
-          ${p.workout.duration_min ? '<span>⏱ '+p.workout.duration_min+' min</span>' : ''}
-        </div>
-        <div class="workout-detail">${p.workout.specific_workout || ''}</div>
-        ${p.workout.route_suggestion ? `<div class="workout-route">📍 ${p.workout.route_suggestion}</div>` : ''}
-        ${p.workout.alternates ? `<div class="workout-route"><b>Alternates:</b> ${p.workout.alternates}</div>` : ''}
-        ${p.workout.skip_if ? `<div class="workout-skip">⚠️ Skip if: ${p.workout.skip_if}</div>` : ''}
+    ${p?.workout ? `<div class="section"><div class="section-title"><h2>Today's Workout</h2><div class="meta">${p.workout.duration_min || '—'} min · ${p.workout.type || '—'}</div></div><div class="card"><div class="card-header"><div class="card-icon">${workoutEmoji(p.workout.primary_modality)}</div><div class="card-title" style="flex:1;margin-left:12px">${(p.workout.primary_modality || '').toUpperCase()}</div></div><div class="workout-meta">${p.workout.intensity_zone ? '<span>🎯 '+p.workout.intensity_zone+'</span>' : ''}${p.workout.duration_min ? '<span>⏱ '+p.workout.duration_min+' min</span>' : ''}</div><div class="workout-detail">${p.workout.specific_workout || ''}</div>${p.workout.route_suggestion ? `<div class="workout-route">📍 ${p.workout.route_suggestion}</div>` : ''}${p.workout.alternates ? `<div class="workout-route"><b>Alternates:</b> ${p.workout.alternates}</div>` : ''}${p.workout.skip_if ? `<div class="workout-skip">⚠️ Skip if: ${p.workout.skip_if}</div>` : ''}<div class="feedback-section"><div class="feedback-label">How did it go?</div><div class="feedback-buttons"><button class="fb-btn did_it ${pendingFeedback.status === 'did_it' ? 'active' : ''}" onclick="setFeedbackStatus('did_it')">✅ Did it</button><button class="fb-btn modified ${pendingFeedback.status === 'modified' ? 'active' : ''}" onclick="setFeedbackStatus('modified')">🔧 Modified</button><button class="fb-btn skipped ${pendingFeedback.status === 'skipped' ? 'active' : ''}" onclick="setFeedbackStatus('skipped')">⏭️ Skipped</button></div><div class="fb-details ${pendingFeedback.status ? 'show' : ''}">${renderFeedbackDetails()}</div></div></div></div>` : ''}
 
-        <div class="feedback-section">
-          <div class="feedback-label">
-            <span>How did it go?</span>
-            <span class="fb-saved" id="fbSaved">✓ saved</span>
-          </div>
-          <div class="feedback-buttons">
-            <button class="fb-btn did_it ${presc.feedback?.status === 'did_it' ? 'active' : ''}" data-status="did_it" onclick="saveFeedback('${presc.date}', 'did_it')">✅ Did it</button>
-            <button class="fb-btn modified ${presc.feedback?.status === 'modified' ? 'active' : ''}" data-status="modified" onclick="saveFeedback('${presc.date}', 'modified')">🔧 Modified</button>
-            <button class="fb-btn skipped ${presc.feedback?.status === 'skipped' ? 'active' : ''}" data-status="skipped" onclick="saveFeedback('${presc.date}', 'skipped')">⏭️ Skipped</button>
-          </div>
-          <textarea class="fb-note" id="fbNote" placeholder="Optional: how the legs felt, what you actually did, RPE…" rows="2" onblur="saveFeedbackNote('${presc.date}')">${presc.feedback?.note || ''}</textarea>
-        </div>
-      </div>
-    </div>` : ''}
+    ${p?.nutrition ? `<div class="section"><div class="section-title"><h2>Nutrition</h2><div class="meta">${p.nutrition.hydration_target_oz || '—'} oz water</div></div><div class="card">${p.nutrition.pre_workout ? nutritionRow('Pre', p.nutrition.pre_workout) : ''}${p.nutrition.intra_workout ? nutritionRow('Intra', p.nutrition.intra_workout) : ''}${p.nutrition.post_workout ? nutritionRow('Post', p.nutrition.post_workout) : ''}${nutritionRow('Breakfast', p.nutrition.breakfast)}${nutritionRow('Lunch', p.nutrition.lunch)}${nutritionRow('Dinner', p.nutrition.dinner)}${nutritionRow('Supps', p.nutrition.supplements)}</div></div>` : ''}
 
-    ${p?.nutrition ? `
-    <div class="section">
-      <div class="section-title"><h2>Nutrition</h2><div class="meta">${p.nutrition.hydration_target_oz || '—'} oz water</div></div>
-      <div class="card">
-        ${p.nutrition.pre_workout ? nutritionRow('Pre', p.nutrition.pre_workout) : ''}
-        ${p.nutrition.intra_workout ? nutritionRow('Intra', p.nutrition.intra_workout) : ''}
-        ${p.nutrition.post_workout ? nutritionRow('Post', p.nutrition.post_workout) : ''}
-        ${nutritionRow('Breakfast', p.nutrition.breakfast)}
-        ${nutritionRow('Lunch', p.nutrition.lunch)}
-        ${nutritionRow('Dinner', p.nutrition.dinner)}
-        ${nutritionRow('Supps', p.nutrition.supplements)}
-      </div>
-    </div>` : ''}
+    ${p?.rationale ? `<div class="section"><div class="section-title"><h2>Why this prescription</h2></div><div class="rationale">${p.rationale}</div></div>` : ''}
 
-    ${p?.rationale ? `
-    <div class="section">
-      <div class="section-title"><h2>Why this prescription</h2></div>
-      <div class="rationale">${p.rationale}</div>
-    </div>` : ''}
-
-    ${p?.flags?.length ? `
-    <div class="section">
-      <div class="section-title"><h2>Flags</h2></div>
-      <div>${p.flags.map(f => '<span class="flag">⚠ '+f.replace(/_/g, ' ')+'</span>').join('')}</div>
-    </div>` : ''}
+    ${p?.flags?.length ? `<div class="section"><div class="section-title"><h2>Flags</h2></div><div>${p.flags.map(f => '<span class="flag">⚠ '+f.replace(/_/g, ' ')+'</span>').join('')}</div></div>` : ''}
   `;
 }
 
-function nutritionRow(label, val){
-  return `<div class="nutrition-row"><div class="nutrition-label">${label}</div><div class="nutrition-value">${val||'—'}</div></div>`;
+function renderFeedbackDetails(){
+  const status = pendingFeedback.status;
+  if (!status) return '';
+  let html = '';
+  if (status === 'modified'){
+    const wt = pendingFeedback.actual_workout_type;
+    html += `<div class="fb-detail-label">What did you actually do?</div><div class="pill-options">${['cycling','strength','run','yoga','hike','swim','other'].map(t => `<button class="pill-opt ${wt===t?'selected':''}" onclick="setFeedbackField('actual_workout_type','${t}')">${t}</button>`).join('')}</div><input type="text" class="fb-note" placeholder="Specifics? (e.g., 60 min easy spin)" value="${pendingFeedback.actual_workout_detail || ''}" oninput="pendingFeedback.actual_workout_detail = this.value" style="margin-top:8px">`;
+  }
+  if (status === 'skipped'){
+    const sr = pendingFeedback.skip_reason;
+    html += `<div class="fb-detail-label">Why?</div><div class="pill-options"><button class="pill-opt ${sr==='too_tired'?'selected':''}" onclick="setFeedbackField('skip_reason','too_tired')">Too tired</button><button class="pill-opt ${sr==='no_time'?'selected':''}" onclick="setFeedbackField('skip_reason','no_time')">No time</button><button class="pill-opt ${sr==='weather'?'selected':''}" onclick="setFeedbackField('skip_reason','weather')">Weather</button><button class="pill-opt ${sr==='sick'?'selected':''}" onclick="setFeedbackField('skip_reason','sick')">Sick / sore</button><button class="pill-opt ${sr==='other'?'selected':''}" onclick="setFeedbackField('skip_reason','other')">Other</button></div>`;
+  }
+  if (status === 'did_it' || status === 'modified'){
+    html += `<div class="fb-detail-label">RPE (1=easy, 10=max effort)</div><div class="rpe-slider-wrap"><input type="range" min="1" max="10" value="${pendingFeedback.rpe}" class="rpe-slider" oninput="pendingFeedback.rpe = +this.value; document.getElementById('rpeVal').textContent = this.value"><div class="rpe-value" id="rpeVal">${pendingFeedback.rpe}</div></div>`;
+  }
+  html += `<div class="fb-detail-label">Notes (optional)</div><textarea class="fb-note" placeholder="How the legs felt, anything notable…" rows="2" oninput="pendingFeedback.note = this.value">${pendingFeedback.note || ''}</textarea><button class="fb-save" id="fbSaveBtn" onclick="saveFeedback()">Save feedback</button>`;
+  return html;
 }
 
-function workoutEmoji(m){
-  const map = {cycling:'🚴', strength:'🏋️', run:'🏃', rest:'😴', cross_train:'🤸', mixed:'🔀'};
-  return map[m] || '💪';
+function setFeedbackStatus(status){
+  pendingFeedback.status = status;
+  if (status !== 'modified'){ pendingFeedback.actual_workout_type = null; pendingFeedback.actual_workout_detail = ''; }
+  if (status !== 'skipped') pendingFeedback.skip_reason = null;
+  renderToday();
 }
+function setFeedbackField(key, val){ pendingFeedback[key] = val; renderToday(); }
 
-async function saveFeedback(date, status){
-  document.querySelectorAll('.fb-btn').forEach(b => b.classList.remove('active'));
-  document.querySelector('.fb-btn[data-status="'+status+'"]').classList.add('active', status);
-  const note = document.getElementById('fbNote')?.value || '';
+async function saveFeedback(){
+  const btn = document.getElementById('fbSaveBtn');
+  if (!btn) return;
+  btn.disabled = true;
+  btn.textContent = 'Saving…';
   try {
-    await fetch('/api/feedback', {
+    const r = await fetch('/api/feedback', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ date, status, note }),
+      headers: { 'Content-Type':'application/json' },
+      body: JSON.stringify({
+        date: todayStr(),
+        status: pendingFeedback.status,
+        rpe: pendingFeedback.rpe,
+        actual_workout_type: pendingFeedback.actual_workout_type,
+        actual_workout_detail: pendingFeedback.actual_workout_detail,
+        skip_reason: pendingFeedback.skip_reason,
+        note: pendingFeedback.note,
+      }),
     });
-    showSaved();
-    if(appData?.prescriptions?.[0]) appData.prescriptions[0].feedback = { status, note };
-  } catch(e) { console.error('Feedback save failed', e); }
+    const data = await r.json();
+    if (!data.success) throw new Error(data.error || 'Save failed');
+    btn.textContent = '✓ Saved';
+    btn.classList.add('saved');
+    if (appData.prescriptions[0]) appData.prescriptions[0].feedback = { ...pendingFeedback, date: todayStr() };
+    setTimeout(() => { btn.disabled = false; btn.textContent = 'Save feedback'; btn.classList.remove('saved'); }, 1500);
+  } catch(e){
+    btn.disabled = false;
+    btn.textContent = 'Save feedback';
+    alert('Save failed: ' + e.message);
+  }
 }
 
-async function saveFeedbackNote(date){
-  const noteEl = document.getElementById('fbNote');
-  if (!noteEl) return;
-  const note = noteEl.value;
-  const status = appData?.prescriptions?.[0]?.feedback?.status;
-  if (!status) return;
-  try {
-    await fetch('/api/feedback', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ date, status, note }),
-    });
-    showSaved();
-    if(appData?.prescriptions?.[0]) appData.prescriptions[0].feedback = { status, note };
-  } catch(e) { console.error(e); }
-}
-
-function showSaved(){
-  const el = document.getElementById('fbSaved');
-  if (!el) return;
-  el.classList.add('show');
-  setTimeout(() => el.classList.remove('show'), 1500);
-}
+function nutritionRow(label, val){return `<div class="nutrition-row"><div class="nutrition-label">${label}</div><div class="nutrition-value">${val||'—'}</div></div>`}
+function workoutEmoji(m){const map={cycling:'🚴',strength:'🏋️',run:'🏃',rest:'😴',cross_train:'🤸',mixed:'🔀'};return map[m]||'💪'}
 
 function renderTrends(){
   const el = document.getElementById('trendsContent');
   const snaps = [...appData.snapshots].reverse();
-  if(snaps.length === 0){
-    el.innerHTML = '<div class="empty">No trend data yet.</div>';
-    return;
-  }
+  if(snaps.length === 0){ el.innerHTML = '<div class="empty">No trend data yet.</div>'; return; }
   const recBars = snaps.map(s => {
     const h = ((s.recovery_pct||0) / 100) * 100;
     const col = recColor(s.recovery_pct);
-    return `<div class="chart-col">
-      <div class="chart-val ${col}">${s.recovery_pct||'—'}</div>
-      <div class="chart-bar"><div class="chart-bar-fill ${col}" style="height:${h}%;background:currentColor"></div></div>
-      <div class="chart-day">${fmtDay(s.date)}</div>
-    </div>`;
+    return `<div class="chart-col"><div class="chart-val ${col}">${s.recovery_pct||'—'}</div><div class="chart-bar"><div class="chart-bar-fill ${col}" style="height:${h}%;background:currentColor"></div></div><div class="chart-day">${fmtDay(s.date)}</div></div>`;
   }).join('');
   const maxStrain = Math.max(21, ...snaps.map(s => s.yesterday_strain || 0));
   const strainBars = snaps.map(s => {
     const v = s.yesterday_strain || 0;
     const h = (v / maxStrain) * 100;
-    return `<div class="chart-col">
-      <div class="chart-val blue">${v.toFixed(1)}</div>
-      <div class="chart-bar"><div class="chart-bar-fill blue" style="height:${h}%;background:currentColor"></div></div>
-      <div class="chart-day">${fmtDay(s.date)}</div>
-    </div>`;
+    return `<div class="chart-col"><div class="chart-val blue">${v.toFixed(1)}</div><div class="chart-bar"><div class="chart-bar-fill blue" style="height:${h}%;background:currentColor"></div></div><div class="chart-day">${fmtDay(s.date)}</div></div>`;
   }).join('');
   const hrvVals = snaps.map(s => s.hrv).filter(v => v != null);
   const minHrv = hrvVals.length ? Math.min(...hrvVals) - 5 : 0;
@@ -482,27 +517,27 @@ function renderTrends(){
   const hrvBars = snaps.map(s => {
     if(s.hrv == null) return `<div class="chart-col"><div class="chart-val">—</div><div class="chart-bar"></div><div class="chart-day">${fmtDay(s.date)}</div></div>`;
     const h = ((s.hrv - minHrv) / (maxHrv - minHrv)) * 100;
-    return `<div class="chart-col">
-      <div class="chart-val purple">${s.hrv.toFixed(0)}</div>
-      <div class="chart-bar"><div class="chart-bar-fill purple" style="height:${h}%;background:currentColor"></div></div>
-      <div class="chart-day">${fmtDay(s.date)}</div>
-    </div>`;
+    return `<div class="chart-col"><div class="chart-val purple">${s.hrv.toFixed(0)}</div><div class="chart-bar"><div class="chart-bar-fill purple" style="height:${h}%;background:currentColor"></div></div><div class="chart-day">${fmtDay(s.date)}</div></div>`;
   }).join('');
   const sleepBars = snaps.map(s => {
     const v = s.sleep_hours || 0;
     const h = (v / 10) * 100;
-    return `<div class="chart-col">
-      <div class="chart-val">${v.toFixed(1)}</div>
-      <div class="chart-bar"><div class="chart-bar-fill blue" style="height:${h}%;background:#60a5fa"></div></div>
-      <div class="chart-day">${fmtDay(s.date)}</div>
-    </div>`;
+    return `<div class="chart-col"><div class="chart-val">${v.toFixed(1)}</div><div class="chart-bar"><div class="chart-bar-fill blue" style="height:${h}%;background:#60a5fa"></div></div><div class="chart-day">${fmtDay(s.date)}</div></div>`;
   }).join('');
+  const checkins = [...(appData.checkins || [])].reverse();
+  const alcoholBars = checkins.length ? checkins.map(c => {
+    const v = c.alcohol_drinks ?? 0;
+    const h = (v / 5) * 100;
+    const col = v >= 3 ? 'red' : v >= 2 ? 'yellow' : 'green';
+    return `<div class="chart-col"><div class="chart-val ${col}">${v}</div><div class="chart-bar"><div class="chart-bar-fill ${col}" style="height:${h}%;background:currentColor"></div></div><div class="chart-day">${fmtDay(c.date)}</div></div>`;
+  }).join('') : '';
 
   el.innerHTML = `
     <div class="section"><div class="section-title"><h2>Recovery (last ${snaps.length} days)</h2></div><div class="card"><div class="chart-row">${recBars}</div></div></div>
     <div class="section"><div class="section-title"><h2>HRV trend</h2></div><div class="card"><div class="chart-row">${hrvBars}</div></div></div>
     <div class="section"><div class="section-title"><h2>Daily strain</h2></div><div class="card"><div class="chart-row">${strainBars}</div></div></div>
     <div class="section"><div class="section-title"><h2>Sleep hours</h2></div><div class="card"><div class="chart-row">${sleepBars}</div></div></div>
+    ${alcoholBars ? `<div class="section"><div class="section-title"><h2>Drinks logged</h2></div><div class="card"><div class="chart-row">${alcoholBars}</div></div></div>` : ''}
   `;
 }
 
@@ -510,55 +545,16 @@ function renderHistory(){
   const el = document.getElementById('historyContent');
   const items = appData.prescriptions;
   const acts = appData.activities;
-  if(items.length === 0){
-    el.innerHTML = '<div class="empty">No history yet.</div>';
-    return;
-  }
+  if(items.length === 0){ el.innerHTML = '<div class="empty">No history yet.</div>'; return; }
   const prescHtml = items.map(p => {
     const fr = p.full_response || {};
     const w = fr.workout || {};
     const fb = p.feedback;
-    const fbBadge = fb ? `<span style="display:inline-block;padding:2px 8px;border-radius:6px;font-size:0.7rem;margin-left:6px;${
-      fb.status === 'did_it' ? 'background:#0d2818;color:#4ade80' :
-      fb.status === 'modified' ? 'background:#1f1d0d;color:#facc15' :
-      'background:#1f0d0d;color:#f87171'
-    }">${fb.status === 'did_it' ? '✓ done' : fb.status === 'modified' ? '🔧 modified' : '⏭ skipped'}</span>` : '';
-    return `<div class="card">
-      <div class="card-header">
-        <div>
-          <div style="color:#666;font-size:0.75rem">${fmtDate(p.date)}${fbBadge}</div>
-          <div class="card-title" style="margin-top:4px">${fr.headline || p.workout_type || '—'}</div>
-        </div>
-        <div class="card-icon">${workoutEmoji(w.primary_modality)}</div>
-      </div>
-      <div class="workout-meta">
-        ${w.duration_min ? '<span>⏱ '+w.duration_min+'m</span>' : ''}
-        ${w.intensity_zone ? '<span>🎯 '+w.intensity_zone+'</span>' : ''}
-      </div>
-      <div style="font-size:0.85rem;color:#bbb;line-height:1.5">${(w.specific_workout || '').slice(0,200)}${w.specific_workout?.length > 200 ? '…' : ''}</div>
-      ${fb?.note ? `<div style="margin-top:10px;padding:10px 12px;background:#0a0a0a;border-radius:8px;font-size:0.8rem;color:#aaa;font-style:italic">"${fb.note}"</div>` : ''}
-    </div>`;
+    const fbBadge = fb ? `<span style="display:inline-block;padding:2px 8px;border-radius:6px;font-size:0.7rem;margin-left:6px;${fb.status === 'did_it' ? 'background:#0d2818;color:#4ade80' : fb.status === 'modified' ? 'background:#1f1d0d;color:#facc15' : 'background:#1f0d0d;color:#f87171'}">${fb.status === 'did_it' ? '✓ done' : fb.status === 'modified' ? '🔧 modified' : '⏭ skipped'}${fb.rpe ? ' · RPE '+fb.rpe : ''}</span>` : '';
+    return `<div class="card"><div class="card-header"><div><div style="color:#666;font-size:0.75rem">${fmtDate(p.date)}${fbBadge}</div><div class="card-title" style="margin-top:4px">${fr.headline || p.workout_type || '—'}</div></div><div class="card-icon">${workoutEmoji(w.primary_modality)}</div></div><div class="workout-meta">${w.duration_min ? '<span>⏱ '+w.duration_min+'m</span>' : ''}${w.intensity_zone ? '<span>🎯 '+w.intensity_zone+'</span>' : ''}</div><div style="font-size:0.85rem;color:#bbb;line-height:1.5">${(w.specific_workout || '').slice(0,200)}${w.specific_workout?.length > 200 ? '…' : ''}</div>${fb?.actual_workout_type ? `<div style="margin-top:8px;font-size:0.78rem;color:#facc15">→ Did instead: ${fb.actual_workout_type}${fb.actual_workout_detail ? ' — ' + fb.actual_workout_detail : ''}</div>` : ''}${fb?.skip_reason ? `<div style="margin-top:8px;font-size:0.78rem;color:#f87171">→ Skipped: ${fb.skip_reason.replace(/_/g, ' ')}</div>` : ''}${fb?.note ? `<div style="margin-top:10px;padding:10px 12px;background:#0a0a0a;border-radius:8px;font-size:0.8rem;color:#aaa;font-style:italic">"${fb.note}"</div>` : ''}</div>`;
   }).join('');
-  const actsHtml = acts.length ? `
-    <div class="section">
-      <div class="section-title"><h2>Recent Strava Activities</h2></div>
-      <div class="card">
-        ${acts.slice(0,10).map(a => `<div class="activity-row">
-          <div class="activity-info">
-            <div class="activity-type">${a.type} · ${fmtShortDate(a.date)}</div>
-            <div class="activity-meta">${a.distance_m ? (a.distance_m/1000).toFixed(1)+'km' : ''} ${a.elevation_gain_m ? '· '+Math.round(a.elevation_gain_m)+'m gain' : ''}</div>
-          </div>
-          <div class="activity-stats">
-            ${a.duration_sec ? Math.round(a.duration_sec/60)+' min' : ''}<br>
-            ${a.avg_hr ? '<span style="color:#f87171">'+Math.round(a.avg_hr)+'bpm</span>' : ''}${a.avg_power ? ' · <span style="color:#facc15">'+Math.round(a.avg_power)+'W</span>' : ''}
-          </div>
-        </div>`).join('')}
-      </div>
-    </div>` : '';
-  el.innerHTML = `
-    <div class="section"><div class="section-title"><h2>Recent Prescriptions</h2></div>${prescHtml}</div>
-    ${actsHtml}
-  `;
+  const actsHtml = acts.length ? `<div class="section"><div class="section-title"><h2>Recent Strava Activities</h2></div><div class="card">${acts.slice(0,10).map(a => `<div class="activity-row"><div class="activity-info"><div class="activity-type">${a.type} · ${fmtShortDate(a.date)}</div><div class="activity-meta">${a.distance_m ? (a.distance_m/1000).toFixed(1)+'km' : ''} ${a.elevation_gain_m ? '· '+Math.round(a.elevation_gain_m)+'m gain' : ''}</div></div><div class="activity-stats">${a.duration_sec ? Math.round(a.duration_sec/60)+' min' : ''}<br>${a.avg_hr ? '<span style="color:#f87171">'+Math.round(a.avg_hr)+'bpm</span>' : ''}${a.avg_power ? ' · <span style="color:#facc15">'+Math.round(a.avg_power)+'W</span>' : ''}</div></div>`).join('')}</div></div>` : '';
+  el.innerHTML = `<div class="section"><div class="section-title"><h2>Recent Prescriptions</h2></div>${prescHtml}</div>${actsHtml}`;
 }
 
 loadData();
