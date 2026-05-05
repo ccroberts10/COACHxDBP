@@ -29,6 +29,11 @@ router.get('/data', auth.requireActiveSubscription, async (req, res) => {
     const checkinByDate = {};
     checkins.forEach(c => { checkinByDate[c.date] = c; });
 
+    // Compute "today" in the USER's timezone, not server's UTC.
+    // PostgreSQL stores dates as YYYY-MM-DD strings, no TZ. We need to format JS date in user's TZ.
+    const userTz = req.user.timezone || 'America/Denver';
+    const todayInUserTz = new Date().toLocaleDateString('en-CA', { timeZone: userTz }); // 'en-CA' gives YYYY-MM-DD format
+
     let weather = null;
     try {
       weather = await getWeather(benchmarks?.location_lat, benchmarks?.location_lng);
@@ -49,7 +54,8 @@ router.get('/data', auth.requireActiveSubscription, async (req, res) => {
       perks,
       weather,
       checkins,
-      today_checkin: checkinByDate[new Date().toISOString().slice(0, 10)] || null,
+      today_checkin: checkinByDate[todayInUserTz] || null,
+      today_date: todayInUserTz,
       connections,
     });
   } catch (e) {
