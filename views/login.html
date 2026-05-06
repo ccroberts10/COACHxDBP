@@ -3,80 +3,337 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Sign in · DBP Coach</title>
+<title>Sign in — DBP Coach</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,700;12..96,800&display=swap" rel="stylesheet">
 <style>
-  *{box-sizing:border-box}
-  html,body{margin:0;padding:0;background:#0a0a0a;color:#f5f5f5;font-family:-apple-system,BlinkMacSystemFont,sans-serif;line-height:1.5;min-height:100vh}
-  .container{max-width:420px;margin:0 auto;padding:60px 24px}
-  .brand{font-weight:700;font-size:1.1rem;letter-spacing:-0.02em;margin-bottom:32px}
-  .brand span{color:#4ade80}
-  h1{font-size:1.8rem;font-weight:700;letter-spacing:-0.02em;margin:0 0 8px}
-  .sub{color:#888;margin-bottom:32px}
-  label{display:block;font-size:0.85rem;color:#aaa;margin-bottom:8px;font-weight:500}
-  input{width:100%;padding:14px 16px;font-size:1rem;background:#111;border:1px solid #1f1f1f;border-radius:10px;color:#fff;font-family:inherit;margin-bottom:16px}
-  input:focus{outline:none;border-color:#4ade80}
-  .btn{width:100%;padding:14px;font-size:1rem;font-weight:600;background:#4ade80;color:#000;border:none;border-radius:10px;cursor:pointer;font-family:inherit}
-  .btn:active{transform:scale(0.98)}
-  .btn:disabled{opacity:0.6;cursor:wait}
-  .msg{padding:14px;border-radius:10px;margin-top:18px;font-size:0.92rem;line-height:1.5;display:none}
-  .msg.success{background:#0d2818;color:#4ade80;border:1px solid #1f5a35;display:block}
-  .msg.error{background:#3a1212;color:#f87171;border:1px solid #5a2828;display:block}
-  .back{display:inline-block;margin-top:24px;color:#888;font-size:0.88rem;text-decoration:none}
-  .back:hover{color:#fff}
+:root {
+  --ink: #0A0A0A; --paper: #FAFAF7; --bone: #EFEDE5; --hi-vis: #F2E600;
+  --rec-green: #1F4A2C; --rec-red: #6B1F2A;
+  --line: rgba(10,10,10,0.10); --line-strong: rgba(10,10,10,0.20);
+  --muted: rgba(10,10,10,0.55);
+  --maxi-round: 'Bricolage Grotesque', system-ui, sans-serif;
+  --maxi-mono: 'DM Mono', monospace;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body {
+  background: var(--bone);
+  color: var(--ink);
+  font-family: var(--maxi-mono);
+  font-size: 15px;
+  line-height: 1.5;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+.container {
+  max-width: 460px;
+  margin: 0 auto;
+  padding: 30px 24px 60px;
+}
+.nav {
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--line-strong);
+  margin-bottom: 38px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.brand {
+  font-family: var(--maxi-round);
+  font-weight: 800;
+  font-size: 1.3rem;
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
+  line-height: 1;
+}
+.brand .accent { background: var(--hi-vis); padding: 0 6px; }
+.back-link {
+  font-family: var(--maxi-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--muted);
+  text-decoration: none;
+}
+.back-link:hover { color: var(--ink); }
+.section-tag {
+  font-family: var(--maxi-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 18px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  justify-content: space-between;
+}
+.section-tag .num { color: var(--muted); }
+
+.hero {
+  background: var(--ink);
+  color: var(--paper);
+  padding: 32px 28px;
+  margin-bottom: 18px;
+}
+h1 {
+  font-family: var(--maxi-round);
+  font-weight: 800;
+  font-size: clamp(2rem, 6vw, 2.8rem);
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
+  line-height: 0.92;
+  margin-bottom: 14px;
+}
+h1 .pop {
+  background: var(--hi-vis);
+  color: var(--ink);
+  padding: 0 8px;
+}
+.lede {
+  font-family: var(--maxi-mono);
+  font-size: 0.92rem;
+  line-height: 1.55;
+  color: rgba(250,250,247,0.8);
+}
+
+.form-card {
+  background: var(--paper);
+  border: 1px solid var(--line-strong);
+  padding: 24px 22px;
+  margin-bottom: 14px;
+}
+label {
+  display: block;
+  font-family: var(--maxi-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+input[type="email"] {
+  width: 100%;
+  padding: 14px 14px;
+  background: var(--bone);
+  border: 1px solid var(--line-strong);
+  font-family: var(--maxi-mono);
+  font-size: 1rem;
+  color: var(--ink);
+}
+input[type="email"]:focus {
+  outline: none;
+  border-color: var(--ink);
+  background: var(--paper);
+}
+.btn {
+  display: block;
+  width: 100%;
+  padding: 16px;
+  background: var(--hi-vis);
+  color: var(--ink);
+  border: 1px solid var(--ink);
+  font-family: var(--maxi-mono);
+  font-size: 0.82rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 14px;
+  transition: transform 0.08s;
+}
+.btn:active { transform: scale(0.98); }
+.btn:disabled { opacity: 0.5; cursor: wait; }
+
+.helper-text {
+  font-family: var(--maxi-mono);
+  font-size: 0.72rem;
+  color: var(--muted);
+  text-align: center;
+  margin-top: 14px;
+  letter-spacing: 0.04em;
+}
+
+.success-state {
+  display: none;
+}
+.success-state.show { display: block; }
+.form-state.hide { display: none; }
+
+.success-card {
+  background: var(--rec-green);
+  color: var(--paper);
+  padding: 28px 24px;
+  margin-bottom: 14px;
+  border: 2px solid var(--ink);
+}
+.success-tag {
+  display: inline-block;
+  background: var(--hi-vis);
+  color: var(--ink);
+  padding: 4px 10px;
+  font-family: var(--maxi-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-weight: 600;
+  margin-bottom: 14px;
+}
+.success-card h2 {
+  font-family: var(--maxi-round);
+  font-weight: 800;
+  font-size: 1.6rem;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  line-height: 1.05;
+  margin-bottom: 12px;
+}
+.success-card p {
+  font-family: var(--maxi-mono);
+  font-size: 0.88rem;
+  color: rgba(250,250,247,0.85);
+  line-height: 1.6;
+  margin-bottom: 6px;
+}
+.success-card .email-call {
+  background: var(--ink);
+  color: var(--hi-vis);
+  padding: 2px 8px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+}
+
+.error-banner {
+  background: var(--rec-red);
+  color: var(--paper);
+  padding: 12px 14px;
+  font-family: var(--maxi-mono);
+  font-size: 0.82rem;
+  margin-top: 10px;
+  display: none;
+}
+.error-banner.show { display: block; }
+
+.footer {
+  margin-top: 30px;
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
+  font-family: var(--maxi-mono);
+  font-size: 0.65rem;
+  color: var(--muted);
+  letter-spacing: 0.1em;
+  text-align: center;
+  text-transform: uppercase;
+}
 </style>
 </head>
 <body>
 <div class="container">
-  <div class="brand">🚴 DBP <span>Coach</span></div>
+  <div class="nav">
+    <div class="brand">DBP <span class="accent">COACH</span></div>
+    <a class="back-link" href="/">← Home</a>
+  </div>
 
-  <h1>Sign in</h1>
-  <p class="sub">We'll email you a one-tap sign-in link. No password.</p>
+  <div id="formState" class="form-state">
+    <div class="section-tag">
+      <span class="num">01</span>
+      <span>SIGN IN</span>
+      <span class="num">NO PASSWORD</span>
+    </div>
 
-  <form id="loginForm">
-    <label for="email">Email address</label>
-    <input type="email" id="email" name="email" required autocomplete="email" placeholder="you@example.com">
-    <button type="submit" class="btn" id="submitBtn">Send sign-in link</button>
-  </form>
+    <div class="hero">
+      <h1>Sign in<br>with <span class="pop">email</span>.</h1>
+      <p class="lede">No passwords. We'll send a one-tap sign-in link to your inbox. Tap it, you're in.</p>
+    </div>
 
-  <div id="msg" class="msg"></div>
+    <div class="form-card">
+      <label>Email address</label>
+      <input type="email" id="email" placeholder="you@example.com" autocomplete="email" autofocus>
+      <button class="btn" id="submitBtn" onclick="sendLink()">Send sign-in link</button>
+      <div class="error-banner" id="errorBanner"></div>
+      <div class="helper-text">Link expires in 15 minutes</div>
+    </div>
+  </div>
 
-  <a href="/" class="back">← Back to home</a>
+  <div id="successState" class="success-state">
+    <div class="section-tag">
+      <span class="num">01</span>
+      <span>CHECK YOUR INBOX</span>
+      <span class="num">SENT</span>
+    </div>
+
+    <div class="success-card">
+      <span class="success-tag">✓ LINK SENT</span>
+      <h2>Check your inbox.</h2>
+      <p>We just emailed a sign-in link to <span class="email-call" id="sentEmail">your email</span>.</p>
+      <p style="opacity:0.7;font-size:0.78rem;margin-top:14px">The link expires in 15 minutes. If you don't see it, check spam or junk.</p>
+    </div>
+
+    <div class="form-card" style="text-align:center">
+      <p style="font-family:var(--maxi-mono);font-size:0.78rem;color:var(--muted);margin-bottom:6px">Wrong email?</p>
+      <button class="btn" style="background:var(--paper);border:1px solid var(--ink)" onclick="resetForm()">Try a different email</button>
+    </div>
+  </div>
+
+  <div class="footer">DBP COACH · 225 E 8TH AVE · DURANGO, CO 81301</div>
 </div>
 
 <script>
-document.getElementById('loginForm').addEventListener('submit', async (e) => {
-  e.preventDefault();
+async function sendLink(){
   const email = document.getElementById('email').value.trim();
+  const errorBanner = document.getElementById('errorBanner');
+  errorBanner.classList.remove('show');
+
+  if (!email) {
+    errorBanner.textContent = 'Enter an email address.';
+    errorBanner.classList.add('show');
+    return;
+  }
+  if (!/.+@.+\..+/.test(email)) {
+    errorBanner.textContent = 'That doesn\'t look like a valid email.';
+    errorBanner.classList.add('show');
+    return;
+  }
+
   const btn = document.getElementById('submitBtn');
-  const msg = document.getElementById('msg');
   btn.disabled = true;
   btn.textContent = 'Sending…';
-  msg.className = 'msg';
-  msg.textContent = '';
 
   try {
-    const r = await fetch('/auth/request', {
+    const r = await fetch('/auth/magic-link', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email }),
     });
-    const data = await r.json();
-    if (data.sent) {
-      msg.className = 'msg success';
-      msg.innerHTML = `<strong>Check your email.</strong><br>Tap the link in the email we just sent to <b>${email}</b>. The link is good for 15 minutes.`;
-      btn.textContent = 'Link sent ✓';
-    } else {
-      msg.className = 'msg error';
-      msg.textContent = data.error || 'Something went wrong. Try again.';
-      btn.disabled = false;
-      btn.textContent = 'Send sign-in link';
+    if (!r.ok) {
+      const data = await r.json().catch(() => ({}));
+      throw new Error(data.error || 'Failed to send link');
     }
+    document.getElementById('sentEmail').textContent = email;
+    document.getElementById('formState').classList.add('hide');
+    document.getElementById('successState').classList.add('show');
   } catch (e) {
-    msg.className = 'msg error';
-    msg.textContent = e.message;
+    errorBanner.textContent = e.message;
+    errorBanner.classList.add('show');
     btn.disabled = false;
     btn.textContent = 'Send sign-in link';
   }
+}
+
+function resetForm() {
+  document.getElementById('successState').classList.remove('show');
+  document.getElementById('formState').classList.remove('hide');
+  document.getElementById('email').value = '';
+  document.getElementById('email').focus();
+  const btn = document.getElementById('submitBtn');
+  btn.disabled = false;
+  btn.textContent = 'Send sign-in link';
+}
+
+document.getElementById('email').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') sendLink();
 });
 </script>
 </body>
