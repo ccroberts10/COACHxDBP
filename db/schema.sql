@@ -237,6 +237,48 @@ CREATE INDEX IF NOT EXISTS idx_perks_user ON perk_redemptions(user_id);
 CREATE INDEX IF NOT EXISTS idx_perks_code ON perk_redemptions(code);
 CREATE INDEX IF NOT EXISTS idx_perks_unredeemed ON perk_redemptions(user_id, redeemed_at) WHERE redeemed_at IS NULL;
 
+-- Migrations: extend perk_redemptions for Member Rewards system
+ALTER TABLE perk_redemptions ADD COLUMN IF NOT EXISTS template_id UUID;
+ALTER TABLE perk_redemptions ADD COLUMN IF NOT EXISTS savings_cents INTEGER;
+ALTER TABLE perk_redemptions ADD COLUMN IF NOT EXISTS cost_cents INTEGER;
+ALTER TABLE perk_redemptions ADD COLUMN IF NOT EXISTS trigger_type TEXT;
+ALTER TABLE perk_redemptions ADD COLUMN IF NOT EXISTS issued_by TEXT;
+
+-- Perk templates: types of rewards that can be issued
+CREATE TABLE IF NOT EXISTS perk_templates (
+  id                      UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  name                    TEXT NOT NULL,
+  category                TEXT NOT NULL,                   -- 'drink' | 'food' | 'service' | 'merch' | 'discount'
+  description             TEXT,
+  default_retail_cents    INTEGER,
+  default_cost_cents      INTEGER,
+  is_percentage           BOOLEAN DEFAULT FALSE,
+  percentage_off          INTEGER,
+  default_expires_days    INTEGER DEFAULT 30,
+  active                  BOOLEAN DEFAULT TRUE,
+  sort_order              INTEGER DEFAULT 0,
+  created_at              TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_perk_templates_active ON perk_templates(active, sort_order);
+
+-- Seed standard templates if not present
+INSERT INTO perk_templates (name, category, description, default_retail_cents, default_cost_cents, is_percentage, percentage_off, default_expires_days, sort_order)
+SELECT v.name, v.category, v.description, v.default_retail_cents, v.default_cost_cents, v.is_percentage, v.percentage_off, v.default_expires_days, v.sort_order
+FROM (VALUES
+  ('Free drink (any size)', 'drink', 'Any drink on the menu — espresso, drip, latte, cortado.', 600, 150, FALSE, NULL::INTEGER, 7, 10),
+  ('Free 12oz drink', 'drink', 'Any 12oz drink — drip, americano, latte, cortado.', 500, 130, FALSE, NULL::INTEGER, 7, 20),
+  ('$1 off any drink', 'drink', '$1 off any drink, today only.', 100, 0, FALSE, NULL::INTEGER, 1, 30),
+  ('Free bag of DBP coffee', 'merch', '12oz bag of DBP / 81301 house coffee.', 1800, 1100, FALSE, NULL::INTEGER, 30, 40),
+  ('10% off coffee', 'discount', '10% off any drink.', 0, 0, TRUE, 10, 365, 50),
+  ('Free pastry', 'food', 'Any pastry from the case.', 450, 200, FALSE, NULL::INTEGER, 7, 60),
+  ('Free flat repair', 'service', 'Free flat tire repair, anytime.', 1500, 300, FALSE, NULL::INTEGER, 365, 70),
+  ('Free tune-up', 'service', 'Free standard bike tune-up.', 9500, 2500, FALSE, NULL::INTEGER, 365, 80),
+  ('10% off retail', 'discount', '10% off any retail or consignment item.', 0, 0, TRUE, 10, 365, 90),
+  ('Bring a friend free coffee', 'drink', 'Buy a coffee, your friend gets one free.', 600, 150, FALSE, NULL::INTEGER, 30, 100)
+) AS v(name, category, description, default_retail_cents, default_cost_cents, is_percentage, percentage_off, default_expires_days, sort_order)
+WHERE NOT EXISTS (SELECT 1 FROM perk_templates WHERE perk_templates.name = v.name);
+
 -- Track service requests / priority queue
 CREATE TABLE IF NOT EXISTS service_requests (
   id                      UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
