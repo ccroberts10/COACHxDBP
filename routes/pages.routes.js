@@ -42,6 +42,8 @@ router.get('/dashboard', auth.requireAuth, (req, res) => {
 });
 router.get('/settings', auth.requireAuth, (req, res) => send(res, 'settings.html'));
 router.get('/barista', (req, res) => send(res, 'barista.html'));
+router.get('/admin', (req, res) => send(res, 'admin.html'));
+router.get('/admin/rewards', (req, res) => send(res, 'admin.html'));
 
 // =====================================================
 // OAuth callbacks for integrations
