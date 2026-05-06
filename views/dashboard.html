@@ -616,6 +616,131 @@ html, body { background: var(--bone); color: var(--ink); font-family: var(--maxi
   letter-spacing: 0.05em;
 }
 
+/* ============= MEMBER REWARDS NEW UI ============= */
+.member-code-hero {
+  background: var(--ink);
+  color: var(--paper);
+  padding: 18px;
+  margin: -18px -20px 16px -20px;
+  text-align: center;
+}
+.member-code-hero .mch-label {
+  font-family: var(--maxi-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  color: rgba(250,250,247,0.6);
+  margin-bottom: 6px;
+}
+.member-code-hero .mch-code {
+  font-family: var(--maxi-round);
+  font-weight: 800;
+  font-size: 2rem;
+  letter-spacing: -0.02em;
+  color: var(--hi-vis);
+  line-height: 1;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.member-code-hero .mch-sub {
+  font-family: var(--maxi-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.1em;
+  color: rgba(250,250,247,0.55);
+  margin-top: 8px;
+  text-transform: uppercase;
+}
+
+.rewards-stat-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1px;
+  background: rgba(10,10,10,0.15);
+  border: 1px solid rgba(10,10,10,0.15);
+  margin-bottom: 14px;
+}
+.rewards-stat {
+  background: var(--hi-vis);
+  padding: 14px 12px;
+}
+.rs-label {
+  font-family: var(--maxi-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(10,10,10,0.6);
+  margin-bottom: 4px;
+}
+.rs-value {
+  font-family: var(--maxi-round);
+  font-weight: 800;
+  font-size: 1.6rem;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  line-height: 1;
+}
+.rs-value .rs-sub {
+  font-family: var(--maxi-mono);
+  font-weight: 400;
+  font-size: 0.7rem;
+  color: rgba(10,10,10,0.55);
+  margin-left: 4px;
+  letter-spacing: 0.04em;
+}
+.rs-meta {
+  font-family: var(--maxi-mono);
+  font-size: 0.62rem;
+  color: rgba(10,10,10,0.6);
+  margin-top: 6px;
+  letter-spacing: 0.02em;
+  line-height: 1.3;
+}
+.punch-bar {
+  display: flex;
+  gap: 3px;
+  margin: 6px 0;
+}
+.punch-dot {
+  flex: 1;
+  height: 6px;
+  background: rgba(10,10,10,0.15);
+}
+.punch-dot.filled {
+  background: var(--ink);
+}
+
+.rewards-savings {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  background: var(--ink);
+  color: var(--paper);
+  padding: 12px 14px;
+  margin-bottom: 14px;
+}
+.rewards-savings .rs-label { color: rgba(250,250,247,0.55); }
+.rs-value-big {
+  font-family: var(--maxi-round);
+  font-weight: 800;
+  font-size: 1.7rem;
+  letter-spacing: -0.02em;
+  color: var(--paper);
+  line-height: 1;
+  margin-top: 2px;
+}
+.rs-value-mid {
+  font-family: var(--maxi-round);
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--paper);
+  line-height: 1;
+  margin-top: 2px;
+}
+
+.rewards-active-list {
+  border-top: 1px solid rgba(10,10,10,0.2);
+  padding-top: 12px;
+}
+
 /* ============= TRENDS / CHARTS ============= */
 .chart-card {
   background: var(--paper);
@@ -1174,29 +1299,76 @@ function renderToday(){
 
   let perksHtml = '';
   const savings = appData.savings || {};
+  const punch = appData.punch;
+  const streak = appData.streak;
+  const memberCode = appData.user?.member_code;
+  const hasMembership = ['rewards', 'coach'].includes(appData.user?.tier);
   const hasSavings = (savings.month_cents || 0) > 0 || (savings.lifetime_cents || 0) > 0;
   const hasPerks = appData.perks?.length > 0;
 
-  if (hasSavings || hasPerks) {
+  if (hasMembership) {
+    // Build the member rewards card
+    const punchDots = punch ? Array.from({length: 10}, (_, i) =>
+      `<span class="punch-dot${i < (punch.current||0) ? ' filled' : ''}"></span>`).join('') : '';
+
+    const streakNext = streak?.next_milestone;
+    const streakLabel = streak?.current
+      ? `${streak.current} day${streak.current === 1 ? '' : 's'}${streakNext ? ` · ${streakNext - streak.current} more for ${streak.next_milestone_reward}` : ''}`
+      : 'Check in to start';
+
     perksHtml = `<div class="section">
       ${sectionHeader('05', 'Member Rewards', hasPerks ? `${appData.perks.length} active` : '')}
       <div class="perks-card">
-        ${hasSavings ? `
-        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid rgba(10,10,10,0.2)">
-          <div>
-            <div style="font-family:var(--maxi-mono);font-size:0.65rem;letter-spacing:0.15em;text-transform:uppercase;color:rgba(10,10,10,0.6)">Saved this month</div>
-            <div style="font-family:var(--maxi-round);font-weight:800;font-size:2rem;letter-spacing:-0.02em;line-height:1;margin-top:2px">$${((savings.month_cents||0)/100).toFixed(2)}</div>
-          </div>
-          ${(savings.lifetime_cents||0) > (savings.month_cents||0) ? `<div style="text-align:right">
-            <div style="font-family:var(--maxi-mono);font-size:0.65rem;letter-spacing:0.15em;text-transform:uppercase;color:rgba(10,10,10,0.6)">Lifetime</div>
-            <div style="font-family:var(--maxi-round);font-weight:700;font-size:1.1rem;letter-spacing:-0.01em;margin-top:2px">$${((savings.lifetime_cents||0)/100).toFixed(2)}</div>
+
+        <!-- Member Code Hero -->
+        ${memberCode ? `
+        <div class="member-code-hero">
+          <div class="mch-label">YOUR MEMBER CODE</div>
+          <div class="mch-code">${memberCode}</div>
+          <div class="mch-sub">Show at DBP for purchases · earn punches · redeem rewards</div>
+        </div>` : ''}
+
+        <!-- Punch + Streak Row -->
+        ${(punch || streak) ? `
+        <div class="rewards-stat-row">
+          ${punch ? `
+          <div class="rewards-stat">
+            <div class="rs-label">Punch Card</div>
+            <div class="rs-value">${punch.current || 0}<span class="rs-sub">/10</span></div>
+            <div class="punch-bar">${punchDots}</div>
+            <div class="rs-meta">${(punch.away_from_free || 10) === 0 ? '🎉 Free drink ready!' : (punch.away_from_free || 10) + ' away from free drink'}</div>
+          </div>` : ''}
+          ${streak ? `
+          <div class="rewards-stat">
+            <div class="rs-label">Check-in Streak</div>
+            <div class="rs-value">${streak.current || 0}<span class="rs-sub">days</span></div>
+            <div class="rs-meta">${streakLabel}</div>
           </div>` : ''}
         </div>` : ''}
-        ${hasPerks ? `<h3>🎁 ${appData.perks.length} active reward${appData.perks.length>1?'s':''}</h3>
-        ${appData.perks.map(perk => `<div class="perk-item">
-          <div class="perk-info"><strong>${perk.description||perk.perk_type}</strong><span>Show this code at DBP · ${perk.expires_at?'expires '+new Date(perk.expires_at).toLocaleDateString():'no expiration'}</span></div>
-          <div class="perk-code">${perk.code}</div>
-        </div>`).join('')}` : '<div style="font-family:var(--maxi-mono);font-size:0.85rem;color:rgba(10,10,10,0.6);text-align:center;padding:8px 0">No active rewards right now.</div>'}
+
+        <!-- Savings Numbers -->
+        ${hasSavings ? `
+        <div class="rewards-savings">
+          <div>
+            <div class="rs-label">Saved this month</div>
+            <div class="rs-value-big">$${((savings.month_cents||0)/100).toFixed(2)}</div>
+          </div>
+          ${(savings.lifetime_cents||0) > (savings.month_cents||0) ? `
+          <div style="text-align:right">
+            <div class="rs-label">Lifetime</div>
+            <div class="rs-value-mid">$${((savings.lifetime_cents||0)/100).toFixed(2)}</div>
+          </div>` : ''}
+        </div>` : ''}
+
+        <!-- Active Rewards List -->
+        ${hasPerks ? `
+        <div class="rewards-active-list">
+          <div style="font-family:var(--maxi-mono);font-size:0.65rem;letter-spacing:0.15em;text-transform:uppercase;color:rgba(10,10,10,0.6);margin-bottom:8px">${appData.perks.length} ACTIVE REWARD${appData.perks.length > 1 ? 'S' : ''}</div>
+          ${appData.perks.map(perk => `<div class="perk-item">
+            <div class="perk-info"><strong>${perk.description||perk.perk_type}</strong><span>Show at DBP · ${perk.expires_at?'expires '+new Date(perk.expires_at).toLocaleDateString():'no expiration'}</span></div>
+            <div class="perk-code">${perk.code}</div>
+          </div>`).join('')}
+        </div>` : ''}
       </div>
     </div>`;
   }
