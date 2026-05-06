@@ -24,15 +24,22 @@ router.get('/data', auth.requireActiveSubscription, async (req, res) => {
       db.many(`SELECT * FROM perk_redemptions WHERE user_id = $1 AND redeemed_at IS NULL AND (expires_at IS NULL OR expires_at > NOW()) ORDER BY issued_at DESC`, [userId]),
     ]);
 
+    // Normalize Postgres DATE columns (returned as Date objects) to YYYY-MM-DD strings for keying
+    function dateKey(d) {
+      if (!d) return null;
+      if (typeof d === 'string') return d.slice(0, 10);
+      // It's a Date object — format in user's timezone to avoid UTC drift
+      return d.toLocaleDateString('en-CA', { timeZone: req.user.timezone || 'America/Denver' });
+    }
+
     const fbByDate = {};
-    feedback.forEach(f => { fbByDate[f.date] = f; });
+    feedback.forEach(f => { fbByDate[dateKey(f.date)] = f; });
     const checkinByDate = {};
-    checkins.forEach(c => { checkinByDate[c.date] = c; });
+    checkins.forEach(c => { checkinByDate[dateKey(c.date)] = c; });
 
     // Compute "today" in the USER's timezone, not server's UTC.
-    // PostgreSQL stores dates as YYYY-MM-DD strings, no TZ. We need to format JS date in user's TZ.
     const userTz = req.user.timezone || 'America/Denver';
-    const todayInUserTz = new Date().toLocaleDateString('en-CA', { timeZone: userTz }); // 'en-CA' gives YYYY-MM-DD format
+    const todayInUserTz = new Date().toLocaleDateString('en-CA', { timeZone: userTz });
 
     let weather = null;
     try {
@@ -48,7 +55,7 @@ router.get('/data', auth.requireActiveSubscription, async (req, res) => {
     res.json({
       user: { id: req.user.id, email: req.user.email, name: req.user.name, tier: req.user.subscription_tier, status: req.user.subscription_status },
       snapshots,
-      prescriptions: prescriptions.map(p => ({ ...p, full_response: p.full_response, feedback: fbByDate[p.date] || null })),
+      prescriptions: prescriptions.map(p => ({ ...p, full_response: p.full_response, feedback: fbByDate[dateKey(p.date)] || null })),
       activities,
       benchmarks,
       perks,
