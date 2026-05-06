@@ -187,9 +187,9 @@ router.post('/admin/broadcast/audience', async (req, res) => {
   if (!staff) return res.status(401).json({ error: 'Manager PIN required' });
 
   let where = `subscription_status IN ('active', 'trialing') AND onboarding_completed = TRUE`;
-  if (audience === 'elite') where += ` AND subscription_tier = 'elite'`;
   if (audience === 'coach') where += ` AND subscription_tier = 'coach'`;
-  if (audience === 'paying') where += ` AND subscription_tier IN ('coach', 'elite')`;
+  if (audience === 'rewards') where += ` AND subscription_tier = 'rewards'`;
+  if (audience === 'paying') where += ` AND subscription_tier IN ('rewards', 'coach')`;
 
   const rows = await db.many(
     `SELECT id, name, email, subscription_tier FROM users WHERE ${where} ORDER BY created_at DESC LIMIT 200`
@@ -206,9 +206,9 @@ router.post('/admin/broadcast/send', async (req, res) => {
   if (!subject || !headline || !body) return res.status(400).json({ error: 'subject, headline, and body required' });
 
   let where = `subscription_status IN ('active', 'trialing') AND onboarding_completed = TRUE`;
-  if (audience === 'elite') where += ` AND subscription_tier = 'elite'`;
   if (audience === 'coach') where += ` AND subscription_tier = 'coach'`;
-  if (audience === 'paying') where += ` AND subscription_tier IN ('coach', 'elite')`;
+  if (audience === 'rewards') where += ` AND subscription_tier = 'rewards'`;
+  if (audience === 'paying') where += ` AND subscription_tier IN ('rewards', 'coach')`;
 
   const recipients = await db.many(`SELECT id, name, email FROM users WHERE ${where}`);
   if (recipients.length === 0) return res.status(400).json({ error: 'No recipients match this audience' });
@@ -289,8 +289,62 @@ router.post('/admin/analytics', async (req, res) => {
 });
 
 // =====================================================
-// AUTO-TRIGGERS — manager-only management
+// PURCHASE LOGGING — barista logs each purchase by member code
 // =====================================================
+
+router.post('/purchase/lookup-member', async (req, res) => {
+  const { code, pin } = req.body;
+  if (!code || !pin) return res.status(400).json({ error: 'code and pin required' });
+  const staff = await verifyStaffPin(pin);
+  if (!staff) return res.status(401).json({ error: 'Invalid PIN' });
+
+  const memberRewards = require('../lib/member-rewards');
+  const user = await memberRewards.userByMemberCode(code);
+  if (!user) return res.status(404).json({ error: 'Member code not found' });
+
+  const punch = await memberRewards.getPunchStats(user.id);
+  const streak = await memberRewards.getStreakStats(user.id);
+  // Active rewards
+  const activePerks = await db.many(
+    `SELECT code, description, expires_at FROM perk_redemptions
+     WHERE user_id = $1 AND redeemed_at IS NULL AND (expires_at IS NULL OR expires_at > NOW())
+     ORDER BY issued_at DESC`,
+    [user.id]
+  );
+
+  res.json({
+    member_code: user.member_code,
+    user_name: user.name,
+    user_id: user.id,
+    tier: user.subscription_tier,
+    punch,
+    streak,
+    active_rewards: activePerks,
+  });
+});
+
+router.post('/purchase/log', async (req, res) => {
+  const { code, pin, category, subcategory, amount_dollars, notes } = req.body;
+  if (!code || !pin || !category) return res.status(400).json({ error: 'code, pin, and category required' });
+  const staff = await verifyStaffPin(pin);
+  if (!staff) return res.status(401).json({ error: 'Invalid PIN' });
+
+  const memberRewards = require('../lib/member-rewards');
+  const user = await memberRewards.userByMemberCode(code);
+  if (!user) return res.status(404).json({ error: 'Member code not found' });
+
+  const amountCents = Math.round((parseFloat(amount_dollars) || 0) * 100);
+  const result = await memberRewards.logPurchase({
+    userId: user.id,
+    category,
+    subcategory: subcategory || null,
+    amountCents,
+    staffName: staff.staff_name,
+    notes: notes || null,
+  });
+
+  res.json({ success: true, ...result });
+});
 
 router.post('/admin/triggers/list', async (req, res) => {
   const { pin } = req.body;
