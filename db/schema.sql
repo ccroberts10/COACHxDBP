@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS users (
   -- Stripe
   stripe_customer_id      TEXT UNIQUE,
   stripe_subscription_id  TEXT,
-  subscription_tier       TEXT,                                -- 'free', 'coach', 'elite'
+  subscription_tier       TEXT,                                -- 'free', 'rewards' (rewards only), 'coach' (coach + rewards)
   subscription_status     TEXT,                                -- 'trialing', 'active', 'past_due', 'canceled'
   trial_ends_at           TIMESTAMPTZ,
   current_period_end      TIMESTAMPTZ,
@@ -424,9 +424,56 @@ FROM users u
 WHERE u.subscription_status IN ('active', 'trialing')
   AND u.onboarding_completed = TRUE;
 
--- Elite tier perk-eligible users
-CREATE OR REPLACE VIEW elite_users AS
+-- Migration: old 'elite' tier becomes new 'coach' tier (coach + rewards bundled together)
+UPDATE users SET subscription_tier = 'coach' WHERE subscription_tier = 'elite';
+
+DROP VIEW IF EXISTS elite_users;
+CREATE OR REPLACE VIEW rewards_members AS
 SELECT u.*
 FROM users u
-WHERE u.subscription_tier = 'elite'
+WHERE u.subscription_tier IN ('rewards', 'coach')
   AND u.subscription_status IN ('active', 'trialing');
+
+-- ===================================================================
+-- MEMBER CODES, PURCHASES, STREAKS (Member Rewards Phase 3)
+-- ===================================================================
+
+-- Permanent member code for in-store identification (e.g., DBP-CASEY)
+ALTER TABLE users ADD COLUMN IF NOT EXISTS member_code TEXT UNIQUE;
+CREATE INDEX IF NOT EXISTS idx_users_member_code ON users(member_code);
+
+-- Streak tracking (kept on users for fast access)
+ALTER TABLE users ADD COLUMN IF NOT EXISTS checkin_streak_current INTEGER DEFAULT 0;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS checkin_streak_longest INTEGER DEFAULT 0;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS checkin_streak_last_date DATE;
+
+-- Punch card counter (rolling — every 10th coffee free)
+ALTER TABLE users ADD COLUMN IF NOT EXISTS punch_count INTEGER DEFAULT 0;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS punch_total_lifetime INTEGER DEFAULT 0;
+
+-- Purchases logged via barista app — every coffee, drink, service, retail item
+CREATE TABLE IF NOT EXISTS purchases (
+  id                      UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  user_id                 UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  category                TEXT NOT NULL,                     -- 'drink' | 'food' | 'service' | 'retail'
+  subcategory             TEXT,                              -- 'coffee' | 'latte' | 'pastry' | 'tune-up' | 'tube' etc
+  amount_cents            INTEGER NOT NULL,
+  staff_name              TEXT,
+  notes                   TEXT,
+  counted_toward_punch    BOOLEAN DEFAULT FALSE,             -- did this purchase increment punch_count?
+  triggered_perk_code     TEXT,                              -- if a reward was issued from this, which one
+  created_at              TIMESTAMPTZ DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS idx_purchases_user_date ON purchases(user_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_purchases_category ON purchases(category, created_at DESC);
+
+-- Streak milestone tracking — what milestones has this user already received rewards for?
+CREATE TABLE IF NOT EXISTS streak_milestones (
+  id                      UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  user_id                 UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  milestone_days          INTEGER NOT NULL,                  -- 7, 30, 100, etc
+  awarded_at              TIMESTAMPTZ DEFAULT NOW(),
+  perk_code               TEXT,                              -- the reward issued for this milestone
+  UNIQUE(user_id, milestone_days)
+);
+CREATE INDEX IF NOT EXISTS idx_streak_milestones_user ON streak_milestones(user_id);
