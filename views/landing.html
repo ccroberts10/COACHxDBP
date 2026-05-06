@@ -692,6 +692,7 @@ a { color: inherit; text-decoration: none; }
 
     <div class="price-grid">
       <!-- FREE -->
+      <!-- FREE -->
       <div class="price-card">
         <div class="price-card-meta">TIER 01</div>
         <h3>Free</h3>
@@ -710,38 +711,16 @@ a { color: inherit; text-decoration: none; }
         <a class="btn btn-ink" href="/login">Sign up free</a>
       </div>
 
-      <!-- COACH -->
-      <div class="price-card popular">
-        <span class="popular-badge">Most Popular</span>
-        <div class="price-card-meta">TIER 02</div>
-        <h3>Coach</h3>
-        <div class="price-tag-line">Daily AI training + nutrition.</div>
-        <div class="price-row">
-          <span class="price-amount" data-price="coach">$19</span>
-          <span class="per" data-per="coach">/mo</span>
-        </div>
-        <ul>
-          <li>Daily AI workout + nutrition prescription</li>
-          <li>WHOOP + Strava integration</li>
-          <li>Recovery, HRV, sleep, training load</li>
-          <li>Workout history with feedback loop</li>
-          <li>Weather-aware route suggestions</li>
-          <li>Email + in-app delivery</li>
-        </ul>
-        <button class="btn btn-primary" onclick="checkout('coach')">Start 7-day trial</button>
-      </div>
-
-      <!-- ELITE -->
+      <!-- REWARDS -->
       <div class="price-card">
-        <div class="price-card-meta">TIER 03</div>
-        <h3>Elite</h3>
-        <div class="price-tag-line">Coach + DBP rewards.</div>
+        <div class="price-card-meta">TIER 02</div>
+        <h3>Rewards</h3>
+        <div class="price-tag-line">DBP loyalty membership.</div>
         <div class="price-row">
-          <span class="price-amount" data-price="elite">$39</span>
-          <span class="per" data-per="elite">/mo</span>
+          <span class="price-amount" data-price="rewards">$19</span>
+          <span class="per" data-per="rewards">/mo</span>
         </div>
         <ul>
-          <li>Everything in Coach</li>
           <li>Free Sunday recovery drink, every week</li>
           <li>10% off all retail and consignment</li>
           <li>Free flat fix anytime</li>
@@ -749,9 +728,34 @@ a { color: inherit; text-decoration: none; }
           <li>1 free tune-up per year</li>
           <li>Monthly DBP group ride</li>
           <li>Birthday month: free coffee</li>
-          <li>Featured on DBP Instagram</li>
+          <li>Punch card: 10th coffee free</li>
+          <li class="muted">No AI coach</li>
         </ul>
-        <button class="btn btn-primary" onclick="checkout('elite')">Start 7-day trial</button>
+        <button class="btn btn-ink" onclick="checkout('rewards')">Start 7-day trial</button>
+      </div>
+
+      <!-- COACH -->
+      <div class="price-card popular">
+        <span class="popular-badge">Most Popular</span>
+        <div class="price-card-meta">TIER 03</div>
+        <h3>Coach</h3>
+        <div class="price-tag-line">Training + all rewards.</div>
+        <div class="price-row">
+          <span class="price-amount" data-price="coach">$39</span>
+          <span class="per" data-per="coach">/mo</span>
+        </div>
+        <ul>
+          <li>Everything in Rewards</li>
+          <li>Daily AI workout + nutrition prescription</li>
+          <li>Strava required, WHOOP optional</li>
+          <li>Recovery, HRV, sleep, training load (with WHOOP)</li>
+          <li>Self-reported recovery (without WHOOP)</li>
+          <li>Workout history with feedback loop</li>
+          <li>Weather-aware route suggestions</li>
+          <li>Email + in-app delivery</li>
+          <li>Check-in streak rewards</li>
+        </ul>
+        <button class="btn btn-primary" onclick="checkout('coach')">Start 7-day trial</button>
       </div>
     </div>
   </div>
@@ -841,25 +845,27 @@ a { color: inherit; text-decoration: none; }
 <script>
 let billing = 'monthly';
 const prices = {
-  coach: { monthly: { amount: '$19', per: '/mo' }, annual: { amount: '$15', per: '/mo, billed annually' } },
-  elite: { monthly: { amount: '$39', per: '/mo' }, annual: { amount: '$29', per: '/mo, billed annually' } },
+  rewards: { monthly: { amount: '$19', per: '/mo' }, annual: { amount: '$14.92', per: '/mo, billed annually' } },
+  coach:   { monthly: { amount: '$39', per: '/mo' }, annual: { amount: '$29.08', per: '/mo, billed annually' } },
 };
+const tierLabels = { rewards: 'Rewards', coach: 'Coach' };
 function setBilling(mode){
   billing = mode;
   document.getElementById('bill-monthly').classList.toggle('active', mode === 'monthly');
   document.getElementById('bill-annual').classList.toggle('active', mode === 'annual');
   document.querySelectorAll('[data-price]').forEach(el => {
     const tier = el.dataset.price;
-    el.textContent = prices[tier][mode].amount;
+    if (prices[tier]) el.textContent = prices[tier][mode].amount;
   });
   document.querySelectorAll('[data-per]').forEach(el => {
     const tier = el.dataset.per;
-    el.textContent = prices[tier][mode].per;
+    if (prices[tier]) el.textContent = prices[tier][mode].per;
   });
 }
 
 async function checkout(tier){
-  const email = prompt(`Sign up for DBP ${tier === 'elite' ? 'Elite' : 'Coach'} — what's your email?`);
+  const label = tierLabels[tier] || tier;
+  const email = prompt(`Sign up for DBP ${label} — what's your email?`);
   if (!email) return;
   const priceKey = `${tier}_${billing}`;
   try {
