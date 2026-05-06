@@ -3,176 +3,727 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>DBP Coach — AI training coach for cyclists</title>
-<meta name="description" content="AI-powered training and nutrition coach built for cyclists, by Durango Bike Project. Daily prescriptions tuned to your WHOOP and Strava data.">
+<title>DBP Coach — AI training built for cyclists</title>
+<meta name="description" content="AI training and nutrition coach built for cyclists by Durango Bike Project. Daily prescriptions tuned to your WHOOP and Strava data. Real coaching, not generic plans.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,700;12..96,800&display=swap" rel="stylesheet">
 <style>
-  :root{
-    --bg:#0a0a0a; --bg-card:#111; --border:#1f1f1f;
-    --text:#f5f5f5; --muted:#888; --accent:#4ade80;
-    --orange:#f97316; --yellow:#facc15; --blue:#60a5fa;
-  }
-  *{box-sizing:border-box}
-  html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sans-serif;line-height:1.5;font-size:16px;-webkit-font-smoothing:antialiased}
-  a{color:inherit;text-decoration:none}
-  .container{max-width:1100px;margin:0 auto;padding:0 24px}
-  .nav{display:flex;justify-content:space-between;align-items:center;padding:20px 0;border-bottom:1px solid var(--border)}
-  .nav-brand{font-weight:700;letter-spacing:-0.02em;font-size:1.1rem}
-  .nav-brand span{color:var(--accent)}
-  .nav-actions{display:flex;gap:12px;align-items:center}
-  .btn{display:inline-block;padding:10px 18px;border-radius:8px;font-weight:600;font-size:0.92rem;cursor:pointer;border:none;font-family:inherit;transition:transform 0.1s}
-  .btn:active{transform:scale(0.97)}
-  .btn-ghost{background:transparent;color:var(--text);border:1px solid var(--border)}
-  .btn-primary{background:var(--accent);color:#000}
-  .btn-secondary{background:#1a1a1a;color:#fff;border:1px solid var(--border)}
-  .btn-lg{padding:14px 28px;font-size:1rem}
+:root {
+  --ink: #0A0A0A;
+  --paper: #FAFAF7;
+  --bone: #EFEDE5;
+  --hi-vis: #F2E600;
+  --rec-green: #1F4A2C;
+  --rec-yellow: #D4A82E;
+  --rec-red: #6B1F2A;
+  --info-blue: #6B92B5;
+  --la-tan: #C4A574;
+  --line: rgba(10,10,10,0.10);
+  --line-strong: rgba(10,10,10,0.20);
+  --muted: rgba(10,10,10,0.55);
+  --maxi-round: 'Bricolage Grotesque', system-ui, sans-serif;
+  --maxi-mono: 'DM Mono', monospace;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body {
+  background: var(--bone);
+  color: var(--ink);
+  font-family: var(--maxi-mono);
+  font-size: 15px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+a { color: inherit; text-decoration: none; }
 
-  .hero{padding:80px 0 60px;text-align:center}
-  .hero h1{font-size:clamp(2rem,5vw,3.5rem);font-weight:700;letter-spacing:-0.03em;margin:0 0 16px;line-height:1.1}
-  .hero h1 .accent{color:var(--accent)}
-  .hero .sub{font-size:1.15rem;color:var(--muted);max-width:620px;margin:0 auto 28px}
-  .hero-cta{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
 
-  .features{padding:60px 0;border-top:1px solid var(--border)}
-  .section-title{text-align:center;margin-bottom:40px}
-  .section-title h2{font-size:2rem;font-weight:700;letter-spacing:-0.02em;margin:0 0 8px}
-  .section-title p{color:var(--muted);margin:0}
+/* ============= NAV ============= */
+.nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18px 0;
+  border-bottom: 1px solid var(--line-strong);
+}
+.brand-mark {
+  font-family: var(--maxi-round);
+  font-weight: 800;
+  font-size: 1.3rem;
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
+  line-height: 1;
+}
+.brand-mark .accent {
+  background: var(--hi-vis);
+  padding: 0 6px;
+}
+.nav-actions { display: flex; gap: 10px; align-items: center; }
 
-  .feature-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px}
-  .feature{background:var(--bg-card);border:1px solid var(--border);border-radius:14px;padding:22px}
-  .feature .ico{font-size:1.6rem;margin-bottom:10px}
-  .feature h3{margin:0 0 6px;font-size:1.05rem}
-  .feature p{color:var(--muted);margin:0;font-size:0.92rem;line-height:1.55}
+.btn {
+  display: inline-block;
+  padding: 12px 22px;
+  font-family: var(--maxi-mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-weight: 500;
+  cursor: pointer;
+  border: 1px solid var(--ink);
+  background: var(--paper);
+  color: var(--ink);
+  transition: transform 0.08s;
+  font-family: var(--maxi-mono);
+}
+.btn:active { transform: scale(0.98); }
+.btn-primary { background: var(--hi-vis); border-color: var(--ink); color: var(--ink); font-weight: 600; }
+.btn-ink { background: var(--ink); color: var(--paper); }
+.btn-lg { padding: 16px 30px; font-size: 0.85rem; }
 
-  .pricing{padding:60px 0;border-top:1px solid var(--border)}
-  .price-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px}
-  .price-card{background:var(--bg-card);border:1px solid var(--border);border-radius:16px;padding:28px;display:flex;flex-direction:column;position:relative}
-  .price-card.popular{border-color:var(--accent)}
-  .badge{position:absolute;top:-10px;right:20px;background:var(--accent);color:#000;font-size:0.7rem;font-weight:700;padding:4px 10px;border-radius:6px;letter-spacing:0.04em;text-transform:uppercase}
-  .price-card h3{margin:0 0 4px;font-size:1.3rem}
-  .price-card .tagline{color:var(--muted);font-size:0.9rem;margin-bottom:18px}
-  .price{font-size:2.2rem;font-weight:700;letter-spacing:-0.02em;margin-bottom:4px}
-  .price .per{font-size:0.95rem;color:var(--muted);font-weight:400}
-  .price-card ul{list-style:none;padding:0;margin:18px 0;font-size:0.92rem;flex:1}
-  .price-card li{padding:7px 0;color:#ddd;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:8px;line-height:1.45}
-  .price-card li:last-child{border-bottom:none}
-  .price-card li::before{content:"✓";color:var(--accent);flex-shrink:0;font-weight:700}
-  .price-card li.muted{color:var(--muted)}
-  .price-card li.muted::before{content:"·";color:var(--muted)}
+/* ============= HERO ============= */
+.hero {
+  background: var(--ink);
+  color: var(--paper);
+  padding: 80px 0 90px;
+  position: relative;
+  overflow: hidden;
+}
+.hero-meta {
+  font-family: var(--maxi-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(250,250,247,0.55);
+  margin-bottom: 18px;
+}
+.hero-meta .num { color: var(--hi-vis); margin-right: 8px; }
+.hero h1 {
+  font-family: var(--maxi-round);
+  font-weight: 800;
+  font-size: clamp(2.8rem, 7vw, 5.5rem);
+  letter-spacing: -0.04em;
+  line-height: 0.92;
+  margin-bottom: 22px;
+  text-transform: uppercase;
+}
+.hero h1 .pop {
+  background: var(--hi-vis);
+  color: var(--ink);
+  padding: 0 12px;
+  display: inline-block;
+}
+.hero .lede {
+  font-family: var(--maxi-mono);
+  font-size: 1rem;
+  line-height: 1.6;
+  color: rgba(250,250,247,0.78);
+  max-width: 580px;
+  margin-bottom: 32px;
+}
+.hero-cta { display: flex; gap: 10px; flex-wrap: wrap; }
+.hero-stats {
+  margin-top: 60px;
+  padding-top: 28px;
+  border-top: 1px solid rgba(250,250,247,0.15);
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 24px;
+}
+.hero-stat .label {
+  font-family: var(--maxi-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(250,250,247,0.55);
+  margin-bottom: 8px;
+}
+.hero-stat .value {
+  font-family: var(--maxi-round);
+  font-weight: 700;
+  font-size: 1.8rem;
+  letter-spacing: -0.02em;
+  color: var(--paper);
+  line-height: 1;
+}
+.hero-stat .sub {
+  font-family: var(--maxi-mono);
+  font-size: 0.68rem;
+  color: rgba(250,250,247,0.5);
+  margin-top: 4px;
+  letter-spacing: 0.05em;
+}
 
-  .signup-form{padding:60px 0;border-top:1px solid var(--border);text-align:center}
-  .signup-form input{width:100%;max-width:380px;padding:14px 16px;font-size:1rem;background:var(--bg-card);border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:inherit;margin-bottom:14px}
-  .signup-form input:focus{outline:none;border-color:var(--accent)}
+/* ============= SECTION HEADER ============= */
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--line);
+  font-family: var(--maxi-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  margin-bottom: 32px;
+}
+.section-header .num { color: var(--muted); }
+.section-header .name { font-weight: 500; }
+.section-header .right { color: var(--muted); }
 
-  .footer{padding:40px 0;border-top:1px solid var(--border);text-align:center;color:var(--muted);font-size:0.85rem}
-  .footer a{color:var(--muted)}
-  .footer a:hover{color:var(--text)}
+/* ============= HOW IT WORKS ============= */
+.how {
+  padding: 80px 0;
+  background: var(--bone);
+}
+.how-intro {
+  font-family: var(--maxi-round);
+  font-weight: 700;
+  font-size: clamp(1.6rem, 3.5vw, 2.6rem);
+  letter-spacing: -0.025em;
+  line-height: 1.05;
+  text-transform: uppercase;
+  max-width: 800px;
+  margin-bottom: 40px;
+}
+.how-intro .quiet { color: var(--muted); }
+.how-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1px;
+  background: var(--line);
+  border: 1px solid var(--line);
+}
+.how-step {
+  background: var(--paper);
+  padding: 28px 24px;
+  position: relative;
+}
+.how-step .step-num {
+  font-family: var(--maxi-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 18px;
+}
+.how-step h3 {
+  font-family: var(--maxi-round);
+  font-weight: 700;
+  font-size: 1.25rem;
+  letter-spacing: -0.015em;
+  text-transform: uppercase;
+  line-height: 1.1;
+  margin-bottom: 10px;
+}
+.how-step p {
+  font-family: var(--maxi-mono);
+  font-size: 0.88rem;
+  color: var(--muted);
+  line-height: 1.6;
+}
 
-  .toggle-billing{display:inline-flex;background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:4px;margin-bottom:24px}
-  .toggle-billing button{background:none;border:none;color:var(--muted);padding:8px 16px;border-radius:6px;cursor:pointer;font-family:inherit;font-size:0.88rem;font-weight:600}
-  .toggle-billing button.active{background:var(--accent);color:#000}
-  .save-badge{font-size:0.7rem;color:var(--accent);margin-left:6px}
+/* ============= SAMPLE PRESCRIPTION CARD ============= */
+.sample {
+  padding: 80px 0;
+  background: var(--paper);
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+.sample-card {
+  background: var(--rec-green);
+  color: var(--paper);
+  padding: 36px 30px 30px;
+  border: 2px solid var(--ink);
+  position: relative;
+}
+.sample-meta {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--maxi-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(250,250,247,0.65);
+  margin-bottom: 18px;
+}
+.sample-rec {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.sample-rec .num {
+  font-family: var(--maxi-round);
+  font-weight: 800;
+  font-size: 5rem;
+  letter-spacing: -0.04em;
+  line-height: 0.9;
+}
+.sample-rec .pct {
+  font-family: var(--maxi-round);
+  font-weight: 600;
+  font-size: 1.5rem;
+  color: rgba(250,250,247,0.55);
+}
+.sample-rec .label {
+  font-family: var(--maxi-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(250,250,247,0.55);
+  margin-left: auto;
+}
+.sample-card .prescription {
+  font-family: var(--maxi-round);
+  font-weight: 700;
+  font-size: 1.25rem;
+  letter-spacing: -0.01em;
+  line-height: 1.25;
+  padding-top: 16px;
+  border-top: 1px solid rgba(250,250,247,0.15);
+}
+.sample-card .target {
+  font-family: var(--maxi-mono);
+  font-size: 0.85rem;
+  margin-top: 14px;
+  color: rgba(250,250,247,0.85);
+}
+.sample-callout {
+  font-family: var(--maxi-mono);
+  font-size: 0.82rem;
+  color: var(--muted);
+  margin-top: 14px;
+  text-align: center;
+  letter-spacing: 0.05em;
+}
 
-  @media (max-width:640px){
-    .hero{padding:48px 0 36px}
-    .features,.pricing,.signup-form{padding:40px 0}
-  }
+/* ============= PRICING ============= */
+.pricing { padding: 80px 0; background: var(--bone); }
+.pricing-toggle {
+  display: inline-flex;
+  background: var(--paper);
+  border: 1px solid var(--ink);
+  padding: 0;
+  margin-bottom: 32px;
+}
+.pricing-toggle button {
+  background: var(--paper);
+  border: none;
+  color: var(--muted);
+  padding: 10px 20px;
+  cursor: pointer;
+  font-family: var(--maxi-mono);
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+.pricing-toggle button.active {
+  background: var(--ink);
+  color: var(--hi-vis);
+}
+.save-badge {
+  font-size: 0.6rem;
+  color: var(--hi-vis);
+  margin-left: 6px;
+  font-weight: 600;
+}
+.pricing-toggle button.active .save-badge { color: var(--hi-vis); }
+.pricing-toggle button:not(.active) .save-badge { color: var(--rec-green); }
+
+.price-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1px;
+  background: var(--line);
+  border: 1px solid var(--ink);
+}
+.price-card {
+  background: var(--paper);
+  padding: 32px 28px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+.price-card.popular { background: var(--ink); color: var(--paper); }
+.price-card.popular ul li { color: var(--paper); border-color: rgba(250,250,247,0.12); }
+.price-card.popular ul li.muted { color: rgba(250,250,247,0.5); }
+.price-card.popular .price-tag-line { color: rgba(250,250,247,0.7); }
+.price-card.popular .price-amount { color: var(--paper); }
+.price-card.popular .per { color: rgba(250,250,247,0.55); }
+.popular-badge {
+  position: absolute;
+  top: 0; right: 24px;
+  background: var(--hi-vis);
+  color: var(--ink);
+  font-family: var(--maxi-mono);
+  font-size: 0.6rem;
+  font-weight: 600;
+  padding: 4px 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+.price-card-meta {
+  font-family: var(--maxi-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+.price-card.popular .price-card-meta { color: rgba(250,250,247,0.55); }
+.price-card h3 {
+  font-family: var(--maxi-round);
+  font-weight: 800;
+  font-size: 1.8rem;
+  letter-spacing: -0.025em;
+  text-transform: uppercase;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+.price-tag-line {
+  font-family: var(--maxi-mono);
+  font-size: 0.78rem;
+  color: var(--muted);
+  margin-bottom: 22px;
+  letter-spacing: 0.02em;
+}
+.price-row {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  margin-bottom: 22px;
+  padding-bottom: 22px;
+  border-bottom: 1px solid var(--line);
+}
+.price-card.popular .price-row { border-color: rgba(250,250,247,0.12); }
+.price-amount {
+  font-family: var(--maxi-round);
+  font-weight: 800;
+  font-size: 2.6rem;
+  letter-spacing: -0.025em;
+  line-height: 1;
+}
+.per {
+  font-family: var(--maxi-mono);
+  font-size: 0.78rem;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+.price-card ul {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 24px;
+  flex: 1;
+}
+.price-card li {
+  padding: 10px 0;
+  font-family: var(--maxi-mono);
+  font-size: 0.84rem;
+  line-height: 1.5;
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  letter-spacing: 0.01em;
+}
+.price-card li:last-child { border-bottom: none; }
+.price-card li::before {
+  content: "→";
+  color: var(--ink);
+  font-family: var(--maxi-mono);
+  flex-shrink: 0;
+  font-weight: 500;
+}
+.price-card.popular li::before { color: var(--hi-vis); }
+.price-card li.muted { color: var(--muted); }
+.price-card li.muted::before { content: "·"; color: var(--muted); }
+.price-card .btn { width: 100%; }
+
+/* ============= MEMBERSHIP CALLOUT ============= */
+.membership {
+  padding: 80px 0;
+  background: var(--ink);
+  color: var(--paper);
+}
+.membership .quote-block {
+  font-family: var(--maxi-round);
+  font-weight: 700;
+  font-size: clamp(1.6rem, 3.5vw, 2.4rem);
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  text-transform: uppercase;
+  margin-bottom: 30px;
+  max-width: 850px;
+}
+.membership .quote-block .pop {
+  background: var(--hi-vis);
+  color: var(--ink);
+  padding: 0 8px;
+}
+.membership .signature {
+  font-family: var(--maxi-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(250,250,247,0.55);
+}
+
+/* ============= FAQ ============= */
+.faq { padding: 80px 0; background: var(--bone); }
+.faq-grid { display: grid; gap: 1px; background: var(--line); border: 1px solid var(--line); }
+.faq-item { background: var(--paper); padding: 22px 26px; }
+.faq-q {
+  font-family: var(--maxi-round);
+  font-weight: 700;
+  font-size: 1.05rem;
+  letter-spacing: -0.005em;
+  margin-bottom: 8px;
+}
+.faq-a {
+  font-family: var(--maxi-mono);
+  font-size: 0.85rem;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+/* ============= CTA STRIP ============= */
+.cta-strip {
+  background: var(--hi-vis);
+  padding: 50px 0;
+  text-align: center;
+  border-top: 2px solid var(--ink);
+  border-bottom: 2px solid var(--ink);
+}
+.cta-strip h2 {
+  font-family: var(--maxi-round);
+  font-weight: 800;
+  font-size: clamp(1.8rem, 4vw, 2.6rem);
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+  line-height: 1;
+}
+.cta-strip p {
+  font-family: var(--maxi-mono);
+  font-size: 0.85rem;
+  color: rgba(10,10,10,0.65);
+  margin-bottom: 22px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+/* ============= FOOTER ============= */
+.footer {
+  padding: 36px 0;
+  border-top: 1px solid var(--line-strong);
+  background: var(--bone);
+}
+.footer-inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+.footer-brand {
+  font-family: var(--maxi-round);
+  font-weight: 800;
+  font-size: 1rem;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+}
+.footer-meta {
+  font-family: var(--maxi-mono);
+  font-size: 0.7rem;
+  color: var(--muted);
+  letter-spacing: 0.05em;
+}
+.footer-links {
+  display: flex;
+  gap: 18px;
+  font-family: var(--maxi-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+.footer-links a { color: var(--muted); }
+.footer-links a:hover { color: var(--ink); }
+
+/* ============= RESPONSIVE ============= */
+@media (max-width: 640px) {
+  .hero { padding: 56px 0 64px; }
+  .how, .pricing, .sample, .membership, .faq { padding: 56px 0; }
+  .container { padding: 0 18px; }
+  .nav { padding: 14px 0; }
+  .btn { padding: 10px 16px; font-size: 0.72rem; }
+  .btn-lg { padding: 14px 22px; font-size: 0.78rem; }
+  .hero-cta { flex-direction: column; }
+  .hero-cta .btn { width: 100%; text-align: center; }
+  .footer-inner { flex-direction: column; }
+}
 </style>
 </head>
 <body>
 
+<!-- ============= NAV ============= -->
 <nav class="nav container">
-  <div class="nav-brand">🚴 DBP <span>Coach</span></div>
+  <div class="brand-mark">DBP <span class="accent">COACH</span></div>
   <div class="nav-actions">
-    <a class="btn btn-ghost" href="/login">Log in</a>
+    <a class="btn" href="/login">Log in</a>
   </div>
 </nav>
 
+<!-- ============= HERO ============= -->
 <section class="hero">
   <div class="container">
-    <h1>Train smarter.<br/><span class="accent">Recover better.</span></h1>
-    <p class="sub">AI training and nutrition coach for cyclists, built into your DBP membership. Daily prescriptions tuned to your WHOOP recovery and Strava activity. Real coaching, not generic plans.</p>
+    <div class="hero-meta"><span class="num">01</span> AI TRAINING / NUTRITION COACH</div>
+    <h1>Train smart.<br>Recover<br><span class="pop">harder</span>.</h1>
+    <p class="lede">AI training and nutrition coach for cyclists, built into your DBP membership. Daily prescriptions tuned to your WHOOP recovery and Strava activity. Real coaching. No generic plans.</p>
     <div class="hero-cta">
       <a class="btn btn-primary btn-lg" href="#pricing">Start 7-day free trial</a>
-      <a class="btn btn-ghost btn-lg" href="#features">How it works</a>
+      <a class="btn btn-lg" href="#how" style="background:transparent;color:var(--paper);border-color:rgba(250,250,247,0.4)">How it works</a>
+    </div>
+
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <div class="label">Built On</div>
+        <div class="value">WHOOP + Strava</div>
+        <div class="sub">recovery + activity</div>
+      </div>
+      <div class="hero-stat">
+        <div class="label">Updated</div>
+        <div class="value">Daily / 6:30 AM</div>
+        <div class="sub">fresh prescription every morning</div>
+      </div>
+      <div class="hero-stat">
+        <div class="label">Made In</div>
+        <div class="value">Durango, CO</div>
+        <div class="sub">by Durango Bike Project</div>
+      </div>
     </div>
   </div>
 </section>
 
-<section id="features" class="features">
+<!-- ============= HOW IT WORKS ============= -->
+<section id="how" class="how">
   <div class="container">
-    <div class="section-title">
-      <h2>Built for how cyclists actually train</h2>
-      <p>Every morning, your data tells us exactly what your body needs.</p>
+    <div class="section-header">
+      <span class="num">02</span>
+      <span class="name">How It Works</span>
+      <span class="right">FOUR STEPS</span>
     </div>
-    <div class="feature-grid">
-      <div class="feature">
-        <div class="ico">📊</div>
-        <h3>Real recovery science</h3>
-        <p>WHOOP recovery score, HRV, sleep stages, and acute:chronic load ratio drive every prescription. No guesswork.</p>
+
+    <div class="how-intro">
+      Every morning, your data tells <span class="quiet">us exactly what your body needs.</span>
+    </div>
+
+    <div class="how-grid">
+      <div class="how-step">
+        <div class="step-num">STEP 01</div>
+        <h3>Connect</h3>
+        <p>Link WHOOP and Strava in 60 seconds. Your data flows in automatically. Set FTP, focus, and weekly hours target.</p>
       </div>
-      <div class="feature">
-        <div class="ico">🚴</div>
-        <h3>Specific workouts, not platitudes</h3>
-        <p>"3×8 min @ 270–290W with 4 min recovery" — actual targets based on your FTP, with route suggestions for Durango.</p>
+      <div class="how-step">
+        <div class="step-num">STEP 02</div>
+        <h3>Wake Up</h3>
+        <p>6:30am: prescription drops. Workout, intensity, duration, nutrition, route — all calibrated to your recovery and load.</p>
       </div>
-      <div class="feature">
-        <div class="ico">🍽️</div>
-        <h3>Nutrition that matches the day</h3>
-        <p>Carbs scaled to load, protein for recovery, supplements timed for sleep. What to eat, when, why.</p>
+      <div class="how-step">
+        <div class="step-num">STEP 03</div>
+        <h3>Execute</h3>
+        <p>Specific targets — "3×8 min @ 270–290W, 4 min recovery." Strength sessions cycling-aligned. Built around Durango terrain.</p>
       </div>
-      <div class="feature">
-        <div class="ico">🏋️</div>
-        <h3>Strength built in</h3>
-        <p>Cycling-focused strength prescribed 2× per week, never on the wrong day. Single-leg, posterior chain, core.</p>
-      </div>
-      <div class="feature">
-        <div class="ico">🧠</div>
-        <h3>Learns from what you actually did</h3>
-        <p>Tap "did it / modified / skipped" each day. The AI adapts. After 4 weeks, it's tuned to your body.</p>
-      </div>
-      <div class="feature">
-        <div class="ico">☕</div>
-        <h3>Membership perks at DBP</h3>
-        <p>Elite tier: free Sunday recovery drink, priority service, free flat fixes, monthly group rides, more.</p>
+      <div class="how-step">
+        <div class="step-num">STEP 04</div>
+        <h3>Adapt</h3>
+        <p>Tap "did it / modified / skipped." The AI learns. After four weeks, it's tuned to your patterns, your recovery, your life.</p>
       </div>
     </div>
   </div>
 </section>
 
+<!-- ============= SAMPLE PRESCRIPTION ============= -->
+<section class="sample">
+  <div class="container">
+    <div class="section-header">
+      <span class="num">03</span>
+      <span class="name">Sample Prescription</span>
+      <span class="right">TUESDAY MORNING</span>
+    </div>
+
+    <div class="sample-card">
+      <div class="sample-meta">
+        <span>TODAY · MAY 5</span>
+        <span>RECOVERED</span>
+      </div>
+      <div class="sample-rec">
+        <span class="num">88</span><span class="pct">%</span>
+        <span class="label">WHOOP RECOVERY</span>
+      </div>
+      <div class="prescription">
+        Threshold intervals — 75 min total. 3×12 min @ 230–245W with 5 min recovery between. Easy spin-up beforehand.
+      </div>
+      <div class="target">
+        Nutrition: 90g carbs/hr on the bike · 35g protein within 30 min post · Magnesium tonight, sleep target 8 hrs.
+      </div>
+    </div>
+    <div class="sample-callout">
+      ↑ Real prescription example. Tuned to your FTP, your recovery, your training load.
+    </div>
+  </div>
+</section>
+
+<!-- ============= PRICING ============= -->
 <section id="pricing" class="pricing">
   <div class="container">
-    <div class="section-title">
-      <h2>Pricing</h2>
-      <p>7-day free trial on all paid plans. Cancel anytime.</p>
-      <div class="toggle-billing" style="margin-top:16px">
+    <div class="section-header">
+      <span class="num">04</span>
+      <span class="name">Pricing</span>
+      <span class="right">7-DAY FREE TRIAL</span>
+    </div>
+
+    <div style="display:flex;justify-content:center;margin-bottom:30px">
+      <div class="pricing-toggle">
         <button id="bill-monthly" class="active" onclick="setBilling('monthly')">Monthly</button>
-        <button id="bill-annual" onclick="setBilling('annual')">Annual <span class="save-badge">save 20%+</span></button>
+        <button id="bill-annual" onclick="setBilling('annual')">Annual<span class="save-badge">SAVE 20%+</span></button>
       </div>
     </div>
+
     <div class="price-grid">
+      <!-- FREE -->
       <div class="price-card">
+        <div class="price-card-meta">TIER 01</div>
         <h3>Free</h3>
-        <div class="tagline">Get on the list</div>
-        <div class="price">$0<span class="per">/mo</span></div>
+        <div class="price-tag-line">Get on the list.</div>
+        <div class="price-row">
+          <span class="price-amount">$0</span>
+          <span class="per">/mo forever</span>
+        </div>
         <ul>
           <li>DBP newsletter</li>
           <li>Member directory</li>
-          <li>Basic Strava club access</li>
+          <li>Strava club access</li>
           <li class="muted">No AI coach</li>
-          <li class="muted">No perks</li>
+          <li class="muted">No member rewards</li>
         </ul>
-        <a class="btn btn-secondary" href="/login">Sign up free</a>
+        <a class="btn btn-ink" href="/login">Sign up free</a>
       </div>
 
+      <!-- COACH -->
       <div class="price-card popular">
-        <span class="badge">Most popular</span>
+        <span class="popular-badge">Most Popular</span>
+        <div class="price-card-meta">TIER 02</div>
         <h3>Coach</h3>
-        <div class="tagline">Daily AI training + nutrition</div>
-        <div class="price"><span data-price="coach">$19</span><span class="per" data-per="coach">/mo</span></div>
+        <div class="price-tag-line">Daily AI training + nutrition.</div>
+        <div class="price-row">
+          <span class="price-amount" data-price="coach">$19</span>
+          <span class="per" data-per="coach">/mo</span>
+        </div>
         <ul>
           <li>Daily AI workout + nutrition prescription</li>
           <li>WHOOP + Strava integration</li>
-          <li>Recovery, HRV, sleep, training load tracking</li>
+          <li>Recovery, HRV, sleep, training load</li>
           <li>Workout history with feedback loop</li>
           <li>Weather-aware route suggestions</li>
           <li>Email + in-app delivery</li>
@@ -180,10 +731,15 @@
         <button class="btn btn-primary" onclick="checkout('coach')">Start 7-day trial</button>
       </div>
 
+      <!-- ELITE -->
       <div class="price-card">
+        <div class="price-card-meta">TIER 03</div>
         <h3>Elite</h3>
-        <div class="tagline">Coach + DBP membership perks</div>
-        <div class="price"><span data-price="elite">$39</span><span class="per" data-per="elite">/mo</span></div>
+        <div class="price-tag-line">Coach + DBP rewards.</div>
+        <div class="price-row">
+          <span class="price-amount" data-price="elite">$39</span>
+          <span class="per" data-per="elite">/mo</span>
+        </div>
         <ul>
           <li>Everything in Coach</li>
           <li>Free Sunday recovery drink, every week</li>
@@ -193,8 +749,7 @@
           <li>1 free tune-up per year</li>
           <li>Monthly DBP group ride</li>
           <li>Birthday month: free coffee</li>
-          <li>Private DBP Coach Strava club</li>
-          <li>Featured on DBP Instagram for monthly winners</li>
+          <li>Featured on DBP Instagram</li>
         </ul>
         <button class="btn btn-primary" onclick="checkout('elite')">Start 7-day trial</button>
       </div>
@@ -202,21 +757,83 @@
   </div>
 </section>
 
-<section class="signup-form">
+<!-- ============= MEMBERSHIP CALLOUT ============= -->
+<section class="membership">
   <div class="container">
-    <div class="section-title">
-      <h2>Already a member?</h2>
-      <p>Sign in with a one-tap email link — no password.</p>
+    <div class="section-header" style="border-color:rgba(250,250,247,0.15);color:rgba(250,250,247,0.55)">
+      <span class="num" style="color:var(--hi-vis)">05</span>
+      <span class="name" style="color:var(--paper)">Why DBP</span>
+      <span class="right">DURANGO, CO</span>
     </div>
-    <a class="btn btn-primary btn-lg" href="/login">Sign in</a>
+
+    <div class="quote-block">
+      Most coaching apps are run from a server farm in Delaware. <span class="pop">DBP Coach</span> is run out of a bike shop on 8th Avenue. The recovery latte is real. The mechanic is real. The members are your neighbors.
+    </div>
+    <div class="signature">— DURANGO BIKE PROJECT · 225 E 8TH AVE</div>
   </div>
 </section>
 
+<!-- ============= FAQ ============= -->
+<section class="faq">
+  <div class="container">
+    <div class="section-header">
+      <span class="num">06</span>
+      <span class="name">Common Questions</span>
+      <span class="right"></span>
+    </div>
+
+    <div class="faq-grid">
+      <div class="faq-item">
+        <div class="faq-q">Do I need a WHOOP?</div>
+        <div class="faq-a">Yes for full Coach functionality — WHOOP recovery is core to the daily prescription. Garmin support is on the roadmap. Strava alone won't unlock Coach yet.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">Do I have to live in Durango?</div>
+        <div class="faq-a">For Coach tier, no — works anywhere. For Elite tier, the rewards (free coffee, service, group rides) require visiting DBP at 225 E 8th Ave. Most Elite members are Durango locals.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">Can I cancel anytime?</div>
+        <div class="faq-a">Yes. Cancel from your account settings — takes one tap. You keep access through the end of your billing period. No "are you sure" voicemail.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">What if I'm not a hardcore cyclist?</div>
+        <div class="faq-a">Coach is built for anyone who rides — commuters, weekend riders, racers. Set your weekly hours target and primary focus, and the AI calibrates. "Aerobic base" focus is great for newer riders.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">Is my data private?</div>
+        <div class="faq-a">Yes. Your WHOOP and Strava data is used only to personalize your prescription. We don't sell it, share it, or train models on it. Read our <a href="/privacy" style="text-decoration:underline">Privacy Policy</a>.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">Who built this?</div>
+        <div class="faq-a">Casey Roberts, DBP owner, in collaboration with the Anthropic Claude API. Real cycling experience, real Durango terrain knowledge, real bike shop service backing the whole thing.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============= CTA STRIP ============= -->
+<section class="cta-strip">
+  <div class="container">
+    <h2>Start tomorrow morning</h2>
+    <p>7 days free · Cancel anytime · No password</p>
+    <a class="btn btn-ink btn-lg" href="#pricing">Pick a plan</a>
+  </div>
+</section>
+
+<!-- ============= FOOTER ============= -->
 <footer class="footer">
   <div class="container">
-    <div>Durango Bike Project · 225 E 8th Ave, Durango, CO</div>
-    <div style="margin-top:8px">
-      <a href="/privacy">Privacy</a> · <a href="/terms">Terms</a> · <a href="mailto:ccroberts10@gmail.com">Contact</a>
+    <div class="footer-inner">
+      <div>
+        <div class="footer-brand">DBP COACH</div>
+        <div class="footer-meta" style="margin-top:6px">DURANGO BIKE PROJECT · 225 E 8TH AVE · DURANGO, CO 81301</div>
+      </div>
+      <div class="footer-links">
+        <a href="/privacy">Privacy</a>
+        <a href="/terms">Terms</a>
+        <a href="https://durangobikeproject.com">DBP Site</a>
+        <a href="mailto:ccroberts10@gmail.com">Contact</a>
+      </div>
     </div>
   </div>
 </footer>
