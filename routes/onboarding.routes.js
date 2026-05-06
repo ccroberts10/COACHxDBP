@@ -17,7 +17,7 @@ router.get('/state', async (req, res) => {
     [req.user.id]
   );
   res.json({
-    user: { id: req.user.id, email: req.user.email, name: req.user.name, onboarding_completed: req.user.onboarding_completed },
+    user: { id: req.user.id, email: req.user.email, name: req.user.name, tier: req.user.subscription_tier, onboarding_completed: req.user.onboarding_completed },
     benchmarks: benchmarks || null,
     integrations: integrations,
   });
