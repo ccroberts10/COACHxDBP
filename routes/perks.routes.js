@@ -44,7 +44,7 @@ router.get('/my-savings', auth.requireAuthApi, async (req, res) => {
 async function verifyStaffPin(pin, requiredRole = null) {
   const staff = await db.one(`SELECT * FROM staff_pins WHERE pin = $1 AND active = TRUE`, [pin]);
   if (!staff) return null;
-  if (requiredRole && staff.role !== requiredRole) return null;
+  if (requiredRole && (staff.role || '').toLowerCase() !== requiredRole.toLowerCase()) return null;
   return staff;
 }
 
