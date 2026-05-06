@@ -3,115 +3,138 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Settings · DBP Coach</title>
+<title>Settings — DBP Coach</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,700;12..96,800&display=swap" rel="stylesheet">
 <style>
-  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-  html,body{margin:0;padding:0;background:#000;color:#e8e8e8;font-family:-apple-system,BlinkMacSystemFont,sans-serif;line-height:1.5;font-size:15px}
-  .container{max-width:600px;margin:0 auto;padding:20px 16px 60px}
-  .header{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px}
-  .header h1{margin:0;font-size:1.3rem;font-weight:700;letter-spacing:-0.02em}
-  .back-btn{background:#1a1a1a;border:1px solid #2a2a2a;color:#e8e8e8;padding:8px 14px;border-radius:20px;font-size:0.85rem;cursor:pointer;text-decoration:none;font-family:inherit}
-  .section{margin-bottom:24px}
-  .section h2{font-size:0.75rem;text-transform:uppercase;letter-spacing:0.1em;color:#666;font-weight:600;margin:0 0 10px;padding:0 4px}
-  .card{background:#0f0f0f;border:1px solid #1f1f1f;border-radius:14px;padding:16px;margin-bottom:8px}
-  .row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #1a1a1a;gap:14px}
-  .row:last-child{border-bottom:none}
-  .row-label{color:#888;font-size:0.85rem}
-  .row-value{color:#ddd;font-size:0.92rem;font-weight:500;text-align:right}
-  .row-value.green{color:#4ade80}.row-value.red{color:#f87171}.row-value.yellow{color:#facc15}
-  label{display:block;font-size:0.85rem;color:#aaa;margin-bottom:6px;font-weight:500}
-  input,select{width:100%;padding:11px 13px;font-size:0.95rem;background:#0a0a0a;border:1px solid #1f1f1f;border-radius:8px;color:#fff;font-family:inherit}
-  input:focus,select:focus{outline:none;border-color:#4ade80}
-  .form-row{margin-bottom:12px}
-  .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-  .btn{display:inline-block;padding:10px 16px;border-radius:8px;font-weight:600;font-size:0.88rem;border:none;cursor:pointer;font-family:inherit;text-decoration:none}
-  .btn-primary{background:#4ade80;color:#000}
-  .btn-secondary{background:#1a1a1a;color:#fff;border:1px solid #2a2a2a}
-  .btn-danger{background:transparent;color:#f87171;border:1px solid #5a2828}
-  .btn:active{transform:scale(0.97)}
-  .saved{color:#4ade80;font-size:0.78rem;margin-left:8px;opacity:0;transition:opacity 0.3s}
-  .saved.show{opacity:1}
-  .danger-zone{margin-top:32px;padding:16px;border:1px dashed #5a2828;border-radius:12px}
-  .danger-zone h3{color:#f87171;margin:0 0 8px;font-size:0.95rem}
-  .danger-zone p{color:#888;font-size:0.85rem;margin:0 0 14px}
+:root {
+  --ink: #0A0A0A; --paper: #FAFAF7; --bone: #EFEDE5; --hi-vis: #F2E600;
+  --rec-green: #1F4A2C; --rec-yellow: #D4A82E; --rec-red: #6B1F2A;
+  --line: rgba(10,10,10,0.10); --line-strong: rgba(10,10,10,0.20);
+  --muted: rgba(10,10,10,0.55);
+  --maxi-round: 'Bricolage Grotesque', system-ui, sans-serif;
+  --maxi-mono: 'DM Mono', monospace;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body { background: var(--bone); color: var(--ink); font-family: var(--maxi-mono); font-size: 15px; line-height: 1.5; -webkit-font-smoothing: antialiased; }
+.container { max-width: 720px; margin: 0 auto; padding: 24px 20px 80px; }
+
+.nav { display: flex; justify-content: space-between; align-items: center; padding-bottom: 16px; border-bottom: 1px solid var(--line-strong); margin-bottom: 30px; }
+.brand { font-family: var(--maxi-round); font-weight: 800; font-size: 1.3rem; letter-spacing: -0.03em; text-transform: uppercase; line-height: 1; }
+.brand .accent { background: var(--hi-vis); padding: 0 6px; }
+.back-link { font-family: var(--maxi-mono); font-size: 0.7rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); text-decoration: none; padding: 8px 14px; background: var(--paper); border: 1px solid var(--line-strong); }
+.back-link:hover { color: var(--ink); }
+
+.section { margin-bottom: 30px; }
+.section-header { display: flex; justify-content: space-between; align-items: baseline; padding: 8px 0; border-bottom: 1px solid var(--line); margin-bottom: 14px; font-family: var(--maxi-mono); font-size: 0.65rem; letter-spacing: 0.18em; text-transform: uppercase; }
+.section-header .num { color: var(--muted); }
+.section-header .name { font-weight: 500; }
+.saved { color: var(--rec-green); font-size: 0.65rem; letter-spacing: 0.12em; opacity: 0; transition: opacity 0.3s; }
+.saved.show { opacity: 1; }
+
+.card { background: var(--paper); border: 1px solid var(--line-strong); padding: 18px 18px; }
+
+.row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--line); gap: 14px; }
+.row:last-child { border-bottom: none; }
+.row-label { color: var(--muted); font-family: var(--maxi-mono); font-size: 0.78rem; letter-spacing: 0.04em; }
+.row-value { color: var(--ink); font-family: var(--maxi-mono); font-size: 0.92rem; font-weight: 500; text-align: right; letter-spacing: 0.02em; }
+.row-value.green { color: var(--rec-green); }
+.row-value.yellow { color: var(--rec-yellow); }
+.row-value.red { color: var(--rec-red); }
+
+label { display: block; font-family: var(--maxi-mono); font-size: 0.62rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; font-weight: 500; }
+input[type="text"], input[type="number"], input[type="date"], select { width: 100%; padding: 11px 12px; font-family: var(--maxi-mono); font-size: 0.92rem; background: var(--bone); border: 1px solid var(--line-strong); color: var(--ink); }
+input:focus, select:focus { outline: none; border-color: var(--ink); background: var(--paper); }
+.form-row { margin-bottom: 12px; }
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+.btn { display: inline-block; padding: 10px 18px; font-family: var(--maxi-mono); font-size: 0.72rem; letter-spacing: 0.15em; text-transform: uppercase; font-weight: 500; border: 1px solid var(--ink); background: var(--paper); color: var(--ink); cursor: pointer; text-decoration: none; }
+.btn:active { transform: scale(0.98); }
+.btn-primary { background: var(--hi-vis); }
+.btn-ink { background: var(--ink); color: var(--paper); }
+.btn-danger { background: transparent; color: var(--rec-red); border-color: var(--rec-red); }
+
+.connection-row { display: flex; justify-content: space-between; align-items: center; padding: 14px 0; border-bottom: 1px solid var(--line); gap: 14px; }
+.connection-row:last-child { border-bottom: none; }
+.conn-label { font-family: var(--maxi-round); font-weight: 700; font-size: 0.95rem; letter-spacing: -0.01em; text-transform: uppercase; }
+.conn-status-row { display: flex; align-items: center; gap: 8px; }
+
+.danger-zone { margin-top: 38px; padding: 20px; border: 1px dashed var(--rec-red); background: var(--paper); }
+.danger-zone h3 { font-family: var(--maxi-round); font-weight: 700; font-size: 0.95rem; letter-spacing: -0.01em; text-transform: uppercase; color: var(--rec-red); margin-bottom: 6px; }
+.danger-zone p { font-family: var(--maxi-mono); font-size: 0.78rem; color: var(--muted); margin-bottom: 14px; line-height: 1.5; }
+
+.tier-badge { display: inline-block; padding: 3px 10px; font-family: var(--maxi-mono); font-size: 0.62rem; letter-spacing: 0.18em; text-transform: uppercase; font-weight: 600; }
+.tier-badge.coach { background: var(--hi-vis); color: var(--ink); }
+.tier-badge.rewards { background: var(--info-blue, #6B92B5); color: var(--paper); }
+.tier-badge.free { background: var(--bone); color: var(--muted); border: 1px solid var(--line-strong); }
 </style>
 </head>
 <body>
 <div class="container">
-  <div class="header">
-    <h1>⚙ Settings</h1>
-    <a class="back-btn" href="/dashboard">← Dashboard</a>
+  <div class="nav">
+    <div class="brand">DBP <span class="accent">COACH</span></div>
+    <a class="back-link" href="/dashboard">← Dashboard</a>
   </div>
 
   <div class="section">
-    <h2>Account</h2>
+    <div class="section-header">
+      <span class="num">01</span>
+      <span class="name">Account</span>
+      <span class="num">DETAILS</span>
+    </div>
     <div class="card">
       <div class="row"><div class="row-label">Email</div><div class="row-value" id="email">—</div></div>
       <div class="row"><div class="row-label">Name</div><div class="row-value" id="name">—</div></div>
+      <div class="row"><div class="row-label">Member code</div><div class="row-value" id="memberCode">—</div></div>
       <div class="row"><div class="row-label">Plan</div><div class="row-value" id="tier">—</div></div>
       <div class="row"><div class="row-label">Status</div><div class="row-value" id="status">—</div></div>
     </div>
-    <div style="margin-top:10px"><a class="btn btn-secondary" href="/billing/portal">Manage billing →</a></div>
+    <div style="margin-top:10px"><a class="btn btn-ink" href="/billing/portal">Manage billing →</a></div>
   </div>
 
   <div class="section">
-    <h2>Connected Accounts</h2>
+    <div class="section-header">
+      <span class="num">02</span>
+      <span class="name">Connected Accounts</span>
+      <span class="num">DATA SOURCES</span>
+    </div>
     <div class="card">
-      <div class="row">
-        <div class="row-label">WHOOP</div>
-        <div><span id="whoop-status" class="row-value">—</span> <a class="btn btn-secondary" id="whoop-btn" href="/integrations/whoop/connect">Reconnect</a></div>
+      <div class="connection-row">
+        <div class="conn-label">WHOOP</div>
+        <div class="conn-status-row">
+          <span class="row-value" id="whoop-status">—</span>
+          <a class="btn" id="whoop-btn" href="/integrations/whoop/connect">Reconnect</a>
+        </div>
       </div>
-      <div class="row">
-        <div class="row-label">Strava</div>
-        <div><span id="strava-status" class="row-value">—</span> <a class="btn btn-secondary" id="strava-btn" href="/integrations/strava/connect">Reconnect</a></div>
+      <div class="connection-row">
+        <div class="conn-label">Strava</div>
+        <div class="conn-status-row">
+          <span class="row-value" id="strava-status">—</span>
+          <a class="btn" id="strava-btn" href="/integrations/strava/connect">Reconnect</a>
+        </div>
       </div>
     </div>
   </div>
 
   <div class="section">
-    <h2>Benchmarks <span class="saved" id="bSaved">✓ saved</span></h2>
+    <div class="section-header">
+      <span class="num">03</span>
+      <span class="name">Benchmarks <span class="saved" id="bSaved">✓ saved</span></span>
+      <span class="num">PERFORMANCE</span>
+    </div>
     <div class="card">
       <div class="form-grid">
-        <div class="form-row">
-          <label>FTP (watts)</label>
-          <input type="number" id="ftp_watts" onblur="saveBenchmarks()">
-        </div>
-        <div class="form-row">
-          <label>Max HR</label>
-          <input type="number" id="max_hr" onblur="saveBenchmarks()">
-        </div>
-        <div class="form-row">
-          <label>LTHR</label>
-          <input type="number" id="lthr" onblur="saveBenchmarks()">
-        </div>
-        <div class="form-row">
-          <label>Bodyweight (kg)</label>
-          <input type="number" step="0.1" id="bodyweight_kg" onblur="saveBenchmarks()">
-        </div>
-        <div class="form-row">
-          <label>RHR baseline</label>
-          <input type="number" id="rhr_baseline" onblur="saveBenchmarks()">
-        </div>
-        <div class="form-row">
-          <label>HRV baseline</label>
-          <input type="number" step="0.1" id="hrv_baseline" onblur="saveBenchmarks()">
-        </div>
-        <div class="form-row">
-          <label>Squat 1RM (lb)</label>
-          <input type="number" id="squat_1rm_lb" onblur="saveBenchmarks()">
-        </div>
-        <div class="form-row">
-          <label>Deadlift 1RM (lb)</label>
-          <input type="number" id="deadlift_1rm_lb" onblur="saveBenchmarks()">
-        </div>
-        <div class="form-row">
-          <label>Bench 1RM (lb)</label>
-          <input type="number" id="bench_1rm_lb" onblur="saveBenchmarks()">
-        </div>
-        <div class="form-row">
-          <label>Weekly hours</label>
-          <input type="number" step="0.5" id="weekly_hours_target" onblur="saveBenchmarks()">
-        </div>
+        <div class="form-row"><label>FTP (watts)</label><input type="number" id="ftp_watts" onblur="saveBenchmarks()"></div>
+        <div class="form-row"><label>Max HR</label><input type="number" id="max_hr" onblur="saveBenchmarks()"></div>
+        <div class="form-row"><label>LTHR</label><input type="number" id="lthr" onblur="saveBenchmarks()"></div>
+        <div class="form-row"><label>Bodyweight (kg)</label><input type="number" step="0.1" id="bodyweight_kg" onblur="saveBenchmarks()"></div>
+        <div class="form-row"><label>RHR baseline</label><input type="number" id="rhr_baseline" onblur="saveBenchmarks()"></div>
+        <div class="form-row"><label>HRV baseline</label><input type="number" step="0.1" id="hrv_baseline" onblur="saveBenchmarks()"></div>
+        <div class="form-row"><label>Squat 1RM (lb)</label><input type="number" id="squat_1rm_lb" onblur="saveBenchmarks()"></div>
+        <div class="form-row"><label>Deadlift 1RM (lb)</label><input type="number" id="deadlift_1rm_lb" onblur="saveBenchmarks()"></div>
+        <div class="form-row"><label>Bench 1RM (lb)</label><input type="number" id="bench_1rm_lb" onblur="saveBenchmarks()"></div>
+        <div class="form-row"><label>Weekly hours</label><input type="number" step="0.5" id="weekly_hours_target" onblur="saveBenchmarks()"></div>
         <div class="form-row">
           <label>Strength/week</label>
           <select id="strength_target_per_week" onchange="saveBenchmarks()">
@@ -132,9 +155,16 @@
   </div>
 
   <div class="section">
-    <h2>Event Mode</h2>
+    <div class="section-header">
+      <span class="num">04</span>
+      <span class="name">Event Mode</span>
+      <span class="num">RACE PREP</span>
+    </div>
     <div class="card">
-      <div class="form-row"><label>Event name</label><input type="text" id="current_event_name" placeholder="e.g. Iron Horse Bicycle Classic" onblur="saveBenchmarks()"></div>
+      <div class="form-row">
+        <label>Event name</label>
+        <input type="text" id="current_event_name" placeholder="e.g. Iron Horse Bicycle Classic" onblur="saveBenchmarks()">
+      </div>
       <div class="form-grid">
         <div class="form-row"><label>Date</label><input type="date" id="current_event_date" onblur="saveBenchmarks()"></div>
         <div class="form-row">
@@ -157,8 +187,8 @@
   </div>
 
   <div class="danger-zone">
-    <h3>Sign out</h3>
-    <p>You can sign back in anytime with a new email link.</p>
+    <h3>Sign Out</h3>
+    <p>You can sign back in anytime with a new email link. Your data stays put.</p>
     <a class="btn btn-danger" href="/auth/logout">Sign out</a>
   </div>
 </div>
@@ -178,7 +208,12 @@ async function load(){
 function render(){
   document.getElementById('email').textContent = data.user.email;
   document.getElementById('name').textContent = data.user.name || '—';
-  document.getElementById('tier').textContent = data.user.tier || 'Free';
+  document.getElementById('memberCode').textContent = data.user.member_code || '—';
+
+  const tier = data.user.tier || 'free';
+  const tierEl = document.getElementById('tier');
+  tierEl.innerHTML = `<span class="tier-badge ${tier}">${tier}</span>`;
+
   const status = data.user.status || 'inactive';
   const sEl = document.getElementById('status');
   sEl.textContent = status;
@@ -188,6 +223,7 @@ function render(){
   const wEl = document.getElementById('whoop-status');
   if (whoop?.status === 'connected') { wEl.textContent = '✓ Connected'; wEl.classList.add('green'); }
   else { wEl.textContent = '✗ Disconnected'; wEl.classList.add('red'); }
+
   const strava = data.connections?.strava;
   const sEl2 = document.getElementById('strava-status');
   if (strava?.status === 'connected') { sEl2.textContent = '✓ Connected'; sEl2.classList.add('green'); }
@@ -196,7 +232,11 @@ function render(){
   const b = data.benchmarks || {};
   ['ftp_watts','max_hr','lthr','bodyweight_kg','rhr_baseline','hrv_baseline','squat_1rm_lb','deadlift_1rm_lb','bench_1rm_lb','weekly_hours_target','strength_target_per_week','primary_focus','current_event_name','current_event_date','current_event_type','current_event_distance_km','current_event_elevation_m'].forEach(k => {
     const el = document.getElementById(k);
-    if (el && b[k] != null) el.value = b[k];
+    if (el && b[k] != null) {
+      // For date, slice to YYYY-MM-DD
+      if (k === 'current_event_date' && typeof b[k] === 'string') el.value = b[k].slice(0, 10);
+      else el.value = b[k];
+    }
   });
 }
 
