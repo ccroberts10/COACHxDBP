@@ -65,8 +65,8 @@ input:focus, textarea:focus, select:focus { outline: none; border-color: var(--i
 .search-result:hover { background: var(--bone); }
 .search-result .email { color: var(--muted); font-size: 0.75rem; }
 .search-result .tier { display: inline-block; padding: 2px 6px; font-size: 0.62rem; letter-spacing: 0.1em; text-transform: uppercase; margin-left: 8px; }
-.search-result .tier.elite { background: var(--hi-vis); color: var(--ink); }
-.search-result .tier.coach { background: var(--info-blue); color: var(--paper); }
+.search-result .tier.coach { background: var(--hi-vis); color: var(--ink); }
+.search-result .tier.rewards { background: var(--info-blue); color: var(--paper); }
 .search-result .tier.free { background: var(--bone); color: var(--muted); }
 
 .selected-user { background: var(--ink); color: var(--paper); padding: 14px 18px; margin-top: 8px; display: flex; justify-content: space-between; align-items: center; }
@@ -199,8 +199,8 @@ td { font-family: var(--maxi-mono); }
         <label>1. Audience</label>
         <div class="audience-grid">
           <button class="audience-btn active" data-audience="all" onclick="pickAudience('all')">All members<span id="cnt-all" style="margin-left:6px;color:var(--muted)">—</span></button>
-          <button class="audience-btn" data-audience="paying" onclick="pickAudience('paying')">Paying<span id="cnt-paying" style="margin-left:6px;color:var(--muted)">—</span></button>
-          <button class="audience-btn" data-audience="elite" onclick="pickAudience('elite')">Elite only<span id="cnt-elite" style="margin-left:6px;color:var(--muted)">—</span></button>
+          <button class="audience-btn" data-audience="paying" onclick="pickAudience('paying')">Paying (Rewards + Coach)<span id="cnt-paying" style="margin-left:6px;color:var(--muted)">—</span></button>
+          <button class="audience-btn" data-audience="rewards" onclick="pickAudience('rewards')">Rewards only<span id="cnt-rewards" style="margin-left:6px;color:var(--muted)">—</span></button>
           <button class="audience-btn" data-audience="coach" onclick="pickAudience('coach')">Coach only<span id="cnt-coach" style="margin-left:6px;color:var(--muted)">—</span></button>
         </div>
       </div>
@@ -627,7 +627,7 @@ let bcSelectedTemplate = null;
 
 async function initBroadcast() {
   // Fetch counts for each audience
-  for (const aud of ['all', 'paying', 'elite', 'coach']) {
+  for (const aud of ['all', 'paying', 'rewards', 'coach']) {
     try {
       const r = await fetch('/api/perks/admin/broadcast/audience', {
         method: 'POST',
