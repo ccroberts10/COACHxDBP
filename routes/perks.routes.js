@@ -126,6 +126,17 @@ router.post('/admin/issue', async (req, res) => {
       expiresInDays: expires_in_days,
       customDescription: custom_description,
     });
+
+    // Send email notification (non-fatal if it fails)
+    try {
+      const { sendRewardIssuedEmail } = require('../lib/email');
+      await sendRewardIssuedEmail(
+        user.email, user.name, result.code, result.description, result.expires_at, staff.staff_name
+      );
+    } catch (e) {
+      console.error('[admin/issue] email failed (non-fatal):', e.message);
+    }
+
     res.json({ success: true, ...result, user: { name: user.name, email: user.email } });
   } catch (e) {
     res.status(500).json({ error: e.message });
@@ -169,6 +180,77 @@ router.post('/admin/recent-redemptions', async (req, res) => {
   res.json({ redemptions: rows });
 });
 
+// Preview broadcast audience
+router.post('/admin/broadcast/audience', async (req, res) => {
+  const { pin, audience } = req.body;
+  const staff = await verifyStaffPin(pin, 'manager');
+  if (!staff) return res.status(401).json({ error: 'Manager PIN required' });
+
+  let where = `subscription_status IN ('active', 'trialing') AND onboarding_completed = TRUE`;
+  if (audience === 'elite') where += ` AND subscription_tier = 'elite'`;
+  if (audience === 'coach') where += ` AND subscription_tier = 'coach'`;
+  if (audience === 'paying') where += ` AND subscription_tier IN ('coach', 'elite')`;
+
+  const rows = await db.many(
+    `SELECT id, name, email, subscription_tier FROM users WHERE ${where} ORDER BY created_at DESC LIMIT 200`
+  );
+  const total = await db.one(`SELECT COUNT(*) as count FROM users WHERE ${where}`);
+  res.json({ users: rows, total: parseInt(total.count) });
+});
+
+// Send broadcast: optionally issue a reward to all matching users + email them
+router.post('/admin/broadcast/send', async (req, res) => {
+  const { pin, audience, template_id, expires_in_days, subject, headline, body, send_email } = req.body;
+  const staff = await verifyStaffPin(pin, 'manager');
+  if (!staff) return res.status(401).json({ error: 'Manager PIN required' });
+  if (!subject || !headline || !body) return res.status(400).json({ error: 'subject, headline, and body required' });
+
+  let where = `subscription_status IN ('active', 'trialing') AND onboarding_completed = TRUE`;
+  if (audience === 'elite') where += ` AND subscription_tier = 'elite'`;
+  if (audience === 'coach') where += ` AND subscription_tier = 'coach'`;
+  if (audience === 'paying') where += ` AND subscription_tier IN ('coach', 'elite')`;
+
+  const recipients = await db.many(`SELECT id, name, email FROM users WHERE ${where}`);
+  if (recipients.length === 0) return res.status(400).json({ error: 'No recipients match this audience' });
+
+  const { sendBroadcastEmail } = require('../lib/email');
+  let issued = 0, emailed = 0, errors = [];
+
+  for (const user of recipients) {
+    let perkResult = null;
+    try {
+      if (template_id) {
+        perkResult = await perks.issuePerkFromTemplate({
+          userId: user.id,
+          templateId: template_id,
+          triggerType: 'broadcast',
+          issuedBy: staff.staff_name,
+          expiresInDays: expires_in_days,
+        });
+        issued++;
+      }
+      if (send_email !== false) {
+        await sendBroadcastEmail(
+          user.email, user.name, subject, headline, body,
+          perkResult?.code, perkResult?.description, perkResult?.expires_at
+        );
+        emailed++;
+      }
+    } catch (e) {
+      errors.push({ email: user.email, error: e.message });
+    }
+  }
+
+  res.json({
+    success: true,
+    recipients_total: recipients.length,
+    rewards_issued: issued,
+    emails_sent: emailed,
+    error_count: errors.length,
+    errors: errors.slice(0, 10),
+  });
+});
+
 router.post('/admin/analytics', async (req, res) => {
   const { pin } = req.body;
   const staff = await verifyStaffPin(pin, 'manager');
@@ -204,6 +286,75 @@ router.post('/admin/analytics', async (req, res) => {
   );
 
   res.json({ overview, top_members: topMembers, by_category: byCategory });
+});
+
+// =====================================================
+// AUTO-TRIGGERS — manager-only management
+// =====================================================
+
+router.post('/admin/triggers/list', async (req, res) => {
+  const { pin } = req.body;
+  const staff = await verifyStaffPin(pin, 'manager');
+  if (!staff) return res.status(401).json({ error: 'Manager PIN required' });
+
+  const triggers = await db.many(
+    `SELECT t.*, pt.name as template_name, pt.category as template_category,
+            pt.default_retail_cents as template_value_cents,
+            (SELECT COUNT(*) FROM trigger_firings WHERE trigger_id = t.id) as fire_count,
+            (SELECT MAX(fired_at) FROM trigger_firings WHERE trigger_id = t.id) as last_fired_at
+     FROM auto_triggers t
+     LEFT JOIN perk_templates pt ON pt.id = t.template_id
+     ORDER BY t.active DESC, t.created_at DESC`
+  );
+  res.json({ triggers });
+});
+
+router.post('/admin/triggers/create', async (req, res) => {
+  const { pin, name, trigger_type, template_id, conditions, audience, message_subject, message_body, cooldown_hours, expires_in_days } = req.body;
+  const staff = await verifyStaffPin(pin, 'manager');
+  if (!staff) return res.status(401).json({ error: 'Manager PIN required' });
+  if (!name || !trigger_type || !template_id) return res.status(400).json({ error: 'name, trigger_type, template_id required' });
+
+  const result = await db.one(
+    `INSERT INTO auto_triggers (name, trigger_type, template_id, conditions, audience, message_subject, message_body, cooldown_hours, expires_in_days, created_by, active)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, TRUE)
+     RETURNING *`,
+    [name, trigger_type, template_id, conditions || {}, audience || 'paying',
+     message_subject || null, message_body || null,
+     cooldown_hours != null ? cooldown_hours : 24,
+     expires_in_days != null ? expires_in_days : 1,
+     staff.staff_name]
+  );
+  res.json({ success: true, trigger: result });
+});
+
+router.post('/admin/triggers/toggle', async (req, res) => {
+  const { pin, trigger_id, active } = req.body;
+  const staff = await verifyStaffPin(pin, 'manager');
+  if (!staff) return res.status(401).json({ error: 'Manager PIN required' });
+
+  await db.query(`UPDATE auto_triggers SET active = $1 WHERE id = $2`, [active, trigger_id]);
+  res.json({ success: true });
+});
+
+router.post('/admin/triggers/delete', async (req, res) => {
+  const { pin, trigger_id } = req.body;
+  const staff = await verifyStaffPin(pin, 'manager');
+  if (!staff) return res.status(401).json({ error: 'Manager PIN required' });
+
+  await db.query(`DELETE FROM auto_triggers WHERE id = $1`, [trigger_id]);
+  res.json({ success: true });
+});
+
+// Manual trigger run (for testing / catching up)
+router.post('/admin/triggers/run-now', async (req, res) => {
+  const { pin } = req.body;
+  const staff = await verifyStaffPin(pin, 'manager');
+  if (!staff) return res.status(401).json({ error: 'Manager PIN required' });
+
+  const autoTriggers = require('../lib/auto-triggers');
+  const result = await autoTriggers.processUnprocessedActivities();
+  res.json({ success: true, ...result });
 });
 
 module.exports = router;
