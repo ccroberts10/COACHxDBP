@@ -417,6 +417,24 @@ CREATE INDEX IF NOT EXISTS idx_pipeline_runs_user ON pipeline_runs(user_id, star
 -- HELPER VIEWS
 -- ===================================================================
 
+-- Migration: old 'elite' tier becomes new 'coach' tier (coach + rewards bundled together)
+UPDATE users SET subscription_tier = 'coach' WHERE subscription_tier = 'elite';
+
+-- Member Rewards Phase 3 column migrations (must run BEFORE views since views may use SELECT *)
+ALTER TABLE users ADD COLUMN IF NOT EXISTS member_code TEXT UNIQUE;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS checkin_streak_current INTEGER DEFAULT 0;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS checkin_streak_longest INTEGER DEFAULT 0;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS checkin_streak_last_date DATE;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS punch_count INTEGER DEFAULT 0;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS punch_total_lifetime INTEGER DEFAULT 0;
+
+CREATE INDEX IF NOT EXISTS idx_users_member_code ON users(member_code);
+
+-- Drop old views before recreating (since column set on users may have changed)
+DROP VIEW IF EXISTS elite_users;
+DROP VIEW IF EXISTS active_users;
+DROP VIEW IF EXISTS rewards_members;
+
 -- Active users to run the cron pipeline against
 CREATE OR REPLACE VIEW active_users AS
 SELECT u.*
@@ -424,10 +442,7 @@ FROM users u
 WHERE u.subscription_status IN ('active', 'trialing')
   AND u.onboarding_completed = TRUE;
 
--- Migration: old 'elite' tier becomes new 'coach' tier (coach + rewards bundled together)
-UPDATE users SET subscription_tier = 'coach' WHERE subscription_tier = 'elite';
-
-DROP VIEW IF EXISTS elite_users;
+-- Members eligible for DBP rewards (rewards or coach tier)
 CREATE OR REPLACE VIEW rewards_members AS
 SELECT u.*
 FROM users u
@@ -437,19 +452,6 @@ WHERE u.subscription_tier IN ('rewards', 'coach')
 -- ===================================================================
 -- MEMBER CODES, PURCHASES, STREAKS (Member Rewards Phase 3)
 -- ===================================================================
-
--- Permanent member code for in-store identification (e.g., DBP-CASEY)
-ALTER TABLE users ADD COLUMN IF NOT EXISTS member_code TEXT UNIQUE;
-CREATE INDEX IF NOT EXISTS idx_users_member_code ON users(member_code);
-
--- Streak tracking (kept on users for fast access)
-ALTER TABLE users ADD COLUMN IF NOT EXISTS checkin_streak_current INTEGER DEFAULT 0;
-ALTER TABLE users ADD COLUMN IF NOT EXISTS checkin_streak_longest INTEGER DEFAULT 0;
-ALTER TABLE users ADD COLUMN IF NOT EXISTS checkin_streak_last_date DATE;
-
--- Punch card counter (rolling — every 10th coffee free)
-ALTER TABLE users ADD COLUMN IF NOT EXISTS punch_count INTEGER DEFAULT 0;
-ALTER TABLE users ADD COLUMN IF NOT EXISTS punch_total_lifetime INTEGER DEFAULT 0;
 
 -- Purchases logged via barista app — every coffee, drink, service, retail item
 CREATE TABLE IF NOT EXISTS purchases (
