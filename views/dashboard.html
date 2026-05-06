@@ -1,165 +1,1491 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>DBP Staff · Redeem</title>
+<meta charset="utf-8">
+<title>DBP Coach</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#FAFAF7">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&display=swap" rel="stylesheet">
 <style>
-  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-  html,body{margin:0;padding:0;background:#0a0a0a;color:#f5f5f5;font-family:-apple-system,BlinkMacSystemFont,sans-serif;min-height:100vh}
-  .container{max-width:480px;margin:0 auto;padding:30px 20px}
-  .brand{font-weight:700;font-size:1.1rem;letter-spacing:-0.02em;margin-bottom:8px;text-align:center}
-  .brand span{color:#4ade80}
-  .label{color:#888;font-size:0.85rem;text-align:center;margin-bottom:24px}
-  label{display:block;font-size:0.85rem;color:#aaa;margin:14px 0 6px;font-weight:500}
-  input{width:100%;padding:14px;font-size:1.2rem;background:#111;border:1px solid #1f1f1f;border-radius:10px;color:#fff;font-family:monospace;letter-spacing:0.05em;text-transform:uppercase}
-  input:focus{outline:none;border-color:#4ade80}
-  .btn{width:100%;padding:16px;font-size:1.05rem;font-weight:700;border:none;border-radius:10px;cursor:pointer;font-family:inherit;margin-top:14px}
-  .btn-primary{background:#4ade80;color:#000}
-  .btn-secondary{background:#1a1a1a;color:#fff;border:1px solid #2a2a2a}
-  .btn:active{transform:scale(0.98)}
-  .btn:disabled{opacity:0.5;cursor:wait}
-  .result{margin-top:18px;padding:18px;border-radius:12px;display:none}
-  .result.show{display:block}
-  .result.valid{background:#0d2818;border:1px solid #1f5a35}
-  .result.invalid{background:#3a1212;border:1px solid #5a2828}
-  .result h2{margin:0 0 6px;font-size:1.2rem}
-  .result.valid h2{color:#4ade80}
-  .result.invalid h2{color:#f87171}
-  .result p{margin:4px 0;color:#ddd;font-size:0.92rem}
-  .result .name{font-size:1rem;color:#fff;font-weight:600}
-  .result .desc{color:#aaa;font-size:0.88rem;margin:8px 0}
-  .pin-display{background:#1a1a1a;border-radius:8px;padding:8px 12px;font-family:monospace;font-size:0.85rem;color:#888;margin-top:6px}
-  .pin-display.hide{filter:blur(4px);user-select:none}
+:root {
+  /* CORE PALETTE */
+  --ink: #0A0A0A;
+  --paper: #FAFAF7;
+  --bone: #EFEDE5;
+  --hi-vis: #F2E600;
+
+  /* SEMANTIC (kept for physiological state — culturally locked) */
+  --rec-green: #1F4A2C;
+  --rec-yellow: #D4A82E;
+  --rec-red: #6B1F2A;
+  --info-blue: #6B92B5;
+
+  /* LOWER ANIMAS — earth tones */
+  --la-brown: #3D2817;
+  --la-tan: #C4A574;
+  --la-rust: #B8542C;
+
+  /* GRID + LINES */
+  --line: rgba(10,10,10,0.10);
+  --line-strong: rgba(10,10,10,0.20);
+  --muted: rgba(10,10,10,0.50);
+  --muted-soft: rgba(10,10,10,0.35);
+
+  /* TYPE — placeholders. Maxi swaps in here when licensed. */
+  --maxi-round: 'Bricolage Grotesque', 'Maxi Round', system-ui, sans-serif;
+  --maxi-sharp: 'Bricolage Grotesque', 'Maxi Sharp', system-ui, sans-serif;
+  --maxi-mono: 'DM Mono', 'Maxi Round Mono', monospace;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body { background: var(--bone); color: var(--ink); font-family: var(--maxi-mono); font-size: 14px; line-height: 1.5; -webkit-font-smoothing: antialiased; }
+
+/* ============= LAYOUT ============= */
+.container { max-width: 600px; margin: 0 auto; padding: 24px 20px 120px; }
+
+/* ============= HEADER ============= */
+.header {
+  display: flex; justify-content: space-between; align-items: flex-end;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--line-strong);
+  margin-bottom: 28px;
+}
+.header-l { display: flex; flex-direction: column; gap: 6px; }
+.brand {
+  font-family: var(--maxi-round);
+  font-weight: 800;
+  font-size: 1.5rem;
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
+  line-height: 0.9;
+}
+.brand .accent {
+  background: var(--hi-vis);
+  padding: 0 4px;
+  margin-left: 2px;
+}
+.header-meta {
+  font-family: var(--maxi-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.header-actions { display: flex; gap: 8px; align-items: center; }
+.btn-icon {
+  width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;
+  background: var(--paper); border: 1px solid var(--line-strong);
+  font-size: 1rem; cursor: pointer; font-family: inherit;
+}
+.btn-icon:active { transform: scale(0.96); }
+.btn-run {
+  font-family: var(--maxi-mono);
+  font-size: 0.7rem; letter-spacing: 0.15em; text-transform: uppercase; font-weight: 500;
+  background: var(--ink); color: var(--paper); border: 1px solid var(--ink);
+  padding: 10px 16px; cursor: pointer;
+}
+.btn-run:disabled { opacity: 0.5; cursor: wait; }
+.btn-run:active { transform: scale(0.97); }
+
+/* ============= SECTION HEADERS ============= */
+.section { margin-bottom: 28px; }
+.section-header {
+  display: flex; justify-content: space-between; align-items: baseline;
+  margin-bottom: 12px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--line);
+  font-family: var(--maxi-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+.section-header .section-num { color: var(--muted); }
+.section-header .section-name { font-weight: 500; }
+.section-header .section-meta { color: var(--muted); }
+
+/* ============= RECOVERY HERO ============= */
+.recovery-hero {
+  background: var(--ink);
+  color: var(--paper);
+  padding: 28px 24px 24px;
+  position: relative;
+  overflow: hidden;
+}
+.recovery-hero.green { background: var(--rec-green); }
+.recovery-hero.yellow { background: var(--rec-yellow); color: var(--ink); }
+.recovery-hero.red { background: var(--rec-red); }
+.recovery-meta {
+  display: flex; justify-content: space-between; align-items: baseline;
+  font-family: var(--maxi-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  opacity: 0.7;
+  margin-bottom: 18px;
+}
+.recovery-pct {
+  font-family: var(--maxi-round);
+  font-weight: 800;
+  font-size: 5rem;
+  line-height: 0.85;
+  letter-spacing: -0.04em;
+}
+.recovery-pct .pct-sign { font-size: 1.8rem; vertical-align: top; margin-left: 4px; opacity: 0.6; }
+.recovery-state {
+  font-family: var(--maxi-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  margin-top: 8px;
+  opacity: 0.6;
+}
+.recovery-headline {
+  margin-top: 18px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(255,255,255,0.18);
+  font-family: var(--maxi-round);
+  font-weight: 700;
+  font-size: 1.1rem;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+}
+.recovery-hero.yellow .recovery-headline { border-top-color: rgba(0,0,0,0.18); }
+
+/* ============= STAT GRID ============= */
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  background: var(--line);
+  border: 1px solid var(--line);
+  margin-top: 14px;
+}
+.stat-tile {
+  background: var(--paper);
+  padding: 16px 12px;
+  text-align: left;
+}
+.stat-label {
+  font-family: var(--maxi-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+.stat-value {
+  font-family: var(--maxi-round);
+  font-weight: 700;
+  font-size: 1.6rem;
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+.stat-sub {
+  font-family: var(--maxi-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  margin-top: 4px;
+  text-transform: uppercase;
+}
+.stat-arrow { font-size: 0.7rem; margin-left: 4px; vertical-align: middle; }
+.arrow-up { color: var(--rec-green); }
+.arrow-down { color: var(--rec-red); }
+.arrow-flat { color: var(--muted); }
+
+/* ============= WEATHER ============= */
+.weather-strip {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  padding: 12px 16px;
+  margin-top: 14px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 12px;
+  align-items: center;
+}
+.weather-now {
+  font-family: var(--maxi-sharp);
+  font-weight: 700;
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.01em;
+}
+.weather-now .temp { font-family: var(--maxi-round); font-size: 1.4rem; margin-right: 10px; letter-spacing: -0.02em; }
+.weather-meta {
+  font-family: var(--maxi-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  text-transform: uppercase;
+  text-align: right;
+}
+.weather-forecast {
+  display: flex;
+  gap: 4px;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+  grid-column: 1 / -1;
+}
+.weather-forecast > div {
+  flex: 1;
+  text-align: center;
+  font-family: var(--maxi-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.05em;
+}
+.weather-forecast .f-time { color: var(--muted); }
+.weather-forecast .f-temp { font-family: var(--maxi-round); font-weight: 700; font-size: 0.9rem; margin: 2px 0; letter-spacing: -0.01em; }
+.weather-forecast .f-precip { color: var(--info-blue); font-size: 0.6rem; }
+
+/* ============= CHECK-IN CARD ============= */
+.checkin-card {
+  background: var(--paper);
+  border: 1px solid var(--line-strong);
+  padding: 20px;
+  margin-top: 4px;
+}
+.checkin-card.complete {
+  background: var(--paper);
+  border-left: 4px solid var(--hi-vis);
+}
+.checkin-title {
+  font-family: var(--maxi-round);
+  font-weight: 700;
+  font-size: 1.05rem;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+.checkin-sub {
+  font-family: var(--maxi-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+  margin-bottom: 18px;
+  line-height: 1.5;
+}
+.checkin-row { margin-bottom: 16px; }
+.checkin-row:last-of-type { margin-bottom: 0; }
+.checkin-row-label {
+  font-family: var(--maxi-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+.checkin-options { display: flex; gap: 6px; flex-wrap: wrap; }
+.opt {
+  flex: 1;
+  min-width: 0;
+  padding: 10px 6px;
+  background: var(--paper);
+  border: 1px solid var(--line-strong);
+  font-family: var(--maxi-mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  font-weight: 500;
+  color: var(--ink);
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.12s;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.opt:active { transform: scale(0.97); }
+.opt.selected { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.opt.selected.warning { background: var(--rec-yellow); color: var(--ink); border-color: var(--rec-yellow); }
+.opt.selected.danger { background: var(--rec-red); color: var(--paper); border-color: var(--rec-red); }
+.opt-icon {
+  display: block;
+  font-size: 1rem;
+  margin-bottom: 2px;
+  line-height: 1;
+}
+.checkin-note {
+  width: 100%;
+  background: var(--bone);
+  border: 1px solid var(--line);
+  padding: 10px 12px;
+  font-size: 0.85rem;
+  font-family: var(--maxi-mono);
+  resize: none;
+  margin-top: 6px;
+  color: var(--ink);
+}
+.checkin-note:focus { outline: none; border-color: var(--ink); }
+.btn-save {
+  width: 100%;
+  margin-top: 16px;
+  padding: 14px;
+  background: var(--hi-vis);
+  color: var(--ink);
+  border: 1px solid var(--ink);
+  font-family: var(--maxi-mono);
+  font-weight: 500;
+  font-size: 0.78rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.btn-save:active { transform: scale(0.98); }
+.btn-save:disabled { opacity: 0.5; cursor: wait; }
+.btn-save.saved { background: var(--rec-green); color: var(--paper); border-color: var(--rec-green); }
+
+.checkin-summary {
+  font-family: var(--maxi-mono);
+  font-size: 0.82rem;
+  letter-spacing: 0.02em;
+  line-height: 1.7;
+  color: var(--ink);
+}
+.checkin-summary .label { color: var(--muted); margin-right: 4px; }
+.checkin-summary .value { font-weight: 500; text-transform: uppercase; }
+.checkin-edit {
+  font-family: var(--maxi-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--ink);
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 0;
+}
+.checkin-summary-note {
+  margin-top: 10px;
+  padding: 10px 12px;
+  background: var(--bone);
+  font-size: 0.78rem;
+  color: var(--muted);
+  font-style: italic;
+  border-left: 2px solid var(--line-strong);
+}
+
+/* ============= WORKOUT CARD ============= */
+.workout-card {
+  background: var(--paper);
+  border: 1px solid var(--line-strong);
+  padding: 0;
+  overflow: hidden;
+}
+.workout-header {
+  background: var(--ink);
+  color: var(--paper);
+  padding: 14px 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+.workout-header .modality {
+  font-family: var(--maxi-round);
+  font-weight: 800;
+  font-size: 1.1rem;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+}
+.workout-header .specs {
+  font-family: var(--maxi-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  opacity: 0.7;
+}
+.workout-body { padding: 20px; }
+.workout-tags {
+  display: flex; gap: 8px; flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+.workout-tag {
+  font-family: var(--maxi-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  background: var(--bone);
+  padding: 5px 9px;
+  border: 1px solid var(--line);
+}
+.workout-detail {
+  font-family: var(--maxi-mono);
+  font-size: 0.92rem;
+  line-height: 1.7;
+  white-space: pre-wrap;
+  color: var(--ink);
+}
+.workout-route, .workout-skip {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+  font-family: var(--maxi-mono);
+  font-size: 0.78rem;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+.workout-skip { color: var(--rec-red); }
+
+/* ============= FEEDBACK ============= */
+.feedback {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line-strong);
+}
+.feedback-label {
+  font-family: var(--maxi-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 10px;
+}
+.feedback-buttons {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+}
+.fb-btn {
+  padding: 12px 6px;
+  background: var(--paper);
+  border: 1px solid var(--line-strong);
+  font-family: var(--maxi-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-weight: 500;
+  color: var(--ink);
+  cursor: pointer;
+}
+.fb-btn:active { transform: scale(0.97); }
+.fb-btn.active.did_it { background: var(--rec-green); color: var(--paper); border-color: var(--rec-green); }
+.fb-btn.active.modified { background: var(--rec-yellow); color: var(--ink); border-color: var(--rec-yellow); }
+.fb-btn.active.skipped { background: var(--rec-red); color: var(--paper); border-color: var(--rec-red); }
+.fb-details { margin-top: 14px; display: none; }
+.fb-details.show { display: block; }
+.fb-detail-label {
+  font-family: var(--maxi-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin: 14px 0 8px;
+  font-weight: 500;
+}
+.fb-detail-label:first-child { margin-top: 0; }
+.pill-options { display: flex; gap: 6px; flex-wrap: wrap; }
+.pill {
+  padding: 9px 12px;
+  background: var(--paper);
+  border: 1px solid var(--line-strong);
+  font-family: var(--maxi-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-weight: 500;
+  color: var(--ink);
+  cursor: pointer;
+}
+.pill:active { transform: scale(0.95); }
+.pill.selected { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.rpe-wrap { display: flex; align-items: center; gap: 14px; margin-top: 4px; }
+.rpe-slider {
+  flex: 1; -webkit-appearance: none; appearance: none;
+  height: 4px; background: var(--ink); border-radius: 0; outline: none;
+}
+.rpe-slider::-webkit-slider-thumb {
+  -webkit-appearance: none; appearance: none;
+  width: 28px; height: 28px; background: var(--hi-vis); cursor: pointer;
+  border: 2px solid var(--ink); border-radius: 0;
+}
+.rpe-slider::-moz-range-thumb {
+  width: 28px; height: 28px; background: var(--hi-vis); cursor: pointer;
+  border: 2px solid var(--ink); border-radius: 0;
+}
+.rpe-value {
+  font-family: var(--maxi-round);
+  font-weight: 800;
+  font-size: 1.5rem;
+  letter-spacing: -0.02em;
+  min-width: 44px;
+  text-align: center;
+  background: var(--ink);
+  color: var(--hi-vis);
+  padding: 4px 8px;
+}
+
+/* ============= NUTRITION ============= */
+.nutrition-card {
+  background: var(--paper);
+  border: 1px solid var(--line-strong);
+}
+.nutrition-row {
+  display: grid;
+  grid-template-columns: 100px 1fr;
+  gap: 12px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--line);
+  font-family: var(--maxi-mono);
+  font-size: 0.85rem;
+}
+.nutrition-row:last-child { border-bottom: none; }
+.nutrition-row .label {
+  font-size: 0.65rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--muted);
+  font-weight: 500;
+  align-self: start;
+  padding-top: 2px;
+}
+.nutrition-row .value { line-height: 1.55; }
+
+/* ============= RATIONALE ============= */
+.rationale {
+  background: var(--paper);
+  border: 1px solid var(--line-strong);
+  border-left: 4px solid var(--info-blue);
+  padding: 16px 18px;
+  font-family: var(--maxi-mono);
+  font-size: 0.9rem;
+  line-height: 1.7;
+  color: var(--ink);
+}
+
+/* ============= FLAGS ============= */
+.flags { display: flex; flex-wrap: wrap; gap: 6px; }
+.flag {
+  background: var(--rec-red);
+  color: var(--paper);
+  padding: 5px 9px;
+  font-family: var(--maxi-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+/* ============= PERKS ============= */
+.perks-card {
+  background: var(--hi-vis);
+  color: var(--ink);
+  border: 1px solid var(--ink);
+  padding: 18px 20px;
+}
+.perks-card h3 {
+  font-family: var(--maxi-round);
+  font-weight: 800;
+  font-size: 1rem;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+.perk-item {
+  display: flex; justify-content: space-between; align-items: center; gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(10,10,10,0.2);
+}
+.perk-item:last-child { border-bottom: none; }
+.perk-info { flex: 1; }
+.perk-info strong {
+  font-family: var(--maxi-round); font-weight: 700;
+  display: block;
+  font-size: 0.9rem;
+  letter-spacing: -0.01em;
+  margin-bottom: 2px;
+  text-transform: uppercase;
+}
+.perk-info span {
+  font-family: var(--maxi-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.06em;
+  color: rgba(10,10,10,0.6);
+}
+.perk-code {
+  background: var(--ink);
+  color: var(--hi-vis);
+  padding: 8px 12px;
+  font-family: var(--maxi-mono);
+  font-weight: 500;
+  font-size: 0.95rem;
+  letter-spacing: 0.05em;
+}
+
+/* ============= TRENDS / CHARTS ============= */
+.chart-card {
+  background: var(--paper);
+  border: 1px solid var(--line-strong);
+  padding: 16px;
+}
+.chart-row {
+  display: flex; align-items: end; gap: 4px; height: 100px; padding: 0 4px;
+}
+.chart-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 0; }
+.chart-bar {
+  width: 100%;
+  background: var(--bone);
+  position: relative;
+  min-height: 2px;
+  height: 80px;
+}
+.chart-bar-fill { position: absolute; bottom: 0; left: 0; right: 0; }
+.chart-day {
+  font-family: var(--maxi-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-top: 4px;
+}
+.chart-val {
+  font-family: var(--maxi-mono);
+  font-size: 0.65rem;
+  font-weight: 500;
+  margin-bottom: 2px;
+}
+
+/* ============= ACTIVITY ROWS (HISTORY) ============= */
+.activity-card {
+  background: var(--paper);
+  border: 1px solid var(--line-strong);
+}
+.activity-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--line);
+  gap: 10px;
+  font-family: var(--maxi-mono);
+}
+.activity-row:last-child { border-bottom: none; }
+.activity-info { flex: 1; min-width: 0; }
+.activity-type {
+  font-weight: 500;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.activity-meta { color: var(--muted); font-size: 0.7rem; margin-top: 2px; letter-spacing: 0.04em; }
+.activity-stats { text-align: right; color: var(--muted); font-size: 0.72rem; flex-shrink: 0; line-height: 1.4; }
+
+/* ============= HISTORY PRESCRIPTION CARDS ============= */
+.history-card {
+  background: var(--paper);
+  border: 1px solid var(--line-strong);
+  padding: 18px;
+  margin-bottom: 8px;
+}
+.history-date {
+  font-family: var(--maxi-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 4px;
+}
+.history-title {
+  font-family: var(--maxi-round);
+  font-weight: 700;
+  font-size: 1.05rem;
+  letter-spacing: -0.01em;
+  margin-bottom: 8px;
+}
+.history-badge {
+  display: inline-block;
+  padding: 3px 8px;
+  font-family: var(--maxi-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-weight: 500;
+  margin-left: 6px;
+  vertical-align: middle;
+}
+.history-badge.did_it { background: var(--rec-green); color: var(--paper); }
+.history-badge.modified { background: var(--rec-yellow); color: var(--ink); }
+.history-badge.skipped { background: var(--rec-red); color: var(--paper); }
+.history-detail {
+  font-family: var(--maxi-mono);
+  font-size: 0.85rem;
+  line-height: 1.6;
+  color: var(--ink);
+}
+.history-actual, .history-skip {
+  margin-top: 8px;
+  font-family: var(--maxi-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  padding: 6px 10px;
+  border-left: 2px solid var(--rec-yellow);
+  background: var(--bone);
+}
+.history-skip { border-left-color: var(--rec-red); }
+.history-note {
+  margin-top: 10px;
+  padding: 10px 12px;
+  background: var(--bone);
+  border-left: 2px solid var(--line-strong);
+  font-family: var(--maxi-mono);
+  font-size: 0.78rem;
+  color: var(--muted);
+  font-style: italic;
+}
+
+/* ============= RECONNECT BANNER ============= */
+.reconnect-banner {
+  background: var(--rec-red);
+  color: var(--paper);
+  padding: 14px 16px;
+  margin-bottom: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+.reconnect-text { flex: 1; line-height: 1.4; }
+.reconnect-text strong {
+  font-family: var(--maxi-round); font-weight: 700;
+  display: block;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: -0.01em;
+  margin-bottom: 2px;
+}
+.reconnect-text span {
+  font-family: var(--maxi-mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+}
+.reconnect-btn {
+  background: var(--hi-vis);
+  color: var(--ink);
+  padding: 8px 14px;
+  font-family: var(--maxi-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  font-weight: 500;
+  text-decoration: none;
+  white-space: nowrap;
+  border: 1px solid var(--ink);
+}
+
+/* ============= EMPTY STATE ============= */
+.empty {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  padding: 60px 24px;
+  text-align: center;
+  color: var(--muted);
+  font-family: var(--maxi-mono);
+}
+.empty strong {
+  display: block;
+  font-family: var(--maxi-round);
+  font-weight: 800;
+  font-size: 1.5rem;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  color: var(--ink);
+  margin-bottom: 8px;
+}
+
+/* ============= LOADING ============= */
+.loading {
+  text-align: center;
+  padding: 80px 20px;
+  font-family: var(--maxi-mono);
+  font-size: 0.8rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.spinner {
+  display: inline-block;
+  width: 20px; height: 20px;
+  border: 2px solid var(--line);
+  border-top-color: var(--ink);
+  animation: spin 0.8s linear infinite;
+  margin-right: 10px;
+  vertical-align: middle;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ============= REWARD BANNER ============= */
+.reward-banner { position: relative; background: var(--hi-vis); border: 2px solid var(--ink); padding: 14px 44px 14px 18px; margin-bottom: 20px; animation: bannerIn 0.4s ease-out; }
+@keyframes bannerIn { from { transform: translateY(-12px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+.reward-banner-inner { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.reward-banner-label { font-family: var(--maxi-mono); font-size: 0.65rem; letter-spacing: 0.18em; text-transform: uppercase; font-weight: 600; color: var(--ink); margin-bottom: 4px; }
+.reward-banner-desc { font-family: var(--maxi-round); font-weight: 700; font-size: 1.05rem; letter-spacing: -0.01em; color: var(--ink); line-height: 1.2; }
+.reward-banner-code { background: var(--ink); color: var(--hi-vis); padding: 6px 12px; font-family: var(--maxi-mono); font-weight: 500; letter-spacing: 0.08em; font-size: 0.92rem; flex-shrink: 0; }
+.reward-banner-dismiss { position: absolute; top: 6px; right: 8px; background: none; border: none; font-size: 1.4rem; line-height: 1; cursor: pointer; color: var(--ink); padding: 4px 8px; opacity: 0.6; }
+.reward-banner-dismiss:hover { opacity: 1; }
+
+/* ============= TAB BAR ============= */
+.tab-bar {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  background: var(--ink);
+  border-top: 2px solid var(--ink);
+  display: flex;
+  padding: 0;
+  padding-bottom: env(safe-area-inset-bottom);
+  z-index: 100;
+  box-shadow: 0 -4px 16px rgba(0,0,0,0.15);
+}
+.tab {
+  flex: 1; text-align: center;
+  padding: 16px 0 14px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: var(--maxi-mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-weight: 500;
+  color: rgba(250,250,247,0.55);
+  border-top: 2px solid transparent;
+  margin-top: -2px;
+  transition: color 0.15s;
+}
+.tab:active { transform: scale(0.97); }
+.tab.active {
+  color: var(--hi-vis);
+  border-top-color: var(--hi-vis);
+}
+.tab-indicator {
+  display: block; width: 28px; height: 3px;
+  background: transparent;
+  margin: 0 auto 6px;
+}
+.tab.active .tab-indicator { background: var(--hi-vis); }
+
+.view { display: none; }
+.view.active { display: block; }
 </style>
 </head>
 <body>
+
 <div class="container">
-  <div class="brand">🚴 DBP <span>Staff</span></div>
-  <div class="label">Redeem member perk</div>
 
-  <label>Staff PIN</label>
-  <input type="password" id="pin" placeholder="••••••" inputmode="numeric" maxlength="6">
-
-  <label>Member code</label>
-  <input type="text" id="code" placeholder="DBP-XXXX" maxlength="10" oninput="this.value = this.value.toUpperCase()">
-
-  <button class="btn btn-secondary" onclick="lookup()">Look up</button>
-  <div id="subtotalRow" style="display:none;margin-top:14px">
-    <label style="font-family:inherit;font-size:0.85rem;color:#aaa;margin-bottom:6px;display:block;font-weight:500">Subtotal ($)</label>
-    <input type="number" id="subtotal" step="0.01" min="0" placeholder="e.g. 6.50" inputmode="decimal" style="text-transform:none;letter-spacing:0;font-family:inherit;font-size:1.05rem">
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-l">
+      <div class="brand">DBP <span class="accent">Coach</span></div>
+      <div class="header-meta" id="dateDisplay">—</div>
+    </div>
+    <div class="header-actions">
+      <button class="btn-run" id="refreshBtn" onclick="runRefresh()">↻ Run</button>
+      <button class="btn-icon" onclick="window.location='/settings'">⚙</button>
+    </div>
   </div>
-  <button class="btn btn-primary" id="redeemBtn" onclick="redeem()" style="display:none">Mark redeemed</button>
 
-  <div class="result" id="result"></div>
+  <div id="loadingView" class="loading">
+    <span class="spinner"></span>Loading
+  </div>
+
+  <div id="connectionBanners"></div>
+
+  <div class="view" id="todayView"><div id="todayContent"></div></div>
+  <div class="view" id="trendsView"><div id="trendsContent"></div></div>
+  <div class="view" id="historyView"><div id="historyContent"></div></div>
+
+</div>
+
+<div class="tab-bar">
+  <button class="tab active" data-view="today" onclick="switchView('today')"><span class="tab-indicator"></span>Today</button>
+  <button class="tab" data-view="trends" onclick="switchView('trends')"><span class="tab-indicator"></span>Trends</button>
+  <button class="tab" data-view="history" onclick="switchView('history')"><span class="tab-indicator"></span>History</button>
 </div>
 
 <script>
-let pendingPerk = null;
+let appData = null;
+let pendingFeedback = { status: null, rpe: 7, actual_workout_type: null, actual_workout_detail: '', skip_reason: null, note: '' };
+let pendingCheckin = { sleep_quality: null, legs_feel: null, alcohol_drinks: null, stress_level: null, note: '' };
 
-async function lookup(){
-  const pin = document.getElementById('pin').value.trim();
-  const code = document.getElementById('code').value.trim().toUpperCase();
-  const result = document.getElementById('result');
-  if (!pin || !code) {
-    showResult(false, 'Both PIN and code required', '');
+function fmtDate(s){return new Date(s+'T12:00:00').toLocaleDateString('en-US',{weekday:'long',month:'short',day:'numeric'})}
+function fmtShortDate(s){return new Date(s+'T12:00:00').toLocaleDateString('en-US',{month:'numeric',day:'numeric'})}
+function fmtDay(s){return new Date(s+'T12:00:00').toLocaleDateString('en-US',{weekday:'short'}).slice(0,3).toUpperCase()}
+function recColor(p){return p>=67?'green':p>=34?'yellow':'red'}
+function recState(p){return p>=67?'Recovered':p>=34?'Caution':'Strain'}
+function arrow(curr,base){if(curr==null||base==null)return'';const d=curr-base;if(Math.abs(d)<base*0.02)return'<span class="stat-arrow arrow-flat">→</span>';return d>0?'<span class="stat-arrow arrow-up">▲</span>':'<span class="stat-arrow arrow-down">▼</span>'}
+function todayStr(){return appData?.today_date || new Date().toLocaleDateString('en-CA')}
+
+function dismissRewardBanner() {
+  const seen = JSON.parse(localStorage.getItem('seen_reward_codes') || '[]');
+  (appData.perks || []).forEach(p => { if (!p.redeemed_at && !seen.includes(p.code)) seen.push(p.code); });
+  // Cap at 100 to avoid runaway storage
+  localStorage.setItem('seen_reward_codes', JSON.stringify(seen.slice(-100)));
+  const banner = document.getElementById('rewardBanner');
+  if (banner) { banner.style.transition = 'opacity 0.25s'; banner.style.opacity = '0'; setTimeout(() => banner.remove(), 250); }
+}
+
+async function loadData(){
+  document.getElementById('loadingView').style.display='block';
+  try{
+    const r = await fetch('/api/data');
+    if (r.status === 401) { window.location = '/login'; return; }
+    appData = await r.json();
+    if (appData.today_checkin) {
+      pendingCheckin = {
+        sleep_quality: appData.today_checkin.sleep_quality,
+        legs_feel: appData.today_checkin.legs_feel,
+        alcohol_drinks: appData.today_checkin.alcohol_drinks,
+        stress_level: appData.today_checkin.stress_level,
+        note: appData.today_checkin.note || '',
+      };
+    }
+    renderAll();
+  }catch(e){
+    document.getElementById('loadingView').innerHTML = '<div style="color:var(--rec-red)">Error: '+e.message+'</div>';
     return;
   }
-  try {
-    const r = await fetch('/api/perks/lookup', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ pin, code }),
-    });
-    const data = await r.json();
-    if (data.error) {
-      showResult(false, data.error, '');
-      pendingPerk = null;
-      document.getElementById('redeemBtn').style.display = 'none';
-      return;
-    }
-    if (data.redeemed) {
-      showResult(false, '✗ Already redeemed', `${data.user_name} · ${data.description}`);
-      pendingPerk = null;
-      document.getElementById('redeemBtn').style.display = 'none';
-      return;
-    }
-    if (data.expired) {
-      showResult(false, '✗ Code expired', `${data.user_name} · ${data.description}`);
-      pendingPerk = null;
-      document.getElementById('redeemBtn').style.display = 'none';
-      return;
-    }
-    pendingPerk = data;
-    let body = data.description;
-    if (data.is_percentage) {
-      body += `<br><small style="color:#888">${data.percentage_off}% discount — enter subtotal below</small>`;
-    } else if (data.expected_savings_cents) {
-      body += `<br><small style="color:#888">Saves member $${(data.expected_savings_cents/100).toFixed(2)}</small>`;
-    }
-    showResult(true, `✓ Valid · ${data.user_name}`, body);
-    // Show subtotal input if percentage
-    if (data.is_percentage) {
-      document.getElementById('subtotalRow').style.display = 'block';
-    } else {
-      document.getElementById('subtotalRow').style.display = 'none';
-    }
-    document.getElementById('redeemBtn').style.display = 'block';
-  } catch(e) {
-    showResult(false, e.message, '');
-  }
+  document.getElementById('loadingView').style.display='none';
 }
 
-async function redeem(){
-  if (!pendingPerk) return;
-  const pin = document.getElementById('pin').value.trim();
-  const code = document.getElementById('code').value.trim().toUpperCase();
-  const btn = document.getElementById('redeemBtn');
-
-  let subtotal_cents = null;
-  if (pendingPerk.is_percentage) {
-    const sub = parseFloat(document.getElementById('subtotal').value);
-    if (!sub || sub <= 0) { alert('Enter the subtotal amount'); return; }
-    subtotal_cents = Math.round(sub * 100);
-  }
-
+async function runRefresh(){
+  const btn = document.getElementById('refreshBtn');
   btn.disabled = true;
-  btn.textContent = 'Redeeming…';
-  try {
-    const r = await fetch('/api/perks/redeem', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ pin, code, subtotal_cents }),
-    });
+  btn.textContent = '⏳ Running';
+  try{
+    const r = await fetch('/api/run', { method: 'POST' });
     const data = await r.json();
-    if (data.success) {
-      const saved = data.perk?.savings_cents;
-      const savedLine = saved ? `<br>Saved member <strong>$${(saved/100).toFixed(2)}</strong>` : '';
-      showResult(true, '✓ Redeemed!', `${pendingPerk.user_name} · ${pendingPerk.description}${savedLine}`);
-      btn.style.display = 'none';
-      document.getElementById('subtotalRow').style.display = 'none';
-      document.getElementById('code').value = '';
-      document.getElementById('subtotal').value = '';
-      pendingPerk = null;
-    } else {
-      showResult(false, data.error, '');
-    }
-  } catch(e) {
-    showResult(false, e.message, '');
+    if(!data.success) throw new Error(data.error);
+    await loadData();
+  }catch(e){
+    await loadData();
+    alert('Run failed: '+e.message);
   }
   btn.disabled = false;
-  btn.textContent = 'Mark redeemed';
+  btn.textContent = '↻ Run';
 }
 
-function showResult(valid, title, body){
-  const el = document.getElementById('result');
-  el.className = 'result show ' + (valid ? 'valid' : 'invalid');
-  el.innerHTML = `<h2>${title}</h2>${body ? '<p class="desc">' + body + '</p>' : ''}`;
+function switchView(name){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById(name+'View').classList.add('active');
+  document.querySelector('[data-view="'+name+'"]').classList.add('active');
 }
 
-document.getElementById('code').addEventListener('keydown', (e) => {
-  if (e.key === 'Enter') lookup();
-});
+function renderAll(){
+  if(!appData) return;
+  const d = new Date();
+  const dayNum = String(d.getDate()).padStart(2,'0');
+  const month = d.toLocaleDateString('en-US',{month:'short'}).toUpperCase();
+  document.getElementById('dateDisplay').textContent = `${dayNum} ${month} / ${d.toLocaleDateString('en-US',{weekday:'long'}).toUpperCase()}`;
+  renderBanners();
+  renderToday();
+  renderTrends();
+  renderHistory();
+  document.getElementById('todayView').classList.add('active');
+}
+
+function renderBanners(){
+  const el = document.getElementById('connectionBanners');
+  const banners = [];
+  const c = appData.connections || {};
+  if(c.whoop?.status === 'disconnected' || c.whoop?.status === 'error'){
+    banners.push(`<div class="reconnect-banner"><div class="reconnect-text"><strong>WHOOP needs reconnecting</strong><span>${c.whoop.error_message || 'Tap to reconnect.'}</span></div><a href="/integrations/whoop/connect" class="reconnect-btn">Reconnect</a></div>`);
+  }
+  if(c.strava?.status === 'disconnected' || c.strava?.status === 'error'){
+    banners.push(`<div class="reconnect-banner"><div class="reconnect-text"><strong>Strava needs reconnecting</strong><span>${c.strava.error_message || 'Tap to reconnect.'}</span></div><a href="/integrations/strava/connect" class="reconnect-btn">Reconnect</a></div>`);
+  }
+  el.innerHTML = banners.join('');
+}
+
+const SLEEP_ICONS = ['😩','😞','😐','🙂','😎'];
+const LEGS = [
+  { value: 'fresh', label: 'Fresh', icon: '✨' },
+  { value: 'normal', label: 'Normal', icon: '👌' },
+  { value: 'heavy', label: 'Heavy', icon: '🥱', mod: 'warning' },
+  { value: 'trashed', label: 'Trashed', icon: '💀', mod: 'danger' },
+];
+const STRESS = [
+  { value: 'low', label: 'Low' },
+  { value: 'medium', label: 'Med', mod: 'warning' },
+  { value: 'high', label: 'High', mod: 'danger' },
+];
+
+function renderCheckinCard(){
+  const isComplete = appData.today_checkin && appData.today_checkin.sleep_quality;
+  if (isComplete && !window._editCheckin){
+    const c = appData.today_checkin;
+    const legsLabel = LEGS.find(l => l.value === c.legs_feel)?.label || c.legs_feel;
+    const stressLabel = STRESS.find(s => s.value === c.stress_level)?.label || c.stress_level;
+    const alcoholLabel = c.alcohol_drinks === 0 ? 'None' : c.alcohol_drinks >= 5 ? '5+ drinks' : `${c.alcohol_drinks} drink${c.alcohol_drinks>1?'s':''}`;
+    return `<div class="checkin-card complete">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+        <div class="checkin-title">✓ Logged</div>
+        <button class="checkin-edit" onclick="window._editCheckin=true; renderToday()">Edit →</button>
+      </div>
+      <div class="checkin-summary">
+        <span class="label">Sleep</span><span class="value">${c.sleep_quality}/5 ${SLEEP_ICONS[c.sleep_quality-1]}</span> &nbsp;·&nbsp;
+        <span class="label">Legs</span><span class="value">${legsLabel}</span><br>
+        <span class="label">Drinks</span><span class="value">${alcoholLabel}</span> &nbsp;·&nbsp;
+        <span class="label">Stress</span><span class="value">${stressLabel}</span>
+        ${c.note ? `<div class="checkin-summary-note">"${c.note}"</div>` : ''}
+      </div>
+    </div>`;
+  }
+  const sq = pendingCheckin.sleep_quality;
+  const lf = pendingCheckin.legs_feel;
+  const ad = pendingCheckin.alcohol_drinks;
+  const sl = pendingCheckin.stress_level;
+  return `<div class="checkin-card">
+    <div class="checkin-title">How are you feeling?</div>
+    <div class="checkin-sub">Last night's sleep, legs, drinks. Helps Coach calibrate today's prescription.</div>
+
+    <div class="checkin-row">
+      <div class="checkin-row-label">Sleep quality</div>
+      <div class="checkin-options">
+        ${[1,2,3,4,5].map(n => `<button class="opt ${sq===n?'selected':''}" onclick="setCheckin('sleep_quality',${n})"><span class="opt-icon">${SLEEP_ICONS[n-1]}</span>${n}</button>`).join('')}
+      </div>
+    </div>
+
+    <div class="checkin-row">
+      <div class="checkin-row-label">Legs feel</div>
+      <div class="checkin-options">
+        ${LEGS.map(l => `<button class="opt ${lf===l.value?('selected '+(l.mod||'')):''}" onclick="setCheckin('legs_feel','${l.value}')"><span class="opt-icon">${l.icon}</span>${l.label}</button>`).join('')}
+      </div>
+    </div>
+
+    <div class="checkin-row">
+      <div class="checkin-row-label">Drinks last night</div>
+      <div class="checkin-options">
+        <button class="opt ${ad===0?'selected':''}" onclick="setCheckin('alcohol_drinks',0)">None</button>
+        <button class="opt ${ad===1?'selected':''}" onclick="setCheckin('alcohol_drinks',1)">1</button>
+        <button class="opt ${ad===2?'selected warning':''}" onclick="setCheckin('alcohol_drinks',2)">2</button>
+        <button class="opt ${ad===3?'selected warning':''}" onclick="setCheckin('alcohol_drinks',3)">3</button>
+        <button class="opt ${ad===4?'selected danger':''}" onclick="setCheckin('alcohol_drinks',4)">4</button>
+        <button class="opt ${ad===5?'selected danger':''}" onclick="setCheckin('alcohol_drinks',5)">5+</button>
+      </div>
+    </div>
+
+    <div class="checkin-row">
+      <div class="checkin-row-label">Stress level</div>
+      <div class="checkin-options">
+        ${STRESS.map(s => `<button class="opt ${sl===s.value?('selected '+(s.mod||'')):''}" onclick="setCheckin('stress_level','${s.value}')">${s.label}</button>`).join('')}
+      </div>
+    </div>
+
+    <div class="checkin-row">
+      <div class="checkin-row-label">Anything else? (optional)</div>
+      <textarea class="checkin-note" placeholder="Soreness, mood, sickness, life stuff…" rows="2" oninput="pendingCheckin.note = this.value">${pendingCheckin.note || ''}</textarea>
+    </div>
+
+    <button class="btn-save" id="checkinSaveBtn" onclick="saveCheckin()">Save check-in</button>
+  </div>`;
+}
+
+function setCheckin(key, val){ pendingCheckin[key] = val; renderToday(); }
+
+async function saveCheckin(){
+  const btn = document.getElementById('checkinSaveBtn');
+  btn.disabled = true;
+  btn.textContent = 'Saving…';
+  try {
+    const r = await fetch('/api/checkin', {
+      method: 'POST',
+      headers: { 'Content-Type':'application/json' },
+      body: JSON.stringify({
+        date: todayStr(),
+        sleep_quality: pendingCheckin.sleep_quality,
+        legs_feel: pendingCheckin.legs_feel,
+        alcohol_drinks: pendingCheckin.alcohol_drinks,
+        stress_level: pendingCheckin.stress_level,
+        note: pendingCheckin.note,
+      }),
+    });
+    const data = await r.json();
+    if (!data.success) throw new Error(data.error || 'Save failed');
+    btn.textContent = '✓ Saved';
+    btn.classList.add('saved');
+    appData.today_checkin = { ...pendingCheckin, date: todayStr() };
+    window._editCheckin = false;
+    setTimeout(() => renderToday(), 700);
+  } catch(e) {
+    btn.disabled = false;
+    btn.textContent = 'Save check-in';
+    alert('Save failed: ' + e.message);
+  }
+}
+
+function sectionHeader(num, name, meta) {
+  return `<div class="section-header"><span class="section-num">${num}</span><span class="section-name">${name}</span><span class="section-meta">${meta || ''}</span></div>`;
+}
+
+function renderToday(){
+  const el = document.getElementById('todayContent');
+  const snap = appData.snapshots[0];
+  const presc = appData.prescriptions[0];
+
+  if(!snap || !presc){
+    el.innerHTML = `
+      <div class="section">
+        ${sectionHeader('01', 'Daily Check-in', '')}
+        ${renderCheckinCard()}
+      </div>
+      <div class="empty">
+        <strong>No prescription yet</strong>
+        Tap <b>↻ Run</b> to pull from WHOOP and Strava.
+      </div>`;
+    return;
+  }
+
+  const p = presc.full_response;
+  const recCol = recColor(snap.recovery_pct);
+  const recStateLabel = recState(snap.recovery_pct);
+  const acStatus = snap.acute_chronic_ratio < 0.8 ? 'detraining' : snap.acute_chronic_ratio < 1.3 ? 'optimal' : snap.acute_chronic_ratio < 1.5 ? 'building' : 'overreaching';
+  const isElite = appData.user?.tier === 'elite';
+
+  // Sync pendingFeedback to this prescription's feedback only when the date changes.
+  // This means: yesterday's typed-but-unsaved notes don't carry into today,
+  // but today's in-progress typing isn't wiped on every re-render.
+  if (window._lastFeedbackDate !== presc.date) {
+    window._lastFeedbackDate = presc.date;
+    window._editFeedback = false;
+    if (presc.feedback) {
+      pendingFeedback = {
+        status: presc.feedback.status,
+        rpe: presc.feedback.rpe || 7,
+        actual_workout_type: presc.feedback.actual_workout_type || null,
+        actual_workout_detail: presc.feedback.actual_workout_detail || '',
+        skip_reason: presc.feedback.skip_reason || null,
+        note: presc.feedback.note || '',
+      };
+    } else {
+      pendingFeedback = { status: null, rpe: 7, actual_workout_type: null, actual_workout_detail: '', skip_reason: null, note: '' };
+    }
+  }
+
+  let perksHtml = '';
+  const savings = appData.savings || {};
+  const hasSavings = (savings.month_cents || 0) > 0 || (savings.lifetime_cents || 0) > 0;
+  const hasPerks = appData.perks?.length > 0;
+
+  if (hasSavings || hasPerks) {
+    perksHtml = `<div class="section">
+      ${sectionHeader('05', 'Member Rewards', hasPerks ? `${appData.perks.length} active` : '')}
+      <div class="perks-card">
+        ${hasSavings ? `
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid rgba(10,10,10,0.2)">
+          <div>
+            <div style="font-family:var(--maxi-mono);font-size:0.65rem;letter-spacing:0.15em;text-transform:uppercase;color:rgba(10,10,10,0.6)">Saved this month</div>
+            <div style="font-family:var(--maxi-round);font-weight:800;font-size:2rem;letter-spacing:-0.02em;line-height:1;margin-top:2px">$${((savings.month_cents||0)/100).toFixed(2)}</div>
+          </div>
+          ${(savings.lifetime_cents||0) > (savings.month_cents||0) ? `<div style="text-align:right">
+            <div style="font-family:var(--maxi-mono);font-size:0.65rem;letter-spacing:0.15em;text-transform:uppercase;color:rgba(10,10,10,0.6)">Lifetime</div>
+            <div style="font-family:var(--maxi-round);font-weight:700;font-size:1.1rem;letter-spacing:-0.01em;margin-top:2px">$${((savings.lifetime_cents||0)/100).toFixed(2)}</div>
+          </div>` : ''}
+        </div>` : ''}
+        ${hasPerks ? `<h3>🎁 ${appData.perks.length} active reward${appData.perks.length>1?'s':''}</h3>
+        ${appData.perks.map(perk => `<div class="perk-item">
+          <div class="perk-info"><strong>${perk.description||perk.perk_type}</strong><span>Show this code at DBP · ${perk.expires_at?'expires '+new Date(perk.expires_at).toLocaleDateString():'no expiration'}</span></div>
+          <div class="perk-code">${perk.code}</div>
+        </div>`).join('')}` : '<div style="font-family:var(--maxi-mono);font-size:0.85rem;color:rgba(10,10,10,0.6);text-align:center;padding:8px 0">No active rewards right now.</div>'}
+      </div>
+    </div>`;
+  }
+
+  // Detect new unseen rewards
+  const seenCodes = JSON.parse(localStorage.getItem('seen_reward_codes') || '[]');
+  const unseenRewards = (appData.perks || []).filter(p => !p.redeemed_at && !seenCodes.includes(p.code));
+  let bannerHtml = '';
+  if (unseenRewards.length > 0) {
+    const r = unseenRewards[0]; // show top one
+    const moreText = unseenRewards.length > 1 ? ` (+${unseenRewards.length - 1} more)` : '';
+    bannerHtml = `
+      <div class="reward-banner" id="rewardBanner">
+        <div class="reward-banner-inner">
+          <div>
+            <div class="reward-banner-label">🎁 New Reward${moreText}</div>
+            <div class="reward-banner-desc">${r.description || r.perk_type}</div>
+          </div>
+          <div class="reward-banner-code">${r.code}</div>
+        </div>
+        <button class="reward-banner-dismiss" onclick="dismissRewardBanner()" aria-label="Dismiss">×</button>
+      </div>`;
+  }
+
+  el.innerHTML = `
+    ${bannerHtml}
+    <div class="section">
+      ${sectionHeader('01', 'Recovery', recStateLabel.toUpperCase())}
+      <div class="recovery-hero ${recCol}">
+        <div class="recovery-meta">
+          <span>Today / ${new Date().toLocaleDateString('en-US',{month:'short',day:'numeric'}).toUpperCase()}</span>
+          <span>${recStateLabel}</span>
+        </div>
+        <div class="recovery-pct">${snap.recovery_pct ?? '—'}<span class="pct-sign">%</span></div>
+        <div class="recovery-state">WHOOP Recovery</div>
+        ${p?.headline ? `<div class="recovery-headline">${p.headline}</div>` : ''}
+      </div>
+
+      <div class="stat-grid">
+        <div class="stat-tile"><div class="stat-label">HRV</div><div class="stat-value">${snap.hrv?.toFixed?.(0) ?? '—'}${arrow(snap.hrv, appData.benchmarks?.hrv_baseline)}</div><div class="stat-sub">ms · base ${appData.benchmarks?.hrv_baseline ?? '—'}</div></div>
+        <div class="stat-tile"><div class="stat-label">RHR</div><div class="stat-value">${snap.rhr ?? '—'}${arrow(appData.benchmarks?.rhr_baseline, snap.rhr)}</div><div class="stat-sub">bpm · base ${appData.benchmarks?.rhr_baseline ?? '—'}</div></div>
+        <div class="stat-tile"><div class="stat-label">Sleep</div><div class="stat-value">${snap.sleep_hours?.toFixed?.(1) ?? '—'}<span style="font-size:0.85rem">h</span></div><div class="stat-sub">${snap.deep_sleep_min ?? '—'} deep</div></div>
+        <div class="stat-tile"><div class="stat-label">Strain Yest</div><div class="stat-value">${snap.yesterday_strain?.toFixed?.(1) ?? '—'}</div><div class="stat-sub">/ 21</div></div>
+        <div class="stat-tile"><div class="stat-label">AC Ratio</div><div class="stat-value">${snap.acute_chronic_ratio ?? '—'}</div><div class="stat-sub">${acStatus}</div></div>
+        <div class="stat-tile"><div class="stat-label">Wkly Avg</div><div class="stat-value">${snap.weekly_strain_avg?.toFixed?.(1) ?? '—'}</div><div class="stat-sub">strain</div></div>
+      </div>
+
+      ${appData.weather ? `
+      <div class="weather-strip">
+        <div class="weather-now"><span class="temp">${appData.weather.current.temp}°</span>${appData.weather.current.description}</div>
+        <div class="weather-meta">Wind ${appData.weather.current.wind_mph}mph<br>Feels ${appData.weather.current.feels_like}°</div>
+        ${appData.weather.next_12h?.length ? `<div class="weather-forecast">${appData.weather.next_12h.map(f => `<div><div class="f-time">${f.time}</div><div class="f-temp">${f.temp}°</div>${f.precip_chance_pct > 20 ? `<div class="f-precip">${f.precip_chance_pct}%💧</div>` : ''}</div>`).join('')}</div>` : ''}
+      </div>` : ''}
+    </div>
+
+    <div class="section">
+      ${sectionHeader('02', 'Daily Check-in', appData.today_checkin?'COMPLETE':'PENDING')}
+      ${renderCheckinCard()}
+    </div>
+
+    ${perksHtml}
+
+    ${p?.workout ? `
+    <div class="section">
+      ${sectionHeader('03', "Today's Workout", `${p.workout.duration_min || '—'} MIN · ${(p.workout.type || '—').toUpperCase()}`)}
+      <div class="workout-card">
+        <div class="workout-header">
+          <span class="modality">${(p.workout.primary_modality || 'workout').toUpperCase()}</span>
+          <span class="specs">${p.workout.duration_min ? p.workout.duration_min + ' min' : ''}</span>
+        </div>
+        <div class="workout-body">
+          <div class="workout-tags">
+            ${p.workout.intensity_zone ? '<span class="workout-tag">🎯 '+p.workout.intensity_zone+'</span>' : ''}
+            ${p.workout.duration_min ? '<span class="workout-tag">⏱ '+p.workout.duration_min+'min</span>' : ''}
+          </div>
+          <div class="workout-detail">${p.workout.specific_workout || ''}</div>
+          ${p.workout.route_suggestion ? `<div class="workout-route">📍 ${p.workout.route_suggestion}</div>` : ''}
+          ${p.workout.alternates ? `<div class="workout-route"><strong style="font-weight:500;color:var(--ink);text-transform:uppercase;letter-spacing:0.1em;font-size:0.7rem">Alternates:</strong> ${p.workout.alternates}</div>` : ''}
+          ${p.workout.skip_if ? `<div class="workout-skip">⚠ Skip if: ${p.workout.skip_if}</div>` : ''}
+
+          <div class="feedback">
+            ${renderFeedbackBlock(presc)}
+          </div>
+        </div>
+      </div>
+    </div>` : ''}
+
+    ${p?.nutrition ? `
+    <div class="section">
+      ${sectionHeader('04', 'Nutrition', `${p.nutrition.hydration_target_oz || '—'} OZ WATER`)}
+      <div class="nutrition-card">
+        ${p.nutrition.pre_workout ? nutritionRow('Pre', p.nutrition.pre_workout) : ''}
+        ${p.nutrition.intra_workout ? nutritionRow('Intra', p.nutrition.intra_workout) : ''}
+        ${p.nutrition.post_workout ? nutritionRow('Post', p.nutrition.post_workout) : ''}
+        ${nutritionRow('Breakfast', p.nutrition.breakfast)}
+        ${nutritionRow('Lunch', p.nutrition.lunch)}
+        ${nutritionRow('Dinner', p.nutrition.dinner)}
+        ${nutritionRow('Supps', p.nutrition.supplements)}
+      </div>
+    </div>` : ''}
+
+    ${p?.rationale ? `<div class="section">${sectionHeader('06', 'Why this prescription', '')}<div class="rationale">${p.rationale}</div></div>` : ''}
+
+    ${p?.flags?.length ? `<div class="section">${sectionHeader('07', 'Flags', `${p.flags.length} ACTIVE`)}<div class="flags">${p.flags.map(f => '<span class="flag">⚠ '+f.replace(/_/g, ' ')+'</span>').join('')}</div></div>` : ''}
+  `;
+}
+
+function renderFeedbackBlock(presc) {
+  const fb = presc.feedback;
+  // Show summary if feedback is saved AND user isn't editing
+  if (fb && fb.status && !window._editFeedback) {
+    const statusLabels = { did_it: '✓ Did it', modified: '⟳ Modified', skipped: '— Skipped' };
+    const skipLabels = { too_tired: 'Too tired', no_time: 'No time', weather: 'Weather', sick: 'Sick / sore', other: 'Other' };
+    return `
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+        <div class="feedback-label">Workout feedback</div>
+        <button class="checkin-edit" onclick="window._editFeedback=true; renderToday()">Edit →</button>
+      </div>
+      <div class="checkin-summary">
+        <span class="value">${statusLabels[fb.status] || fb.status}</span>
+        ${fb.rpe ? ` &nbsp;·&nbsp; <span class="label">RPE</span><span class="value">${fb.rpe}/10</span>` : ''}
+        ${fb.actual_workout_type ? `<br><span class="label">Did instead</span><span class="value">${fb.actual_workout_type}${fb.actual_workout_detail ? ' — ' + fb.actual_workout_detail : ''}</span>` : ''}
+        ${fb.skip_reason ? `<br><span class="label">Reason</span><span class="value">${skipLabels[fb.skip_reason] || fb.skip_reason}</span>` : ''}
+        ${fb.note ? `<div class="checkin-summary-note">"${fb.note}"</div>` : ''}
+      </div>
+    `;
+  }
+  // Editor view
+  return `
+    <div class="feedback-label">How did it go?</div>
+    <div class="feedback-buttons">
+      <button class="fb-btn did_it ${pendingFeedback.status === 'did_it' ? 'active' : ''}" onclick="setFeedbackStatus('did_it')">✓ Did it</button>
+      <button class="fb-btn modified ${pendingFeedback.status === 'modified' ? 'active' : ''}" onclick="setFeedbackStatus('modified')">⟳ Modified</button>
+      <button class="fb-btn skipped ${pendingFeedback.status === 'skipped' ? 'active' : ''}" onclick="setFeedbackStatus('skipped')">— Skipped</button>
+    </div>
+    <div class="fb-details ${pendingFeedback.status ? 'show' : ''}">${renderFeedbackDetails()}</div>
+  `;
+}
+
+function renderFeedbackDetails(){
+  const status = pendingFeedback.status;
+  if (!status) return '';
+  let html = '';
+  if (status === 'modified'){
+    const wt = pendingFeedback.actual_workout_type;
+    html += `<div class="fb-detail-label">What did you actually do?</div>
+      <div class="pill-options">${['cycling','strength','run','yoga','hike','swim','other'].map(t => `<button class="pill ${wt===t?'selected':''}" onclick="setFeedbackField('actual_workout_type','${t}')">${t}</button>`).join('')}</div>
+      <input type="text" class="checkin-note" placeholder="Specifics? (e.g., 60 min easy spin)" value="${pendingFeedback.actual_workout_detail || ''}" oninput="pendingFeedback.actual_workout_detail = this.value" style="margin-top:8px">`;
+  }
+  if (status === 'skipped'){
+    const sr = pendingFeedback.skip_reason;
+    html += `<div class="fb-detail-label">Why?</div>
+      <div class="pill-options">
+        <button class="pill ${sr==='too_tired'?'selected':''}" onclick="setFeedbackField('skip_reason','too_tired')">Too tired</button>
+        <button class="pill ${sr==='no_time'?'selected':''}" onclick="setFeedbackField('skip_reason','no_time')">No time</button>
+        <button class="pill ${sr==='weather'?'selected':''}" onclick="setFeedbackField('skip_reason','weather')">Weather</button>
+        <button class="pill ${sr==='sick'?'selected':''}" onclick="setFeedbackField('skip_reason','sick')">Sick / sore</button>
+        <button class="pill ${sr==='other'?'selected':''}" onclick="setFeedbackField('skip_reason','other')">Other</button>
+      </div>`;
+  }
+  if (status === 'did_it' || status === 'modified'){
+    html += `<div class="fb-detail-label">RPE (1=easy, 10=max)</div>
+      <div class="rpe-wrap">
+        <input type="range" min="1" max="10" value="${pendingFeedback.rpe}" class="rpe-slider" oninput="pendingFeedback.rpe = +this.value; document.getElementById('rpeVal').textContent = this.value">
+        <div class="rpe-value" id="rpeVal">${pendingFeedback.rpe}</div>
+      </div>`;
+  }
+  html += `<div class="fb-detail-label">Notes (optional)</div>
+    <textarea class="checkin-note" placeholder="How the legs felt, anything notable…" rows="2" oninput="pendingFeedback.note = this.value">${pendingFeedback.note || ''}</textarea>
+    <button class="btn-save" id="fbSaveBtn" onclick="saveFeedback()">Save feedback</button>`;
+  return html;
+}
+
+function setFeedbackStatus(status){
+  pendingFeedback.status = status;
+  if (status !== 'modified'){ pendingFeedback.actual_workout_type = null; pendingFeedback.actual_workout_detail = ''; }
+  if (status !== 'skipped') pendingFeedback.skip_reason = null;
+  renderToday();
+}
+function setFeedbackField(key, val){ pendingFeedback[key] = val; renderToday(); }
+
+async function saveFeedback(){
+  const btn = document.getElementById('fbSaveBtn');
+  if (!btn) return;
+  btn.disabled = true;
+  btn.textContent = 'Saving…';
+  try {
+    const r = await fetch('/api/feedback', {
+      method: 'POST',
+      headers: { 'Content-Type':'application/json' },
+      body: JSON.stringify({
+        date: todayStr(),
+        status: pendingFeedback.status,
+        rpe: pendingFeedback.rpe,
+        actual_workout_type: pendingFeedback.actual_workout_type,
+        actual_workout_detail: pendingFeedback.actual_workout_detail,
+        skip_reason: pendingFeedback.skip_reason,
+        note: pendingFeedback.note,
+      }),
+    });
+    const data = await r.json();
+    if (!data.success) throw new Error(data.error || 'Save failed');
+    btn.textContent = '✓ Saved';
+    btn.classList.add('saved');
+    if (appData.prescriptions[0]) appData.prescriptions[0].feedback = { ...pendingFeedback, date: todayStr() };
+    window._editFeedback = false;
+    setTimeout(() => renderToday(), 700);
+  } catch(e){
+    btn.disabled = false;
+    btn.textContent = 'Save feedback';
+    alert('Save failed: ' + e.message);
+  }
+}
+
+function nutritionRow(label, val){return `<div class="nutrition-row"><div class="label">${label}</div><div class="value">${val||'—'}</div></div>`}
+
+function renderTrends(){
+  const el = document.getElementById('trendsContent');
+  const snaps = [...appData.snapshots].reverse();
+  if(snaps.length === 0){ el.innerHTML = '<div class="empty"><strong>No trend data yet</strong>Run a few days to build trends.</div>'; return; }
+
+  function chart(values, color, valFmt) {
+    const max = Math.max(...values.filter(v => v != null), 1);
+    return values.map((v, i) => {
+      if (v == null) return `<div class="chart-col"><div class="chart-val">—</div><div class="chart-bar"></div><div class="chart-day">${fmtDay(snaps[i].date)}</div></div>`;
+      const h = (v / max) * 100;
+      return `<div class="chart-col"><div class="chart-val">${valFmt(v)}</div><div class="chart-bar"><div class="chart-bar-fill" style="height:${h}%;background:${color}"></div></div><div class="chart-day">${fmtDay(snaps[i].date)}</div></div>`;
+    }).join('');
+  }
+
+  const recBars = snaps.map(s => {
+    const v = s.recovery_pct || 0;
+    const h = v;
+    const col = recColor(v);
+    const bg = col === 'green' ? 'var(--rec-green)' : col === 'yellow' ? 'var(--rec-yellow)' : 'var(--rec-red)';
+    return `<div class="chart-col"><div class="chart-val">${v||'—'}</div><div class="chart-bar"><div class="chart-bar-fill" style="height:${h}%;background:${bg}"></div></div><div class="chart-day">${fmtDay(s.date)}</div></div>`;
+  }).join('');
+
+  const checkins = [...(appData.checkins || [])].reverse();
+  const alcoholBars = checkins.length ? checkins.map(c => {
+    const v = c.alcohol_drinks ?? 0;
+    const h = (v / 5) * 100;
+    const col = v >= 3 ? 'var(--rec-red)' : v >= 2 ? 'var(--rec-yellow)' : 'var(--rec-green)';
+    return `<div class="chart-col"><div class="chart-val">${v}</div><div class="chart-bar"><div class="chart-bar-fill" style="height:${h}%;background:${col}"></div></div><div class="chart-day">${fmtDay(c.date)}</div></div>`;
+  }).join('') : '';
+
+  el.innerHTML = `
+    <div class="section">${sectionHeader('01', 'Recovery', `LAST ${snaps.length} DAYS`)}<div class="chart-card"><div class="chart-row">${recBars}</div></div></div>
+    <div class="section">${sectionHeader('02', 'HRV', 'MS')}<div class="chart-card"><div class="chart-row">${chart(snaps.map(s => s.hrv), 'var(--la-brown)', v => v.toFixed(0))}</div></div></div>
+    <div class="section">${sectionHeader('03', 'Daily Strain', '/ 21')}<div class="chart-card"><div class="chart-row">${chart(snaps.map(s => s.yesterday_strain), 'var(--info-blue)', v => v.toFixed(1))}</div></div></div>
+    <div class="section">${sectionHeader('04', 'Sleep Hours', '')}<div class="chart-card"><div class="chart-row">${chart(snaps.map(s => s.sleep_hours), 'var(--info-blue)', v => v.toFixed(1))}</div></div></div>
+    ${alcoholBars ? `<div class="section">${sectionHeader('05', 'Drinks Logged', '')}<div class="chart-card"><div class="chart-row">${alcoholBars}</div></div></div>` : ''}
+  `;
+}
+
+function renderHistory(){
+  const el = document.getElementById('historyContent');
+  const items = appData.prescriptions;
+  const acts = appData.activities;
+  if(items.length === 0){ el.innerHTML = '<div class="empty"><strong>No history yet</strong>Run your first prescription to start.</div>'; return; }
+
+  const prescHtml = items.map(p => {
+    const fr = p.full_response || {};
+    const w = fr.workout || {};
+    const fb = p.feedback;
+    const fbBadge = fb ? `<span class="history-badge ${fb.status}">${fb.status === 'did_it' ? '✓ done' : fb.status === 'modified' ? '⟳ modified' : '— skipped'}${fb.rpe ? ' · RPE '+fb.rpe : ''}</span>` : '';
+    return `<div class="history-card">
+      <div class="history-date">${fmtDate(p.date)}${fbBadge}</div>
+      <div class="history-title">${fr.headline || p.workout_type || '—'}</div>
+      <div class="history-detail">${(w.specific_workout || '').slice(0,200)}${w.specific_workout?.length > 200 ? '…' : ''}</div>
+      ${fb?.actual_workout_type ? `<div class="history-actual">→ Did instead: <strong>${fb.actual_workout_type}</strong>${fb.actual_workout_detail ? ' — ' + fb.actual_workout_detail : ''}</div>` : ''}
+      ${fb?.skip_reason ? `<div class="history-skip">→ Skipped: ${fb.skip_reason.replace(/_/g, ' ')}</div>` : ''}
+      ${fb?.note ? `<div class="history-note">"${fb.note}"</div>` : ''}
+    </div>`;
+  }).join('');
+
+  const actsHtml = acts.length ? `
+    <div class="section">${sectionHeader('02', 'Recent Activities', `${acts.length} TOTAL`)}
+      <div class="activity-card">
+        ${acts.slice(0,10).map(a => `<div class="activity-row">
+          <div class="activity-info">
+            <div class="activity-type">${a.type} · ${fmtShortDate(a.date)}</div>
+            <div class="activity-meta">${a.distance_m ? (a.distance_m/1000).toFixed(1)+'km' : ''} ${a.elevation_gain_m ? '· '+Math.round(a.elevation_gain_m)+'m gain' : ''}</div>
+          </div>
+          <div class="activity-stats">
+            ${a.duration_sec ? Math.round(a.duration_sec/60)+' min' : ''}<br>
+            ${a.avg_hr ? Math.round(a.avg_hr)+'bpm' : ''}${a.avg_power ? ' · '+Math.round(a.avg_power)+'W' : ''}
+          </div>
+        </div>`).join('')}
+      </div>
+    </div>` : '';
+
+  el.innerHTML = `
+    <div class="section">${sectionHeader('01', 'Prescriptions', `LAST ${items.length}`)}${prescHtml}</div>
+    ${actsHtml}
+  `;
+}
+
+loadData();
 </script>
 </body>
 </html>
