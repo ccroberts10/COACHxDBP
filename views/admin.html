@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>DBP Admin / Member Rewards</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,700;12..96,800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #0A0A0A; --paper: #FAFAF7; --bone: #EFEDE5; --hi-vis: #F2E600;
+  --rec-green: #1F4A2C; --rec-yellow: #D4A82E; --rec-red: #6B1F2A;
+  --info-blue: #6B92B5; --la-tan: #C4A574;
+  --line: rgba(10,10,10,0.10); --line-strong: rgba(10,10,10,0.20);
+  --muted: rgba(10,10,10,0.50);
+  --maxi-round: 'Bricolage Grotesque', system-ui, sans-serif;
+  --maxi-mono: 'DM Mono', monospace;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body { background: var(--bone); color: var(--ink); font-family: var(--maxi-mono); font-size: 14px; line-height: 1.5; }
+.container { max-width: 900px; margin: 0 auto; padding: 24px 20px 60px; }
+
+.header { display: flex; justify-content: space-between; align-items: flex-end; padding-bottom: 16px; border-bottom: 1px solid var(--line-strong); margin-bottom: 28px; }
+.brand { font-family: var(--maxi-round); font-weight: 800; font-size: 1.5rem; letter-spacing: -0.03em; text-transform: uppercase; line-height: 0.9; }
+.brand .accent { background: var(--hi-vis); padding: 0 4px; }
+.header-meta { font-family: var(--maxi-mono); font-size: 0.65rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); margin-top: 6px; }
+.btn-back { font-family: var(--maxi-mono); font-size: 0.7rem; letter-spacing: 0.15em; text-transform: uppercase; background: var(--paper); border: 1px solid var(--line-strong); padding: 8px 14px; cursor: pointer; text-decoration: none; color: var(--ink); }
+
+.section { margin-bottom: 28px; }
+.section-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 12px; padding: 8px 0; border-bottom: 1px solid var(--line); font-family: var(--maxi-mono); font-size: 0.65rem; letter-spacing: 0.15em; text-transform: uppercase; }
+.section-header .num { color: var(--muted); }
+.section-header .name { font-weight: 500; }
+
+.tabs { display: flex; gap: 0; border-bottom: 1px solid var(--ink); margin-bottom: 20px; }
+.tab-btn { flex: 1; padding: 12px 16px; background: var(--paper); border: 1px solid var(--ink); border-bottom: none; font-family: var(--maxi-mono); font-size: 0.78rem; letter-spacing: 0.12em; text-transform: uppercase; font-weight: 500; color: var(--muted); cursor: pointer; margin-right: -1px; }
+.tab-btn.active { background: var(--ink); color: var(--hi-vis); }
+.tab-btn:active { transform: scale(0.98); }
+
+.view { display: none; }
+.view.active { display: block; }
+
+label { display: block; font-family: var(--maxi-mono); font-size: 0.65rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); margin: 0 0 6px; font-weight: 500; }
+input, textarea, select { width: 100%; padding: 12px 14px; background: var(--paper); border: 1px solid var(--line-strong); font-family: var(--maxi-mono); font-size: 0.92rem; color: var(--ink); }
+input:focus, textarea:focus, select:focus { outline: none; border-color: var(--ink); }
+.btn { padding: 12px 20px; background: var(--ink); color: var(--paper); border: 1px solid var(--ink); font-family: var(--maxi-mono); font-size: 0.78rem; letter-spacing: 0.18em; text-transform: uppercase; font-weight: 500; cursor: pointer; }
+.btn-primary { background: var(--hi-vis); color: var(--ink); border-color: var(--ink); }
+.btn:active { transform: scale(0.98); }
+.btn:disabled { opacity: 0.5; cursor: wait; }
+
+.card { background: var(--paper); border: 1px solid var(--line-strong); padding: 20px; margin-bottom: 12px; }
+
+/* PIN screen */
+#pinView { max-width: 380px; margin: 60px auto; text-align: center; }
+#pinView h2 { font-family: var(--maxi-round); font-weight: 800; font-size: 1.6rem; letter-spacing: -0.02em; text-transform: uppercase; margin-bottom: 8px; }
+#pinView p { color: var(--muted); margin-bottom: 24px; font-size: 0.85rem; }
+#pinView input { font-size: 1.4rem; letter-spacing: 0.3em; text-align: center; font-family: var(--maxi-mono); }
+
+/* User search */
+.search-wrap { position: relative; }
+.search-results { position: absolute; top: calc(100% + 4px); left: 0; right: 0; background: var(--paper); border: 1px solid var(--line-strong); max-height: 280px; overflow-y: auto; z-index: 10; display: none; }
+.search-results.show { display: block; }
+.search-result { padding: 10px 14px; cursor: pointer; border-bottom: 1px solid var(--line); font-size: 0.88rem; }
+.search-result:last-child { border-bottom: none; }
+.search-result:hover { background: var(--bone); }
+.search-result .email { color: var(--muted); font-size: 0.75rem; }
+.search-result .tier { display: inline-block; padding: 2px 6px; font-size: 0.62rem; letter-spacing: 0.1em; text-transform: uppercase; margin-left: 8px; }
+.search-result .tier.elite { background: var(--hi-vis); color: var(--ink); }
+.search-result .tier.coach { background: var(--info-blue); color: var(--paper); }
+.search-result .tier.free { background: var(--bone); color: var(--muted); }
+
+.selected-user { background: var(--ink); color: var(--paper); padding: 14px 18px; margin-top: 8px; display: flex; justify-content: space-between; align-items: center; }
+.selected-user .name { font-family: var(--maxi-round); font-weight: 700; font-size: 1.05rem; text-transform: uppercase; letter-spacing: -0.01em; }
+.selected-user .email-line { font-family: var(--maxi-mono); font-size: 0.72rem; color: rgba(250,250,247,0.6); margin-top: 2px; letter-spacing: 0.05em; }
+.selected-user button { background: none; border: 1px solid rgba(250,250,247,0.3); color: var(--paper); padding: 6px 12px; font-family: var(--maxi-mono); font-size: 0.65rem; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; }
+
+/* Template grid */
+.template-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 8px; margin-top: 8px; }
+.template-card { padding: 14px; background: var(--paper); border: 1px solid var(--line-strong); cursor: pointer; transition: border-color 0.1s; text-align: left; }
+.template-card:hover { border-color: var(--ink); }
+.template-card.selected { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.template-card .cat { font-family: var(--maxi-mono); font-size: 0.6rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; }
+.template-card.selected .cat { color: rgba(250,250,247,0.5); }
+.template-card .name { font-family: var(--maxi-round); font-weight: 700; font-size: 1rem; letter-spacing: -0.01em; line-height: 1.2; margin-bottom: 4px; }
+.template-card .value { font-family: var(--maxi-mono); font-size: 0.72rem; color: var(--muted); letter-spacing: 0.04em; }
+.template-card.selected .value { color: rgba(250,250,247,0.7); }
+
+/* Result */
+.result { margin-top: 18px; padding: 16px 18px; display: none; }
+.result.show { display: block; }
+.result.success { background: var(--rec-green); color: var(--paper); }
+.result.error { background: var(--rec-red); color: var(--paper); }
+.result strong { font-family: var(--maxi-round); font-weight: 700; font-size: 1.1rem; display: block; margin-bottom: 4px; text-transform: uppercase; letter-spacing: -0.01em; }
+.result .code { background: var(--ink); padding: 6px 10px; font-weight: 500; letter-spacing: 0.1em; display: inline-block; margin-top: 8px; }
+.result.success .code { background: var(--hi-vis); color: var(--ink); }
+
+/* Stats */
+.stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); margin-top: 12px; }
+.stat-tile { background: var(--paper); padding: 18px 16px; }
+.stat-label { font-family: var(--maxi-mono); font-size: 0.62rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+.stat-value { font-family: var(--maxi-round); font-weight: 800; font-size: 1.7rem; letter-spacing: -0.02em; line-height: 1; }
+.stat-sub { font-family: var(--maxi-mono); font-size: 0.65rem; color: var(--muted); margin-top: 4px; letter-spacing: 0.05em; text-transform: uppercase; }
+
+/* Tables */
+table { width: 100%; border-collapse: collapse; background: var(--paper); border: 1px solid var(--line-strong); font-size: 0.82rem; }
+th, td { padding: 10px 12px; text-align: left; border-bottom: 1px solid var(--line); }
+th { font-family: var(--maxi-mono); font-size: 0.62rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); font-weight: 500; background: var(--bone); }
+td { font-family: var(--maxi-mono); }
+.badge { display: inline-block; padding: 2px 8px; font-family: var(--maxi-mono); font-size: 0.6rem; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 500; }
+.badge.redeemed { background: var(--rec-green); color: var(--paper); }
+.badge.active { background: var(--hi-vis); color: var(--ink); }
+.badge.expired { background: var(--muted); color: var(--paper); }
+.code-cell { font-family: var(--maxi-mono); font-weight: 500; letter-spacing: 0.06em; }
+
+.empty { text-align: center; padding: 40px; color: var(--muted); font-size: 0.85rem; }
+.spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid var(--line); border-top-color: var(--ink); border-radius: 50%; animation: spin 0.8s linear infinite; vertical-align: middle; margin-right: 8px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+@media (max-width: 600px) {
+  .tabs { flex-wrap: wrap; }
+  .tab-btn { flex: 1 0 50%; }
+  table { font-size: 0.74rem; }
+  th, td { padding: 8px 8px; }
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header">
+    <div>
+      <div class="brand">DBP <span class="accent">ADMIN</span></div>
+      <div class="header-meta">MEMBER REWARDS</div>
+    </div>
+    <a class="btn-back" href="/">← Site</a>
+  </div>
+
+  <!-- PIN GATE -->
+  <div id="pinView">
+    <h2>Manager Sign-in</h2>
+    <p>Enter your manager PIN to access Member Rewards admin.</p>
+    <input type="password" id="pin" inputmode="numeric" maxlength="6" placeholder="••••••" autocomplete="off" autofocus>
+    <button class="btn btn-primary" style="margin-top:14px;width:100%" onclick="unlockAdmin()">Continue</button>
+    <div id="pinError" style="color:var(--rec-red);font-size:0.8rem;margin-top:12px;display:none">Invalid PIN</div>
+  </div>
+
+  <!-- ADMIN VIEWS -->
+  <div id="adminApp" style="display:none">
+    <div class="tabs">
+      <button class="tab-btn active" onclick="setTab('issue')">Issue Reward</button>
+      <button class="tab-btn" onclick="setTab('analytics')">Analytics</button>
+      <button class="tab-btn" onclick="setTab('history')">History</button>
+    </div>
+
+    <!-- ISSUE TAB -->
+    <div class="view active" id="issueView">
+      <div class="card">
+        <label>1. Find member</label>
+        <div class="search-wrap">
+          <input type="text" id="userSearch" placeholder="Email or name (min 2 chars)" oninput="searchUsers()" autocomplete="off">
+          <div class="search-results" id="searchResults"></div>
+        </div>
+        <div id="selectedUserBox"></div>
+      </div>
+
+      <div class="card">
+        <label>2. Pick reward</label>
+        <div class="template-grid" id="templateGrid"><div class="empty">Loading templates…</div></div>
+      </div>
+
+      <div class="card">
+        <label>3. Optional details</label>
+        <div style="display:grid;grid-template-columns:1fr 2fr;gap:10px;margin-bottom:10px">
+          <div>
+            <label style="font-size:0.6rem">Expires in (days)</label>
+            <input type="number" id="expiresIn" placeholder="default" min="0">
+          </div>
+          <div>
+            <label style="font-size:0.6rem">Custom note (overrides description)</label>
+            <input type="text" id="customDesc" placeholder="Leave blank for default">
+          </div>
+        </div>
+        <button class="btn btn-primary" onclick="issueReward()" id="issueBtn" style="width:100%">Issue Reward</button>
+      </div>
+
+      <div class="result" id="issueResult"></div>
+    </div>
+
+    <!-- ANALYTICS TAB -->
+    <div class="view" id="analyticsView">
+      <div id="analyticsContent"><div class="empty">Loading…</div></div>
+    </div>
+
+    <!-- HISTORY TAB -->
+    <div class="view" id="historyView">
+      <div id="historyContent"><div class="empty">Loading…</div></div>
+    </div>
+  </div>
+</div>
+
+<script>
+let currentPin = null;
+let templates = [];
+let selectedUser = null;
+let selectedTemplate = null;
+
+async function unlockAdmin() {
+  const pin = document.getElementById('pin').value.trim();
+  if (!pin) return;
+  const r = await fetch('/api/perks/admin/templates', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ pin }),
+  });
+  if (!r.ok) {
+    document.getElementById('pinError').style.display = 'block';
+    return;
+  }
+  const data = await r.json();
+  templates = data.templates;
+  currentPin = pin;
+  document.getElementById('pinView').style.display = 'none';
+  document.getElementById('adminApp').style.display = 'block';
+  renderTemplates();
+}
+
+document.getElementById('pin').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') unlockAdmin();
+});
+
+function setTab(name) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  event.target.classList.add('active');
+  document.getElementById(name + 'View').classList.add('active');
+  if (name === 'analytics') loadAnalytics();
+  if (name === 'history') loadHistory();
+}
+
+let searchTimeout = null;
+function searchUsers() {
+  const query = document.getElementById('userSearch').value.trim();
+  if (searchTimeout) clearTimeout(searchTimeout);
+  if (query.length < 2) {
+    document.getElementById('searchResults').classList.remove('show');
+    return;
+  }
+  searchTimeout = setTimeout(async () => {
+    const r = await fetch('/api/perks/admin/search-users', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ pin: currentPin, query }),
+    });
+    const data = await r.json();
+    const el = document.getElementById('searchResults');
+    if (!data.users || data.users.length === 0) {
+      el.innerHTML = '<div class="search-result"><span style="color:var(--muted)">No users found</span></div>';
+    } else {
+      el.innerHTML = data.users.map(u => `
+        <div class="search-result" onclick='selectUser(${JSON.stringify(u).replace(/'/g, "&#39;")})'>
+          <strong>${u.name || '—'}</strong>
+          <span class="tier ${u.subscription_tier || 'free'}">${u.subscription_tier || 'free'}</span>
+          <div class="email">${u.email}</div>
+        </div>
+      `).join('');
+    }
+    el.classList.add('show');
+  }, 250);
+}
+
+function selectUser(u) {
+  selectedUser = u;
+  document.getElementById('searchResults').classList.remove('show');
+  document.getElementById('userSearch').value = '';
+  document.getElementById('selectedUserBox').innerHTML = `
+    <div class="selected-user">
+      <div>
+        <div class="name">${u.name || u.email}</div>
+        <div class="email-line">${u.email} · ${u.subscription_tier || 'free'} · ${u.subscription_status || 'inactive'}</div>
+      </div>
+      <button onclick="clearUser()">Change</button>
+    </div>`;
+}
+
+function clearUser() {
+  selectedUser = null;
+  document.getElementById('selectedUserBox').innerHTML = '';
+  document.getElementById('userSearch').focus();
+}
+
+function fmtCents(cents) {
+  if (cents == null) return '—';
+  return '$' + (cents / 100).toFixed(2);
+}
+
+function renderTemplates() {
+  const el = document.getElementById('templateGrid');
+  el.innerHTML = templates.map(t => {
+    const valueLabel = t.is_percentage
+      ? `${t.percentage_off}% off`
+      : `Retail ${fmtCents(t.default_retail_cents)} · Cost ${fmtCents(t.default_cost_cents)}`;
+    return `<div class="template-card ${selectedTemplate?.id === t.id ? 'selected' : ''}" onclick='selectTemplate(${JSON.stringify(t).replace(/'/g, "&#39;")})'>
+      <div class="cat">${t.category}</div>
+      <div class="name">${t.name}</div>
+      <div class="value">${valueLabel}</div>
+    </div>`;
+  }).join('');
+}
+
+function selectTemplate(t) {
+  selectedTemplate = t;
+  renderTemplates();
+}
+
+async function issueReward() {
+  if (!selectedUser) return showResult(false, 'Pick a user first');
+  if (!selectedTemplate) return showResult(false, 'Pick a reward template first');
+
+  const btn = document.getElementById('issueBtn');
+  btn.disabled = true;
+  btn.textContent = 'Issuing…';
+  try {
+    const expiresInDays = document.getElementById('expiresIn').value;
+    const customDesc = document.getElementById('customDesc').value.trim();
+    const r = await fetch('/api/perks/admin/issue', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        pin: currentPin,
+        user_email: selectedUser.email,
+        template_id: selectedTemplate.id,
+        expires_in_days: expiresInDays !== '' ? parseInt(expiresInDays) : null,
+        custom_description: customDesc || null,
+      }),
+    });
+    const data = await r.json();
+    if (!data.success) throw new Error(data.error || 'Failed');
+    showResult(true, `✓ Reward issued to ${selectedUser.name || selectedUser.email}`,
+      `<div>${data.description}</div><div class="code">${data.code}</div>` +
+      (data.expires_at ? `<div style="margin-top:6px;font-size:0.78rem;opacity:0.8">Expires ${new Date(data.expires_at).toLocaleDateString()}</div>` : '<div style="margin-top:6px;font-size:0.78rem;opacity:0.8">No expiration</div>'));
+    // Clear form
+    selectedUser = null;
+    selectedTemplate = null;
+    document.getElementById('selectedUserBox').innerHTML = '';
+    document.getElementById('expiresIn').value = '';
+    document.getElementById('customDesc').value = '';
+    renderTemplates();
+  } catch(e) {
+    showResult(false, 'Failed to issue', e.message);
+  }
+  btn.disabled = false;
+  btn.textContent = 'Issue Reward';
+}
+
+function showResult(success, title, body = '') {
+  const el = document.getElementById('issueResult');
+  el.className = 'result show ' + (success ? 'success' : 'error');
+  el.innerHTML = `<strong>${title}</strong>${body}`;
+  setTimeout(() => { el.classList.remove('show'); }, 8000);
+}
+
+async function loadAnalytics() {
+  const el = document.getElementById('analyticsContent');
+  el.innerHTML = '<div class="empty"><span class="spinner"></span>Loading…</div>';
+  const r = await fetch('/api/perks/admin/analytics', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ pin: currentPin }),
+  });
+  const data = await r.json();
+  const o = data.overview;
+  const margin = (o.total_savings_this_month_cents || 0) - (o.total_cost_this_month_cents || 0);
+
+  el.innerHTML = `
+    <div class="section-header"><span class="num">01</span><span class="name">This Month</span><span></span></div>
+    <div class="stats-grid">
+      <div class="stat-tile"><div class="stat-label">Member Savings</div><div class="stat-value">${fmtCents(o.total_savings_this_month_cents)}</div><div class="stat-sub">value to members</div></div>
+      <div class="stat-tile"><div class="stat-label">DBP Cost</div><div class="stat-value">${fmtCents(o.total_cost_this_month_cents)}</div><div class="stat-sub">COGS for redeemed rewards</div></div>
+      <div class="stat-tile"><div class="stat-label">Margin Impact</div><div class="stat-value" style="color:${margin >= 0 ? 'var(--rec-green)' : 'var(--rec-red)'}">${fmtCents(margin)}</div><div class="stat-sub">savings minus cost</div></div>
+      <div class="stat-tile"><div class="stat-label">Redemptions</div><div class="stat-value">${o.redeemed_this_month}</div><div class="stat-sub">this month</div></div>
+      <div class="stat-tile"><div class="stat-label">Active Codes</div><div class="stat-value">${o.active_count}</div><div class="stat-sub">issued, not redeemed</div></div>
+      <div class="stat-tile"><div class="stat-label">Lifetime Redeemed</div><div class="stat-value">${o.redeemed_count}</div><div class="stat-sub">all-time</div></div>
+    </div>
+
+    ${data.by_category?.length ? `
+    <div class="section-header" style="margin-top:24px"><span class="num">02</span><span class="name">By Category This Month</span><span></span></div>
+    <table>
+      <thead><tr><th>Category</th><th>Count</th><th>Member Savings</th><th>DBP Cost</th></tr></thead>
+      <tbody>
+        ${data.by_category.map(c => `<tr>
+          <td><strong>${c.category || '—'}</strong></td>
+          <td>${c.count}</td>
+          <td>${fmtCents(c.savings_cents)}</td>
+          <td>${fmtCents(c.cost_cents)}</td>
+        </tr>`).join('')}
+      </tbody>
+    </table>` : ''}
+
+    ${data.top_members?.length ? `
+    <div class="section-header" style="margin-top:24px"><span class="num">03</span><span class="name">Top Members By Savings This Month</span><span></span></div>
+    <table>
+      <thead><tr><th>Member</th><th>Tier</th><th>Redemptions</th><th>Saved</th></tr></thead>
+      <tbody>
+        ${data.top_members.map(m => `<tr>
+          <td><strong>${m.name || '—'}</strong><div style="font-size:0.7rem;color:var(--muted)">${m.email}</div></td>
+          <td><span class="badge ${m.subscription_tier}">${m.subscription_tier || 'free'}</span></td>
+          <td>${m.redemption_count}</td>
+          <td><strong>${fmtCents(m.savings_cents)}</strong></td>
+        </tr>`).join('')}
+      </tbody>
+    </table>` : '<div class="empty">No redemptions yet this month</div>'}
+  `;
+}
+
+async function loadHistory() {
+  const el = document.getElementById('historyContent');
+  el.innerHTML = '<div class="empty"><span class="spinner"></span>Loading…</div>';
+  const r = await fetch('/api/perks/admin/recent-redemptions', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ pin: currentPin, limit: 100 }),
+  });
+  const data = await r.json();
+  if (!data.redemptions?.length) {
+    el.innerHTML = '<div class="empty">No rewards issued yet</div>';
+    return;
+  }
+  el.innerHTML = `
+    <div class="section-header"><span class="num">01</span><span class="name">Recent Rewards</span><span class="num">${data.redemptions.length} SHOWN</span></div>
+    <table>
+      <thead><tr><th>Code</th><th>Member</th><th>Reward</th><th>Status</th><th>Savings</th><th>Issued</th></tr></thead>
+      <tbody>
+        ${data.redemptions.map(p => {
+          const isExpired = !p.redeemed_at && p.expires_at && new Date(p.expires_at) < new Date();
+          const status = p.redeemed_at ? 'redeemed' : isExpired ? 'expired' : 'active';
+          return `<tr>
+            <td class="code-cell">${p.code}</td>
+            <td><strong>${p.user_name || '—'}</strong><div style="font-size:0.7rem;color:var(--muted)">${p.user_email}</div></td>
+            <td>${p.template_name || p.description || '—'}</td>
+            <td><span class="badge ${status}">${status}</span></td>
+            <td>${fmtCents(p.savings_cents)}</td>
+            <td>${new Date(p.issued_at).toLocaleDateString()}<div style="font-size:0.7rem;color:var(--muted)">${p.issued_by || '—'}</div></td>
+          </tr>`;
+        }).join('')}
+      </tbody>
+    </table>
+  `;
+}
+</script>
+</body>
+</html>
