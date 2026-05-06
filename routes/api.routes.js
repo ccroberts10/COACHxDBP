@@ -73,7 +73,7 @@ router.get('/data', auth.requireActiveSubscription, async (req, res) => {
         punchStats = await memberRewards.getPunchStats(userId);
         streakStats = await memberRewards.getStreakStats(userId);
       } catch (e) {
-        console.error('[api/data] member rewards lookup failed:', e.message);
+        console.error('[api/data] member rewards lookup failed:', e.message, e.stack);
       }
     }
 
