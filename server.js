@@ -97,6 +97,16 @@ cron.schedule('0 * * * *', async () => {
   await db.query(`DELETE FROM sessions WHERE expires_at < NOW()`);
 }, { timezone: TZ });
 
+// Auto-trigger scanner: every 15 minutes — issue rewards for activities matching triggers
+cron.schedule('*/15 * * * *', async () => {
+  try {
+    const autoTriggers = require('./lib/auto-triggers');
+    await autoTriggers.processUnprocessedActivities();
+  } catch (e) {
+    console.error('[cron] auto-triggers error:', e);
+  }
+}, { timezone: TZ });
+
 // ===== Boot =====
 (async () => {
   try {
