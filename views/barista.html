@@ -3,68 +3,306 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>DBP Staff · Redeem</title>
+<title>DBP Staff</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,700;12..96,800&display=swap" rel="stylesheet">
 <style>
-  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-  html,body{margin:0;padding:0;background:#0a0a0a;color:#f5f5f5;font-family:-apple-system,BlinkMacSystemFont,sans-serif;min-height:100vh}
-  .container{max-width:480px;margin:0 auto;padding:30px 20px}
-  .brand{font-weight:700;font-size:1.1rem;letter-spacing:-0.02em;margin-bottom:8px;text-align:center}
-  .brand span{color:#4ade80}
-  .label{color:#888;font-size:0.85rem;text-align:center;margin-bottom:24px}
-  label{display:block;font-size:0.85rem;color:#aaa;margin:14px 0 6px;font-weight:500}
-  input{width:100%;padding:14px;font-size:1.2rem;background:#111;border:1px solid #1f1f1f;border-radius:10px;color:#fff;font-family:monospace;letter-spacing:0.05em;text-transform:uppercase}
-  input:focus{outline:none;border-color:#4ade80}
-  .btn{width:100%;padding:16px;font-size:1.05rem;font-weight:700;border:none;border-radius:10px;cursor:pointer;font-family:inherit;margin-top:14px}
-  .btn-primary{background:#4ade80;color:#000}
-  .btn-secondary{background:#1a1a1a;color:#fff;border:1px solid #2a2a2a}
-  .btn:active{transform:scale(0.98)}
-  .btn:disabled{opacity:0.5;cursor:wait}
-  .result{margin-top:18px;padding:18px;border-radius:12px;display:none}
-  .result.show{display:block}
-  .result.valid{background:#0d2818;border:1px solid #1f5a35}
-  .result.invalid{background:#3a1212;border:1px solid #5a2828}
-  .result h2{margin:0 0 6px;font-size:1.2rem}
-  .result.valid h2{color:#4ade80}
-  .result.invalid h2{color:#f87171}
-  .result p{margin:4px 0;color:#ddd;font-size:0.92rem}
-  .result .name{font-size:1rem;color:#fff;font-weight:600}
-  .result .desc{color:#aaa;font-size:0.88rem;margin:8px 0}
-  .pin-display{background:#1a1a1a;border-radius:8px;padding:8px 12px;font-family:monospace;font-size:0.85rem;color:#888;margin-top:6px}
-  .pin-display.hide{filter:blur(4px);user-select:none}
+:root {
+  --ink: #0A0A0A; --paper: #FAFAF7; --bone: #EFEDE5; --hi-vis: #F2E600;
+  --rec-green: #1F4A2C; --rec-red: #6B1F2A; --info-blue: #6B92B5;
+  --line: rgba(10,10,10,0.10); --line-strong: rgba(10,10,10,0.20);
+  --muted: rgba(10,10,10,0.55);
+  --maxi-round: 'Bricolage Grotesque', system-ui, sans-serif;
+  --maxi-mono: 'DM Mono', monospace;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body { background: var(--bone); color: var(--ink); font-family: var(--maxi-mono); font-size: 15px; line-height: 1.5; }
+
+.container { max-width: 480px; margin: 0 auto; padding: 18px 18px 60px; }
+
+.header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 22px; padding-bottom: 14px; border-bottom: 1px solid var(--line-strong); }
+.brand { font-family: var(--maxi-round); font-weight: 800; font-size: 1.4rem; letter-spacing: -0.03em; text-transform: uppercase; line-height: 0.9; }
+.brand .accent { background: var(--hi-vis); padding: 0 6px; }
+.header-meta { font-family: var(--maxi-mono); font-size: 0.62rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); margin-top: 4px; }
+
+/* Mode tabs */
+.mode-tabs { display: flex; border: 1px solid var(--ink); margin-bottom: 16px; }
+.mode-tab { flex: 1; padding: 12px 8px; background: var(--paper); border: none; font-family: var(--maxi-mono); font-size: 0.74rem; letter-spacing: 0.12em; text-transform: uppercase; font-weight: 500; color: var(--muted); cursor: pointer; }
+.mode-tab.active { background: var(--ink); color: var(--hi-vis); }
+
+label { display: block; font-family: var(--maxi-mono); font-size: 0.62rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; font-weight: 500; }
+input[type="text"], input[type="number"], input[type="password"] { width: 100%; padding: 14px 14px; background: var(--paper); border: 1px solid var(--line-strong); font-family: var(--maxi-mono); font-size: 1rem; color: var(--ink); }
+input:focus { outline: none; border-color: var(--ink); }
+input.code-input { text-transform: uppercase; letter-spacing: 0.08em; font-weight: 500; }
+.field { margin-bottom: 14px; }
+
+.btn { width: 100%; padding: 16px; font-family: var(--maxi-mono); font-size: 0.82rem; letter-spacing: 0.18em; text-transform: uppercase; font-weight: 500; border: 1px solid var(--ink); background: var(--paper); color: var(--ink); cursor: pointer; margin-bottom: 10px; }
+.btn:active { transform: scale(0.98); }
+.btn-primary { background: var(--hi-vis); }
+.btn-ink { background: var(--ink); color: var(--paper); }
+.btn:disabled { opacity: 0.5; cursor: wait; }
+
+.card { background: var(--paper); border: 1px solid var(--line-strong); padding: 18px; margin-bottom: 12px; }
+
+.member-card { background: var(--ink); color: var(--paper); padding: 18px; margin: 12px 0; }
+.member-card .name { font-family: var(--maxi-round); font-weight: 800; font-size: 1.4rem; letter-spacing: -0.02em; text-transform: uppercase; line-height: 1; margin-bottom: 4px; }
+.member-card .meta { font-family: var(--maxi-mono); font-size: 0.7rem; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(250,250,247,0.6); }
+.member-card .stats-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 14px; padding-top: 14px; border-top: 1px solid rgba(250,250,247,0.15); }
+.member-card .stat-label { font-family: var(--maxi-mono); font-size: 0.58rem; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(250,250,247,0.55); margin-bottom: 4px; }
+.member-card .stat-value { font-family: var(--maxi-round); font-weight: 700; font-size: 1.4rem; letter-spacing: -0.01em; line-height: 1; }
+.member-card .stat-sub { font-family: var(--maxi-mono); font-size: 0.6rem; color: rgba(250,250,247,0.5); margin-top: 2px; letter-spacing: 0.05em; }
+
+.punch-bar { display: flex; gap: 4px; margin-top: 6px; }
+.punch-dot { flex: 1; height: 8px; background: rgba(250,250,247,0.15); }
+.punch-dot.filled { background: var(--hi-vis); }
+
+.active-rewards { margin: 12px 0; }
+.reward-row { background: var(--hi-vis); padding: 10px 12px; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center; }
+.reward-row .desc { font-family: var(--maxi-mono); font-size: 0.78rem; flex: 1; }
+.reward-row .code { font-family: var(--maxi-mono); font-weight: 600; letter-spacing: 0.06em; font-size: 0.85rem; background: var(--ink); color: var(--hi-vis); padding: 4px 8px; }
+
+.cat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 14px; }
+.cat-btn { padding: 16px 8px; background: var(--paper); border: 1px solid var(--line-strong); font-family: var(--maxi-mono); font-size: 0.78rem; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 500; color: var(--ink); cursor: pointer; text-align: center; }
+.cat-btn.selected { background: var(--ink); color: var(--hi-vis); border-color: var(--ink); }
+.cat-btn .ico { font-size: 1.4rem; display: block; margin-bottom: 4px; }
+
+.result { padding: 16px; margin: 12px 0; display: none; }
+.result.show { display: block; }
+.result.success { background: var(--rec-green); color: var(--paper); }
+.result.error { background: var(--rec-red); color: var(--paper); }
+.result strong { font-family: var(--maxi-round); font-weight: 700; font-size: 1.05rem; display: block; text-transform: uppercase; letter-spacing: -0.01em; margin-bottom: 4px; }
+.result .small { font-family: var(--maxi-mono); font-size: 0.78rem; opacity: 0.9; }
+.result .reward-pop { background: var(--hi-vis); color: var(--ink); padding: 10px; margin-top: 10px; }
+.result .reward-pop .code { font-family: var(--maxi-mono); font-weight: 600; font-size: 1.1rem; letter-spacing: 0.08em; }
+
+.subtle-link { display: block; text-align: center; margin-top: 24px; font-family: var(--maxi-mono); font-size: 0.7rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); text-decoration: none; }
+.subtle-link:hover { color: var(--ink); }
+
+.section-header { display: flex; justify-content: space-between; align-items: baseline; padding: 8px 0; margin: 8px 0 12px; border-bottom: 1px solid var(--line); font-family: var(--maxi-mono); font-size: 0.62rem; letter-spacing: 0.15em; text-transform: uppercase; }
+.section-header .num { color: var(--muted); }
 </style>
 </head>
 <body>
 <div class="container">
-  <div class="brand">🚴 DBP <span>Staff</span></div>
-  <div class="label">Redeem member perk</div>
-
-  <label>Staff PIN</label>
-  <input type="password" id="pin" placeholder="••••••" inputmode="numeric" maxlength="6">
-
-  <label>Member code</label>
-  <input type="text" id="code" placeholder="DBP-XXXX" maxlength="10" oninput="this.value = this.value.toUpperCase()">
-
-  <button class="btn btn-secondary" onclick="lookup()">Look up</button>
-  <div id="subtotalRow" style="display:none;margin-top:14px">
-    <label style="font-family:inherit;font-size:0.85rem;color:#aaa;margin-bottom:6px;display:block;font-weight:500">Subtotal ($)</label>
-    <input type="number" id="subtotal" step="0.01" min="0" placeholder="e.g. 6.50" inputmode="decimal" style="text-transform:none;letter-spacing:0;font-family:inherit;font-size:1.05rem">
+  <div class="header">
+    <div>
+      <div class="brand">DBP <span class="accent">STAFF</span></div>
+      <div class="header-meta">CHECKOUT TERMINAL</div>
+    </div>
   </div>
-  <button class="btn btn-primary" id="redeemBtn" onclick="redeem()" style="display:none">Mark redeemed</button>
 
-  <div class="result" id="result"></div>
+  <div class="mode-tabs">
+    <button class="mode-tab active" onclick="setMode('purchase')">Log Purchase</button>
+    <button class="mode-tab" onclick="setMode('redeem')">Redeem Reward</button>
+  </div>
+
+  <!-- =================== PURCHASE MODE =================== -->
+  <div id="purchaseMode">
+    <div class="card">
+      <div class="field">
+        <label>Staff PIN</label>
+        <input type="password" id="pPin" inputmode="numeric" maxlength="6" placeholder="••••••" autocomplete="off">
+      </div>
+      <div class="field">
+        <label>Member Code</label>
+        <input type="text" id="pCode" class="code-input" placeholder="DBP-CASEY" autocomplete="off">
+      </div>
+      <button class="btn btn-ink" onclick="lookupMember()">Look up member</button>
+    </div>
+
+    <div id="memberCard"></div>
+
+    <div id="purchaseForm" style="display:none">
+      <div class="card">
+        <label>Category</label>
+        <div class="cat-grid">
+          <button class="cat-btn" data-cat="drink" onclick="selectCat('drink', this)"><span class="ico">☕</span>Drink</button>
+          <button class="cat-btn" data-cat="food" onclick="selectCat('food', this)"><span class="ico">🥐</span>Food</button>
+          <button class="cat-btn" data-cat="service" onclick="selectCat('service', this)"><span class="ico">🔧</span>Service</button>
+          <button class="cat-btn" data-cat="retail" onclick="selectCat('retail', this)"><span class="ico">🛍️</span>Retail</button>
+        </div>
+
+        <div class="field">
+          <label>Amount ($)</label>
+          <input type="number" id="pAmount" step="0.01" min="0" inputmode="decimal" placeholder="6.00">
+        </div>
+
+        <div class="field">
+          <label>Notes (optional)</label>
+          <input type="text" id="pNotes" placeholder="cortado · oat milk · etc">
+        </div>
+
+        <button class="btn btn-primary" onclick="logPurchase()" id="logBtn">Log Purchase</button>
+      </div>
+    </div>
+
+    <div class="result" id="pResult"></div>
+  </div>
+
+  <!-- =================== REDEEM MODE =================== -->
+  <div id="redeemMode" style="display:none">
+    <div class="card">
+      <div class="field">
+        <label>Staff PIN</label>
+        <input type="password" id="rPin" inputmode="numeric" maxlength="6" placeholder="••••••" autocomplete="off">
+      </div>
+      <div class="field">
+        <label>Reward Code</label>
+        <input type="text" id="rCode" class="code-input" placeholder="DBP-XXXX" autocomplete="off">
+      </div>
+      <button class="btn btn-ink" onclick="lookupReward()">Look up</button>
+
+      <div id="rSubtotalRow" style="display:none;margin-top:14px">
+        <label>Subtotal ($)</label>
+        <input type="number" id="rSubtotal" step="0.01" min="0" inputmode="decimal" placeholder="6.50">
+      </div>
+      <button class="btn btn-primary" id="rRedeemBtn" onclick="redeemReward()" style="display:none;margin-top:10px">Mark redeemed</button>
+    </div>
+
+    <div class="result" id="rResult"></div>
+  </div>
+
+  <a class="subtle-link" href="/">← Back to site</a>
 </div>
 
 <script>
-let pendingPerk = null;
+let currentMember = null;
+let currentCategory = null;
+let pendingReward = null;
 
-async function lookup(){
-  const pin = document.getElementById('pin').value.trim();
-  const code = document.getElementById('code').value.trim().toUpperCase();
-  const result = document.getElementById('result');
-  if (!pin || !code) {
-    showResult(false, 'Both PIN and code required', '');
-    return;
+function setMode(mode) {
+  document.querySelectorAll('.mode-tab').forEach(t => t.classList.remove('active'));
+  event.target.classList.add('active');
+  document.getElementById('purchaseMode').style.display = mode === 'purchase' ? 'block' : 'none';
+  document.getElementById('redeemMode').style.display = mode === 'redeem' ? 'block' : 'none';
+}
+
+// ============== PURCHASE MODE ==============
+
+async function lookupMember() {
+  const pin = document.getElementById('pPin').value.trim();
+  const code = document.getElementById('pCode').value.trim();
+  if (!pin || !code) { showResult('p', false, 'Enter PIN and member code'); return; }
+
+  try {
+    const r = await fetch('/api/perks/purchase/lookup-member', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ pin, code }),
+    });
+    const data = await r.json();
+    if (!r.ok) throw new Error(data.error || 'Not found');
+    currentMember = data;
+    renderMember(data);
+    document.getElementById('purchaseForm').style.display = 'block';
+    document.getElementById('pResult').classList.remove('show');
+  } catch(e) {
+    showResult('p', false, e.message);
   }
+}
+
+function renderMember(m) {
+  const punch = m.punch || { current: 0, target: 10, lifetime: 0, away_from_free: 10 };
+  const streak = m.streak || { current: 0, longest: 0 };
+  const rewardsHtml = m.active_rewards?.length ? `
+    <div class="active-rewards">
+      ${m.active_rewards.map(r => `<div class="reward-row">
+        <div class="desc">${r.description || 'Reward'}</div>
+        <div class="code">${r.code}</div>
+      </div>`).join('')}
+    </div>
+    <div style="font-family:var(--maxi-mono);font-size:0.65rem;color:rgba(250,250,247,0.7);text-align:center;margin-top:4px">↑ Active rewards · use Redeem mode</div>
+  ` : '';
+
+  const punchDots = Array.from({length: 10}, (_, i) => `<div class="punch-dot${i < punch.current ? ' filled' : ''}"></div>`).join('');
+
+  document.getElementById('memberCard').innerHTML = `
+    <div class="member-card">
+      <div class="name">${m.user_name || 'Member'}</div>
+      <div class="meta">${m.member_code} · ${m.tier}</div>
+      <div class="stats-row">
+        <div>
+          <div class="stat-label">Punch Card</div>
+          <div class="stat-value">${punch.current}/10</div>
+          <div class="stat-sub">${punch.away_from_free === 0 ? 'AWARD READY' : punch.away_from_free + ' away from free'}</div>
+          <div class="punch-bar">${punchDots}</div>
+        </div>
+        <div>
+          <div class="stat-label">Check-in Streak</div>
+          <div class="stat-value">${streak.current}</div>
+          <div class="stat-sub">days · longest ${streak.longest}</div>
+        </div>
+      </div>
+      ${rewardsHtml}
+    </div>
+  `;
+}
+
+function selectCat(cat, btn) {
+  currentCategory = cat;
+  document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+}
+
+async function logPurchase() {
+  if (!currentMember) return;
+  if (!currentCategory) { showResult('p', false, 'Pick a category'); return; }
+  const amt = parseFloat(document.getElementById('pAmount').value);
+  if (!amt || amt <= 0) { showResult('p', false, 'Enter a valid amount'); return; }
+
+  const btn = document.getElementById('logBtn');
+  btn.disabled = true;
+  btn.textContent = 'Logging…';
+  try {
+    const r = await fetch('/api/perks/purchase/log', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        pin: document.getElementById('pPin').value.trim(),
+        code: document.getElementById('pCode').value.trim(),
+        category: currentCategory,
+        amount_dollars: amt,
+        notes: document.getElementById('pNotes').value.trim() || null,
+      }),
+    });
+    const data = await r.json();
+    if (!data.success) throw new Error(data.error || 'Failed');
+
+    let resultHtml = `<strong>✓ Purchase logged</strong><div class="small">${currentCategory} · $${amt.toFixed(2)}</div>`;
+    if (data.counted_toward_punch) {
+      resultHtml += `<div class="small" style="margin-top:6px">Punch card: ${data.punch_progress.current}/10${data.punch_progress.current === 0 ? ' (just reset!)' : ''}</div>`;
+    }
+    if (data.awarded_perk) {
+      resultHtml += `<div class="reward-pop">
+        <strong style="font-size:0.95rem">🎉 PUNCH CARD COMPLETE!</strong>
+        <div class="small">Free drink earned — they got an email</div>
+        <div class="code">${data.awarded_perk.code}</div>
+      </div>`;
+    }
+    showResult('p', true, '', resultHtml);
+
+    // Reset form for next purchase, keep PIN + code
+    document.getElementById('pAmount').value = '';
+    document.getElementById('pNotes').value = '';
+    currentCategory = null;
+    document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('selected'));
+    // Re-fetch member to show updated punch count
+    setTimeout(() => lookupMember(), 800);
+  } catch(e) {
+    showResult('p', false, e.message);
+  }
+  btn.disabled = false;
+  btn.textContent = 'Log Purchase';
+}
+
+// ============== REDEEM MODE (existing) ==============
+
+async function lookupReward() {
+  const pin = document.getElementById('rPin').value.trim();
+  const code = document.getElementById('rCode').value.trim().toUpperCase();
+  if (!pin || !code) { showResult('r', false, 'Enter PIN and code'); return; }
+
   try {
     const r = await fetch('/api/perks/lookup', {
       method: 'POST',
@@ -72,57 +310,38 @@ async function lookup(){
       body: JSON.stringify({ pin, code }),
     });
     const data = await r.json();
-    if (data.error) {
-      showResult(false, data.error, '');
-      pendingPerk = null;
-      document.getElementById('redeemBtn').style.display = 'none';
-      return;
-    }
-    if (data.redeemed) {
-      showResult(false, '✗ Already redeemed', `${data.user_name} · ${data.description}`);
-      pendingPerk = null;
-      document.getElementById('redeemBtn').style.display = 'none';
-      return;
-    }
-    if (data.expired) {
-      showResult(false, '✗ Code expired', `${data.user_name} · ${data.description}`);
-      pendingPerk = null;
-      document.getElementById('redeemBtn').style.display = 'none';
-      return;
-    }
-    pendingPerk = data;
+    if (!r.ok) throw new Error(data.error || 'Not found');
+    if (data.redeemed) throw new Error('Already redeemed');
+    if (data.expired) throw new Error('Expired');
+
+    pendingReward = data;
     let body = data.description;
     if (data.is_percentage) {
-      body += `<br><small style="color:#888">${data.percentage_off}% discount — enter subtotal below</small>`;
+      body += `<br><span class="small">${data.percentage_off}% discount — enter subtotal below</span>`;
+      document.getElementById('rSubtotalRow').style.display = 'block';
     } else if (data.expected_savings_cents) {
-      body += `<br><small style="color:#888">Saves member $${(data.expected_savings_cents/100).toFixed(2)}</small>`;
+      body += `<br><span class="small">Saves member $${(data.expected_savings_cents/100).toFixed(2)}</span>`;
+      document.getElementById('rSubtotalRow').style.display = 'none';
     }
-    showResult(true, `✓ Valid · ${data.user_name}`, body);
-    // Show subtotal input if percentage
-    if (data.is_percentage) {
-      document.getElementById('subtotalRow').style.display = 'block';
-    } else {
-      document.getElementById('subtotalRow').style.display = 'none';
-    }
-    document.getElementById('redeemBtn').style.display = 'block';
+    showResult('r', true, `✓ Valid · ${data.user_name}`, body);
+    document.getElementById('rRedeemBtn').style.display = 'block';
   } catch(e) {
-    showResult(false, e.message, '');
+    showResult('r', false, e.message);
   }
 }
 
-async function redeem(){
-  if (!pendingPerk) return;
-  const pin = document.getElementById('pin').value.trim();
-  const code = document.getElementById('code').value.trim().toUpperCase();
-  const btn = document.getElementById('redeemBtn');
-
+async function redeemReward() {
+  if (!pendingReward) return;
+  const pin = document.getElementById('rPin').value.trim();
+  const code = document.getElementById('rCode').value.trim().toUpperCase();
   let subtotal_cents = null;
-  if (pendingPerk.is_percentage) {
-    const sub = parseFloat(document.getElementById('subtotal').value);
+  if (pendingReward.is_percentage) {
+    const sub = parseFloat(document.getElementById('rSubtotal').value);
     if (!sub || sub <= 0) { alert('Enter the subtotal amount'); return; }
     subtotal_cents = Math.round(sub * 100);
   }
 
+  const btn = document.getElementById('rRedeemBtn');
   btn.disabled = true;
   btn.textContent = 'Redeeming…';
   try {
@@ -135,31 +354,30 @@ async function redeem(){
     if (data.success) {
       const saved = data.perk?.savings_cents;
       const savedLine = saved ? `<br>Saved member <strong>$${(saved/100).toFixed(2)}</strong>` : '';
-      showResult(true, '✓ Redeemed!', `${pendingPerk.user_name} · ${pendingPerk.description}${savedLine}`);
+      showResult('r', true, '✓ Redeemed!', `${pendingReward.user_name} · ${pendingReward.description}${savedLine}`);
       btn.style.display = 'none';
-      document.getElementById('subtotalRow').style.display = 'none';
-      document.getElementById('code').value = '';
-      document.getElementById('subtotal').value = '';
-      pendingPerk = null;
+      document.getElementById('rSubtotalRow').style.display = 'none';
+      document.getElementById('rCode').value = '';
+      document.getElementById('rSubtotal').value = '';
+      pendingReward = null;
     } else {
-      showResult(false, data.error, '');
+      showResult('r', false, data.error);
     }
   } catch(e) {
-    showResult(false, e.message, '');
+    showResult('r', false, e.message);
   }
   btn.disabled = false;
   btn.textContent = 'Mark redeemed';
 }
 
-function showResult(valid, title, body){
-  const el = document.getElementById('result');
-  el.className = 'result show ' + (valid ? 'valid' : 'invalid');
-  el.innerHTML = `<h2>${title}</h2>${body ? '<p class="desc">' + body + '</p>' : ''}`;
+function showResult(prefix, success, title, body = '') {
+  const el = document.getElementById(prefix + 'Result');
+  el.className = 'result show ' + (success ? 'success' : 'error');
+  el.innerHTML = `${title ? '<strong>' + title + '</strong>' : ''}${body}`;
 }
 
-document.getElementById('code').addEventListener('keydown', (e) => {
-  if (e.key === 'Enter') lookup();
-});
+document.getElementById('pCode').addEventListener('keydown', (e) => { if (e.key === 'Enter') lookupMember(); });
+document.getElementById('rCode').addEventListener('keydown', (e) => { if (e.key === 'Enter') lookupReward(); });
 </script>
 </body>
 </html>
