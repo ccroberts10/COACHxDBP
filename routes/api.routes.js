@@ -52,6 +52,16 @@ router.get('/data', auth.requireActiveSubscription, async (req, res) => {
       connections[svc] = i ? { service: svc, status: i.status, error_message: i.error_message, last_synced_at: i.last_synced_at } : { service: svc, status: 'disconnected' };
     }
 
+    // Member Rewards: total savings stats
+    const savingsRow = await db.one(
+      `SELECT
+         COALESCE(SUM(CASE WHEN redeemed_at >= date_trunc('month', NOW()) THEN savings_cents END), 0) as month_cents,
+         COALESCE(SUM(savings_cents), 0) as lifetime_cents,
+         COUNT(*) FILTER (WHERE redeemed_at IS NOT NULL) as redemption_count
+       FROM perk_redemptions WHERE user_id = $1`,
+      [userId]
+    );
+
     res.json({
       user: { id: req.user.id, email: req.user.email, name: req.user.name, tier: req.user.subscription_tier, status: req.user.subscription_status },
       snapshots,
@@ -63,6 +73,11 @@ router.get('/data', auth.requireActiveSubscription, async (req, res) => {
       checkins,
       today_checkin: checkinByDate[todayInUserTz] || null,
       today_date: todayInUserTz,
+      savings: {
+        month_cents: parseInt(savingsRow?.month_cents || 0),
+        lifetime_cents: parseInt(savingsRow?.lifetime_cents || 0),
+        redemption_count: parseInt(savingsRow?.redemption_count || 0),
+      },
       connections,
     });
   } catch (e) {
