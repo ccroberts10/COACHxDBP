@@ -164,6 +164,38 @@ CREATE TABLE IF NOT EXISTS activities (
 
 CREATE INDEX IF NOT EXISTS idx_activities_user_date ON activities(user_id, date DESC);
 
+-- Member Rewards: auto-trigger tracking on activities
+ALTER TABLE activities ADD COLUMN IF NOT EXISTS triggers_processed_at TIMESTAMPTZ;
+CREATE INDEX IF NOT EXISTS idx_activities_unprocessed ON activities(triggers_processed_at) WHERE triggers_processed_at IS NULL;
+
+-- Auto-trigger rules: e.g., "big ride finished" → issue reward
+CREATE TABLE IF NOT EXISTS auto_triggers (
+  id                      UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  name                    TEXT NOT NULL,                   -- "Big ride bonus"
+  trigger_type            TEXT NOT NULL,                   -- 'big_ride' | 'rainy_day' | 'sunday_morning' | etc.
+  template_id             UUID REFERENCES perk_templates(id) ON DELETE CASCADE,
+  conditions              JSONB NOT NULL DEFAULT '{}',     -- threshold rules per trigger type
+  audience                TEXT DEFAULT 'paying',           -- 'all' | 'paying' | 'elite' | 'coach'
+  message_subject         TEXT,                            -- email subject
+  message_body            TEXT,                            -- email body text
+  cooldown_hours          INTEGER DEFAULT 24,              -- min hours between firings per user
+  expires_in_days         INTEGER DEFAULT 1,               -- reward validity (1 = today only)
+  active                  BOOLEAN DEFAULT TRUE,
+  created_by              TEXT,
+  created_at              TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Log of trigger firings (for cooldown enforcement + audit)
+CREATE TABLE IF NOT EXISTS trigger_firings (
+  id                      UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  trigger_id              UUID NOT NULL REFERENCES auto_triggers(id) ON DELETE CASCADE,
+  user_id                 UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  activity_id             TEXT,                            -- Strava activity that triggered it (if applicable)
+  perk_redemption_id      UUID,                            -- the issued reward
+  fired_at                TIMESTAMPTZ DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS idx_trigger_firings_user ON trigger_firings(user_id, trigger_id, fired_at DESC);
+
 CREATE TABLE IF NOT EXISTS prescriptions (
   user_id                 UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
   date                    DATE NOT NULL,
