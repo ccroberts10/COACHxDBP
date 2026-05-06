@@ -3,66 +3,110 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Set up · DBP Coach</title>
+<title>Set up — DBP Coach</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,700;12..96,800&display=swap" rel="stylesheet">
 <style>
-  *{box-sizing:border-box}
-  html,body{margin:0;padding:0;background:#0a0a0a;color:#f5f5f5;font-family:-apple-system,BlinkMacSystemFont,sans-serif;line-height:1.5;min-height:100vh}
-  .container{max-width:560px;margin:0 auto;padding:40px 20px 80px}
-  .brand{font-weight:700;font-size:1.05rem;letter-spacing:-0.02em;margin-bottom:24px;color:#aaa}
-  .brand span{color:#4ade80}
-  .progress{display:flex;gap:6px;margin-bottom:32px}
-  .progress div{flex:1;height:4px;border-radius:2px;background:#222}
-  .progress div.active{background:#4ade80}
-  h1{font-size:1.6rem;font-weight:700;letter-spacing:-0.02em;margin:0 0 8px}
-  .step-sub{color:#888;margin-bottom:28px;font-size:0.95rem}
-  label{display:block;font-size:0.85rem;color:#aaa;margin-bottom:6px;font-weight:500;margin-top:14px}
-  input,select,textarea{width:100%;padding:12px 14px;font-size:1rem;background:#111;border:1px solid #1f1f1f;border-radius:10px;color:#fff;font-family:inherit}
-  input:focus,select:focus,textarea:focus{outline:none;border-color:#4ade80}
-  .field-help{font-size:0.78rem;color:#666;margin-top:4px}
-  .btn{padding:14px 18px;font-size:1rem;font-weight:600;border-radius:10px;cursor:pointer;border:none;font-family:inherit}
-  .btn-primary{background:#4ade80;color:#000}
-  .btn-secondary{background:#1a1a1a;color:#fff;border:1px solid #2a2a2a}
-  .btn:active{transform:scale(0.98)}
-  .btn:disabled{opacity:0.5;cursor:wait}
-  .actions{display:flex;justify-content:space-between;gap:10px;margin-top:32px}
-  .actions .btn{flex:1}
+:root {
+  --ink: #0A0A0A; --paper: #FAFAF7; --bone: #EFEDE5; --hi-vis: #F2E600;
+  --rec-green: #1F4A2C; --rec-red: #6B1F2A;
+  --line: rgba(10,10,10,0.10); --line-strong: rgba(10,10,10,0.20);
+  --muted: rgba(10,10,10,0.55);
+  --maxi-round: 'Bricolage Grotesque', system-ui, sans-serif;
+  --maxi-mono: 'DM Mono', monospace;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body { background: var(--bone); color: var(--ink); font-family: var(--maxi-mono); font-size: 15px; line-height: 1.5; min-height: 100vh; -webkit-font-smoothing: antialiased; }
+.container { max-width: 580px; margin: 0 auto; padding: 28px 22px 80px; }
 
-  .integration-card{background:#111;border:1px solid #1f1f1f;border-radius:14px;padding:18px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;gap:14px}
-  .integration-card.connected{border-color:#1f5a35;background:#0d2818}
-  .integration-info{flex:1}
-  .integration-info strong{display:block;font-size:1.05rem}
-  .integration-info span{color:#888;font-size:0.85rem}
+.nav { padding-bottom: 16px; border-bottom: 1px solid var(--line-strong); margin-bottom: 30px; }
+.brand { font-family: var(--maxi-round); font-weight: 800; font-size: 1.3rem; letter-spacing: -0.03em; text-transform: uppercase; line-height: 1; }
+.brand .accent { background: var(--hi-vis); padding: 0 6px; }
 
-  .options{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin-top:8px}
-  .option{padding:11px 12px;background:#111;border:1px solid #1f1f1f;border-radius:10px;cursor:pointer;text-align:center;font-size:0.9rem;font-weight:500;transition:all 0.15s}
-  .option.selected{background:#0d2818;border-color:#4ade80;color:#4ade80}
-  .option:active{transform:scale(0.97)}
+.progress-row { display: flex; gap: 6px; margin-bottom: 24px; }
+.progress-pip { flex: 1; height: 4px; background: rgba(10,10,10,0.15); }
+.progress-pip.active { background: var(--ink); }
+.progress-pip.complete { background: var(--hi-vis); }
 
-  .checkbox{display:flex;align-items:center;gap:10px;padding:12px;background:#111;border:1px solid #1f1f1f;border-radius:10px;cursor:pointer;margin-top:8px;font-size:0.92rem}
-  .checkbox input{width:auto;margin:0}
-  .checkbox.checked{border-color:#4ade80}
+.step-tag { font-family: var(--maxi-mono); font-size: 0.62rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; padding-bottom: 8px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; }
+.step-tag .num { color: var(--muted); }
 
-  .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-  .err{color:#f87171;font-size:0.85rem;margin-top:8px;display:none}
-  .err.show{display:block}
+h1 { font-family: var(--maxi-round); font-weight: 800; font-size: clamp(1.9rem, 5vw, 2.4rem); letter-spacing: -0.02em; text-transform: uppercase; line-height: 0.95; margin-bottom: 8px; }
+.step-sub { font-family: var(--maxi-mono); font-size: 0.88rem; color: var(--muted); margin-bottom: 26px; line-height: 1.55; }
+
+label { display: block; font-family: var(--maxi-mono); font-size: 0.62rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; font-weight: 500; margin-top: 16px; }
+label:first-of-type { margin-top: 0; }
+label .lite { color: rgba(10,10,10,0.4); font-weight: 400; text-transform: none; letter-spacing: 0.02em; font-size: 0.78em; }
+input, select, textarea { width: 100%; padding: 12px 13px; font-family: var(--maxi-mono); font-size: 0.95rem; background: var(--paper); border: 1px solid var(--line-strong); color: var(--ink); }
+input:focus, select:focus, textarea:focus { outline: none; border-color: var(--ink); background: var(--paper); }
+.field-help { font-family: var(--maxi-mono); font-size: 0.7rem; color: var(--muted); margin-top: 6px; line-height: 1.4; letter-spacing: 0.02em; }
+
+.btn { padding: 14px 18px; font-family: var(--maxi-mono); font-size: 0.78rem; letter-spacing: 0.16em; text-transform: uppercase; font-weight: 500; border: 1px solid var(--ink); cursor: pointer; }
+.btn-primary { background: var(--hi-vis); color: var(--ink); }
+.btn-secondary { background: var(--paper); color: var(--ink); }
+.btn-ink { background: var(--ink); color: var(--paper); }
+.btn:active { transform: scale(0.98); }
+.btn:disabled { opacity: 0.5; cursor: wait; }
+.actions { display: flex; justify-content: space-between; gap: 10px; margin-top: 30px; }
+.actions .btn { flex: 1; }
+
+.integration-card { background: var(--paper); border: 1px solid var(--line-strong); padding: 18px 18px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; gap: 14px; }
+.integration-card.connected { border-color: var(--rec-green); background: var(--rec-green); color: var(--paper); }
+.integration-card.connected .integration-info span { color: rgba(250,250,247,0.65); }
+.integration-info { flex: 1; }
+.integration-info strong { font-family: var(--maxi-round); font-weight: 700; font-size: 1.05rem; letter-spacing: -0.01em; text-transform: uppercase; display: block; }
+.integration-info span { color: var(--muted); font-size: 0.78rem; font-family: var(--maxi-mono); letter-spacing: 0.02em; display: block; margin-top: 4px; }
+.integration-info .badge { display: inline-block; background: var(--bone); color: var(--muted); padding: 2px 8px; font-family: var(--maxi-mono); font-size: 0.6rem; letter-spacing: 0.15em; text-transform: uppercase; margin-top: 6px; font-weight: 500; }
+.integration-info .badge.required { background: var(--rec-red); color: var(--paper); }
+.integration-info .badge.optional { background: var(--bone); color: var(--muted); border: 1px solid var(--line-strong); }
+.integration-info .badge.connected { background: var(--hi-vis); color: var(--ink); }
+
+.options { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 6px; margin-top: 4px; }
+.option { padding: 12px 12px; background: var(--paper); border: 1px solid var(--line-strong); cursor: pointer; text-align: center; font-family: var(--maxi-mono); font-size: 0.82rem; font-weight: 500; letter-spacing: 0.02em; transition: all 0.12s; }
+.option.selected { background: var(--ink); color: var(--hi-vis); border-color: var(--ink); }
+.option:active { transform: scale(0.97); }
+
+.checkbox { display: flex; align-items: center; gap: 12px; padding: 14px 14px; background: var(--paper); border: 1px solid var(--line-strong); cursor: pointer; margin-top: 10px; font-family: var(--maxi-mono); font-size: 0.9rem; }
+.checkbox input { width: auto; margin: 0; padding: 0; cursor: pointer; }
+.checkbox.checked { border-color: var(--ink); background: var(--bone); }
+
+.row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.err { color: var(--paper); background: var(--rec-red); padding: 10px 12px; font-family: var(--maxi-mono); font-size: 0.82rem; margin-top: 12px; display: none; letter-spacing: 0.02em; }
+.err.show { display: block; }
+
+.notice { background: var(--bone); border-left: 3px solid var(--ink); padding: 12px 14px; margin: 14px 0; font-family: var(--maxi-mono); font-size: 0.82rem; line-height: 1.5; color: var(--ink); }
+.notice strong { font-weight: 600; }
 </style>
 </head>
 <body>
 <div class="container">
-  <div class="brand">🚴 DBP <span>Coach</span></div>
-  <div class="progress" id="progress">
-    <div class="active"></div><div></div><div></div><div></div>
+  <div class="nav">
+    <div class="brand">DBP <span class="accent">COACH</span></div>
+  </div>
+
+  <div class="progress-row" id="progress">
+    <div class="progress-pip active"></div>
+    <div class="progress-pip"></div>
+    <div class="progress-pip"></div>
+    <div class="progress-pip"></div>
   </div>
 
   <!-- STEP 1: Personal info -->
   <div class="step" id="step1">
-    <h1>About you</h1>
-    <p class="step-sub">Quick basics so Coach can personalize.</p>
+    <div class="step-tag">
+      <span class="num">01</span>
+      <span>ABOUT YOU</span>
+      <span class="num">SETUP</span>
+    </div>
 
-    <label>Name</label>
-    <input type="text" id="name" placeholder="Your name">
+    <h1>About<br>you.</h1>
+    <p class="step-sub">Quick basics so DBP can personalize.</p>
 
-    <label>Birthdate <span style="color:#666">(unlocks birthday perks if you go Elite)</span></label>
+    <label>Full name</label>
+    <input type="text" id="name" placeholder="Your name" autocomplete="name">
+
+    <label>Birthdate <span class="lite">(unlocks birthday rewards)</span></label>
     <input type="date" id="birthdate">
 
     <div class="row">
@@ -77,60 +121,80 @@
     </div>
 
     <div class="actions">
-      <button class="btn btn-secondary" disabled>Back</button>
-      <button class="btn btn-primary" onclick="nextStep()">Continue</button>
+      <button class="btn btn-secondary" disabled style="opacity:0.4">Back</button>
+      <button class="btn btn-primary" onclick="nextStep()">Continue →</button>
     </div>
   </div>
 
-  <!-- STEP 2: Connect data sources -->
+  <!-- STEP 2: Connect data sources (only for Coach tier) -->
   <div class="step" id="step2" style="display:none">
-    <h1>Connect your data</h1>
-    <p class="step-sub">Coach reads your WHOOP for recovery and Strava for activity. Both required.</p>
-
-    <div class="integration-card" id="whoop-card">
-      <div class="integration-info">
-        <strong>WHOOP</strong>
-        <span id="whoop-status">Not connected</span>
-      </div>
-      <a class="btn btn-primary" href="/integrations/whoop/connect" id="whoop-btn">Connect</a>
+    <div class="step-tag">
+      <span class="num">02</span>
+      <span>CONNECT DATA</span>
+      <span class="num" id="connectStepHint">REQUIRED</span>
     </div>
+
+    <h1>Connect<br>your data.</h1>
+    <p class="step-sub" id="connectSubtitle">DBP Coach reads your activity and recovery to personalize prescriptions.</p>
 
     <div class="integration-card" id="strava-card">
       <div class="integration-info">
         <strong>Strava</strong>
         <span id="strava-status">Not connected</span>
+        <span class="badge required" id="strava-badge">Required</span>
       </div>
-      <a class="btn btn-primary" href="/integrations/strava/connect" id="strava-btn">Connect</a>
+      <a class="btn btn-ink" href="/integrations/strava/connect" id="strava-btn">Connect</a>
     </div>
 
-    <div class="err" id="connectErr">Both accounts required to continue.</div>
+    <div class="integration-card" id="whoop-card">
+      <div class="integration-info">
+        <strong>WHOOP</strong>
+        <span id="whoop-status">Not connected</span>
+        <span class="badge optional" id="whoop-badge">Recommended</span>
+      </div>
+      <a class="btn btn-ink" href="/integrations/whoop/connect" id="whoop-btn">Connect</a>
+    </div>
+
+    <div class="notice">
+      <strong>No WHOOP?</strong> No problem. Coach works with just Strava + your daily check-in. WHOOP unlocks more precision around recovery, but it's not required.
+    </div>
+
+    <div class="err" id="connectErr">Connect Strava to continue.</div>
 
     <div class="actions">
-      <button class="btn btn-secondary" onclick="prevStep()">Back</button>
-      <button class="btn btn-primary" onclick="nextStep()">Continue</button>
+      <button class="btn btn-secondary" onclick="prevStep()">← Back</button>
+      <button class="btn btn-primary" onclick="nextStep()">Continue →</button>
     </div>
   </div>
 
-  <!-- STEP 3: Training -->
+  <!-- STEP 2 ALT (Rewards tier — skip integrations) — never shown directly, just merged into step 1's nextStep when tier=rewards -->
+
+  <!-- STEP 3: Training context (Coach tier only) -->
   <div class="step" id="step3" style="display:none">
-    <h1>Training context</h1>
-    <p class="step-sub">Helps Coach prescribe the right balance of work.</p>
+    <div class="step-tag">
+      <span class="num">03</span>
+      <span>TRAINING CONTEXT</span>
+      <span class="num">PERFORMANCE</span>
+    </div>
+
+    <h1>Training<br>context.</h1>
+    <p class="step-sub">So Coach prescribes the right balance of work.</p>
 
     <label>Primary focus</label>
     <div class="options" id="focus-options">
-      <div class="option" data-value="cycling">Cycling performance</div>
-      <div class="option" data-value="cycling-balanced">Cycling + strength</div>
-      <div class="option" data-value="general">General fitness</div>
-      <div class="option" data-value="aerobic_base">Build aerobic base</div>
+      <div class="option" data-value="cycling">Cycling Performance</div>
+      <div class="option" data-value="cycling-balanced">Cycling + Strength</div>
+      <div class="option" data-value="general">General Fitness</div>
+      <div class="option" data-value="aerobic_base">Aerobic Base</div>
     </div>
 
-    <div class="row" style="margin-top:14px">
+    <div class="row" style="margin-top:16px">
       <div>
-        <label>Weekly training hours</label>
+        <label>Weekly hours</label>
         <input type="number" id="weekly_hours_target" placeholder="e.g. 8" step="0.5" min="2" max="20">
       </div>
       <div>
-        <label>Strength sessions / week</label>
+        <label>Strength/week</label>
         <select id="strength_target_per_week">
           <option value="0">0</option>
           <option value="1">1</option>
@@ -141,21 +205,27 @@
     </div>
 
     <label>FTP (cycling threshold watts)</label>
-    <input type="number" id="ftp_watts" placeholder="If unknown, leave blank — we'll estimate from your Strava">
-    <div class="field-help">Tip: do a 20-min FTP test in Zwift or outside. Until then, we estimate from your best 20-min normalized power.</div>
+    <input type="number" id="ftp_watts" placeholder="If unknown, leave blank">
+    <div class="field-help">Tip: do a 20-min FTP test in Zwift or outside. Until then, we estimate from your best 20-min normalized power on Strava.</div>
 
     <div class="actions">
-      <button class="btn btn-secondary" onclick="prevStep()">Back</button>
-      <button class="btn btn-primary" onclick="nextStep()">Continue</button>
+      <button class="btn btn-secondary" onclick="prevStep()">← Back</button>
+      <button class="btn btn-primary" onclick="nextStep()">Continue →</button>
     </div>
   </div>
 
-  <!-- STEP 4: Equipment -->
+  <!-- STEP 4: Equipment (Coach tier only) -->
   <div class="step" id="step4" style="display:none">
-    <h1>Equipment</h1>
+    <div class="step-tag">
+      <span class="num">04</span>
+      <span>EQUIPMENT</span>
+      <span class="num">FINAL STEP</span>
+    </div>
+
+    <h1>Equipment.</h1>
     <p class="step-sub">For strength prescriptions.</p>
 
-    <label>Home gym equipment (select all available)</label>
+    <label>Home gym (select all available)</label>
     <div class="options" id="equipment-options">
       <div class="option" data-value="barbell">Barbell + plates</div>
       <div class="option" data-value="rack">Squat rack</div>
@@ -164,55 +234,82 @@
       <div class="option" data-value="kettlebells">Kettlebells</div>
       <div class="option" data-value="pullup_bar">Pull-up bar</div>
       <div class="option" data-value="bands">Bands</div>
-      <div class="option" data-value="machines">Cable/machines</div>
+      <div class="option" data-value="machines">Cable / machines</div>
     </div>
 
-    <label class="checkbox">
+    <label class="checkbox" style="margin-top:18px">
       <input type="checkbox" id="has_indoor_trainer">
       <span>I have an indoor trainer (Wahoo, Tacx, Zwift, etc.)</span>
     </label>
 
     <div class="actions">
-      <button class="btn btn-secondary" onclick="prevStep()">Back</button>
-      <button class="btn btn-primary" onclick="finish()" id="finishBtn">Finish setup</button>
+      <button class="btn btn-secondary" onclick="prevStep()">← Back</button>
+      <button class="btn btn-primary" onclick="finish()" id="finishBtn">Finish setup →</button>
     </div>
     <div class="err" id="finishErr"></div>
+  </div>
+
+  <!-- STEP REWARDS_DONE — for Rewards tier users who just need basic setup -->
+  <div class="step" id="stepRewardsDone" style="display:none">
+    <div class="step-tag">
+      <span class="num">02</span>
+      <span>YOU'RE IN</span>
+      <span class="num">FINAL STEP</span>
+    </div>
+
+    <h1>You're<br>set.</h1>
+    <p class="step-sub">Your DBP membership is active. Your member code unlocks rewards in person at the shop.</p>
+
+    <div class="notice">
+      <strong>Want training too?</strong> Upgrade to Coach anytime from Settings — adds AI training prescriptions to your membership for $20 more per month.
+    </div>
+
+    <div class="actions">
+      <button class="btn btn-secondary" onclick="prevStep()">← Back</button>
+      <button class="btn btn-primary" onclick="finish()" id="finishBtnRewards">Open dashboard →</button>
+    </div>
+    <div class="err" id="finishErrRewards"></div>
   </div>
 </div>
 
 <script>
 let currentStep = 1;
-let state = { benchmarks: {}, integrations: [] };
+let state = { benchmarks: {}, integrations: [], user: {} };
+let userTier = 'coach'; // assume coach by default; updated from server
 
 async function loadState(){
   try {
     const r = await fetch('/onboarding/state');
     const data = await r.json();
     state = data;
-    if (data.benchmarks) {
-      document.getElementById('name').value = data.user.name || '';
-      document.getElementById('bodyweight_kg').value = data.benchmarks.bodyweight_kg || '';
-      document.getElementById('location_name').value = data.benchmarks.location_name || '';
-      document.getElementById('weekly_hours_target').value = data.benchmarks.weekly_hours_target || '';
-      document.getElementById('ftp_watts').value = data.benchmarks.ftp_watts || '';
-      if (data.benchmarks.strength_target_per_week != null) {
-        document.getElementById('strength_target_per_week').value = data.benchmarks.strength_target_per_week;
-      }
-      if (data.benchmarks.primary_focus) {
-        const focus = document.querySelector(`#focus-options [data-value="${data.benchmarks.primary_focus}"]`);
+    userTier = data.user?.tier || 'coach';
+
+    if (data.benchmarks || data.user) {
+      const b = data.benchmarks || {};
+      const u = data.user || {};
+      const get = id => document.getElementById(id);
+      get('name').value = u.name || '';
+      get('bodyweight_kg').value = b.bodyweight_kg || '';
+      get('location_name').value = b.location_name || '';
+      get('weekly_hours_target').value = b.weekly_hours_target || '';
+      get('ftp_watts').value = b.ftp_watts || '';
+      if (b.strength_target_per_week != null) get('strength_target_per_week').value = b.strength_target_per_week;
+      if (b.primary_focus) {
+        const focus = document.querySelector(`#focus-options [data-value="${b.primary_focus}"]`);
         if (focus) focus.classList.add('selected');
       }
-      if (data.benchmarks.home_gym_equipment) {
-        const eq = data.benchmarks.home_gym_equipment;
-        eq.forEach(v => {
+      if (b.home_gym_equipment) {
+        b.home_gym_equipment.forEach(v => {
           const el = document.querySelector(`#equipment-options [data-value="${v}"]`);
           if (el) el.classList.add('selected');
         });
       }
-      if (data.benchmarks.has_indoor_trainer) {
-        document.getElementById('has_indoor_trainer').checked = true;
-      }
+      if (b.has_indoor_trainer) get('has_indoor_trainer').checked = true;
     }
+
+    // Update progress bar based on tier (rewards has 2 steps, coach has 4)
+    updateProgressForTier();
+
     renderIntegrations();
     // If user came back via OAuth callback, jump to step 2
     const params = new URLSearchParams(location.search);
@@ -222,18 +319,34 @@ async function loadState(){
   } catch(e) { console.error(e); }
 }
 
+function updateProgressForTier() {
+  const progress = document.getElementById('progress');
+  if (userTier === 'rewards') {
+    // Only 2 steps for rewards
+    progress.innerHTML = '<div class="progress-pip active"></div><div class="progress-pip"></div>';
+  } else {
+    // 4 steps for coach
+    progress.innerHTML = '<div class="progress-pip active"></div><div class="progress-pip"></div><div class="progress-pip"></div><div class="progress-pip"></div>';
+  }
+}
+
 function renderIntegrations(){
   const whoop = state.integrations?.find(i => i.service === 'whoop');
   const strava = state.integrations?.find(i => i.service === 'strava');
+
   if (whoop && whoop.status === 'connected') {
     document.getElementById('whoop-status').textContent = '✓ Connected';
     document.getElementById('whoop-card').classList.add('connected');
     document.getElementById('whoop-btn').textContent = 'Reconnect';
+    document.getElementById('whoop-badge').textContent = 'Connected';
+    document.getElementById('whoop-badge').className = 'badge connected';
   }
   if (strava && strava.status === 'connected') {
     document.getElementById('strava-status').textContent = '✓ Connected';
     document.getElementById('strava-card').classList.add('connected');
     document.getElementById('strava-btn').textContent = 'Reconnect';
+    document.getElementById('strava-badge').textContent = 'Connected';
+    document.getElementById('strava-badge').className = 'badge connected';
   }
 }
 
@@ -245,9 +358,7 @@ document.querySelectorAll('#focus-options .option').forEach(el => {
 });
 
 document.querySelectorAll('#equipment-options .option').forEach(el => {
-  el.addEventListener('click', () => {
-    el.classList.toggle('selected');
-  });
+  el.addEventListener('click', () => { el.classList.toggle('selected'); });
 });
 
 async function saveStep(){
@@ -257,7 +368,6 @@ async function saveStep(){
     data.birthdate = document.getElementById('birthdate').value || null;
     data.bodyweight_kg = parseFloat(document.getElementById('bodyweight_kg').value) || null;
     data.location_name = document.getElementById('location_name').value.trim();
-    // If Durango, hardcode lat/lng
     if (/durango/i.test(data.location_name)) {
       data.location_lat = 37.2753;
       data.location_lng = -107.8801;
@@ -283,12 +393,21 @@ async function saveStep(){
 
 async function nextStep(){
   await saveStep();
+
+  // Rewards tier: only 1 step (account info), then skip to done
+  if (userTier === 'rewards') {
+    if (currentStep === 1) {
+      goTo('rewardsDone');
+      return;
+    }
+  }
+
+  // Coach tier: validate Strava connected before moving past step 2
   if (currentStep === 2) {
-    // Verify both integrations
     await loadState();
-    const whoop = state.integrations?.find(i => i.service === 'whoop' && i.status === 'connected');
     const strava = state.integrations?.find(i => i.service === 'strava' && i.status === 'connected');
-    if (!whoop || !strava) {
+    if (!strava) {
+      document.getElementById('connectErr').textContent = 'Connect Strava to continue. (WHOOP optional but recommended.)';
       document.getElementById('connectErr').classList.add('show');
       return;
     }
@@ -296,25 +415,38 @@ async function nextStep(){
   goTo(currentStep + 1);
 }
 
-function prevStep(){ goTo(currentStep - 1); }
+function prevStep(){
+  if (userTier === 'rewards' && currentStep === 'rewardsDone') {
+    goTo(1);
+    return;
+  }
+  goTo(currentStep - 1);
+}
 
 function goTo(n){
-  if (n < 1 || n > 4) return;
   document.querySelectorAll('.step').forEach(s => s.style.display = 'none');
-  document.getElementById('step' + n).style.display = 'block';
-  document.querySelectorAll('#progress div').forEach((d, i) => {
-    d.classList.toggle('active', i < n);
-  });
-  currentStep = n;
+
+  if (n === 'rewardsDone') {
+    document.getElementById('stepRewardsDone').style.display = 'block';
+    document.querySelectorAll('#progress .progress-pip').forEach(d => d.classList.add('active'));
+    currentStep = 'rewardsDone';
+  } else {
+    if (n < 1 || n > 4) return;
+    document.getElementById('step' + n).style.display = 'block';
+    document.querySelectorAll('#progress .progress-pip').forEach((d, i) => {
+      d.classList.toggle('active', i < n);
+    });
+    currentStep = n;
+  }
   window.scrollTo(0, 0);
 }
 
 async function finish(){
-  const btn = document.getElementById('finishBtn');
-  const err = document.getElementById('finishErr');
+  const btn = document.getElementById(currentStep === 'rewardsDone' ? 'finishBtnRewards' : 'finishBtn');
+  const err = document.getElementById(currentStep === 'rewardsDone' ? 'finishErrRewards' : 'finishErr');
   btn.disabled = true;
   btn.textContent = 'Setting up…';
-  await saveStep();
+  if (currentStep !== 'rewardsDone') await saveStep();
   try {
     const r = await fetch('/onboarding/complete', { method: 'POST' });
     const data = await r.json();
@@ -322,7 +454,7 @@ async function finish(){
       err.textContent = data.error || 'Could not complete setup';
       err.classList.add('show');
       btn.disabled = false;
-      btn.textContent = 'Finish setup';
+      btn.textContent = 'Finish setup →';
       return;
     }
     window.location = '/dashboard';
@@ -330,7 +462,7 @@ async function finish(){
     err.textContent = e.message;
     err.classList.add('show');
     btn.disabled = false;
-    btn.textContent = 'Finish setup';
+    btn.textContent = 'Finish setup →';
   }
 }
 
