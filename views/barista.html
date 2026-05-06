@@ -45,6 +45,10 @@
   <input type="text" id="code" placeholder="DBP-XXXX" maxlength="10" oninput="this.value = this.value.toUpperCase()">
 
   <button class="btn btn-secondary" onclick="lookup()">Look up</button>
+  <div id="subtotalRow" style="display:none;margin-top:14px">
+    <label style="font-family:inherit;font-size:0.85rem;color:#aaa;margin-bottom:6px;display:block;font-weight:500">Subtotal ($)</label>
+    <input type="number" id="subtotal" step="0.01" min="0" placeholder="e.g. 6.50" inputmode="decimal" style="text-transform:none;letter-spacing:0;font-family:inherit;font-size:1.05rem">
+  </div>
   <button class="btn btn-primary" id="redeemBtn" onclick="redeem()" style="display:none">Mark redeemed</button>
 
   <div class="result" id="result"></div>
@@ -87,7 +91,19 @@ async function lookup(){
       return;
     }
     pendingPerk = data;
-    showResult(true, `✓ Valid · ${data.user_name}`, data.description);
+    let body = data.description;
+    if (data.is_percentage) {
+      body += `<br><small style="color:#888">${data.percentage_off}% discount — enter subtotal below</small>`;
+    } else if (data.expected_savings_cents) {
+      body += `<br><small style="color:#888">Saves member $${(data.expected_savings_cents/100).toFixed(2)}</small>`;
+    }
+    showResult(true, `✓ Valid · ${data.user_name}`, body);
+    // Show subtotal input if percentage
+    if (data.is_percentage) {
+      document.getElementById('subtotalRow').style.display = 'block';
+    } else {
+      document.getElementById('subtotalRow').style.display = 'none';
+    }
     document.getElementById('redeemBtn').style.display = 'block';
   } catch(e) {
     showResult(false, e.message, '');
@@ -99,19 +115,31 @@ async function redeem(){
   const pin = document.getElementById('pin').value.trim();
   const code = document.getElementById('code').value.trim().toUpperCase();
   const btn = document.getElementById('redeemBtn');
+
+  let subtotal_cents = null;
+  if (pendingPerk.is_percentage) {
+    const sub = parseFloat(document.getElementById('subtotal').value);
+    if (!sub || sub <= 0) { alert('Enter the subtotal amount'); return; }
+    subtotal_cents = Math.round(sub * 100);
+  }
+
   btn.disabled = true;
   btn.textContent = 'Redeeming…';
   try {
     const r = await fetch('/api/perks/redeem', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ pin, code }),
+      body: JSON.stringify({ pin, code, subtotal_cents }),
     });
     const data = await r.json();
     if (data.success) {
-      showResult(true, '✓ Redeemed!', `${pendingPerk.user_name} · ${pendingPerk.description}`);
+      const saved = data.perk?.savings_cents;
+      const savedLine = saved ? `<br>Saved member <strong>$${(saved/100).toFixed(2)}</strong>` : '';
+      showResult(true, '✓ Redeemed!', `${pendingPerk.user_name} · ${pendingPerk.description}${savedLine}`);
       btn.style.display = 'none';
+      document.getElementById('subtotalRow').style.display = 'none';
       document.getElementById('code').value = '';
+      document.getElementById('subtotal').value = '';
       pendingPerk = null;
     } else {
       showResult(false, data.error, '');
