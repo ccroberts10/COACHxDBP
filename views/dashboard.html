@@ -907,9 +907,19 @@ let appData = null;
 let pendingFeedback = { status: null, rpe: 7, actual_workout_type: null, actual_workout_detail: '', skip_reason: null, note: '' };
 let pendingCheckin = { sleep_quality: null, legs_feel: null, alcohol_drinks: null, stress_level: null, note: '' };
 
-function fmtDate(s){return new Date(s+'T12:00:00').toLocaleDateString('en-US',{weekday:'long',month:'short',day:'numeric'})}
-function fmtShortDate(s){return new Date(s+'T12:00:00').toLocaleDateString('en-US',{month:'numeric',day:'numeric'})}
-function fmtDay(s){return new Date(s+'T12:00:00').toLocaleDateString('en-US',{weekday:'short'}).slice(0,3).toUpperCase()}
+function _toDate(s) {
+  if (!s) return null;
+  // If it's already a Date, return as-is
+  if (s instanceof Date) return s;
+  // If it's an ISO timestamp (has 'T'), parse directly
+  if (typeof s === 'string' && s.includes('T')) return new Date(s);
+  // If it's just YYYY-MM-DD, parse at noon to avoid timezone drift
+  if (typeof s === 'string') return new Date(s + 'T12:00:00');
+  return new Date(s);
+}
+function fmtDate(s){const d=_toDate(s);return d&&!isNaN(d)?d.toLocaleDateString('en-US',{weekday:'long',month:'short',day:'numeric'}):'—'}
+function fmtShortDate(s){const d=_toDate(s);return d&&!isNaN(d)?d.toLocaleDateString('en-US',{month:'numeric',day:'numeric'}):'—'}
+function fmtDay(s){const d=_toDate(s);return d&&!isNaN(d)?d.toLocaleDateString('en-US',{weekday:'short'}).slice(0,3).toUpperCase():'—'}
 function recColor(p){return p>=67?'green':p>=34?'yellow':'red'}
 function recState(p){return p>=67?'Recovered':p>=34?'Caution':'Strain'}
 function arrow(curr,base){if(curr==null||base==null)return'';const d=curr-base;if(Math.abs(d)<base*0.02)return'<span class="stat-arrow arrow-flat">→</span>';return d>0?'<span class="stat-arrow arrow-up">▲</span>':'<span class="stat-arrow arrow-down">▼</span>'}
