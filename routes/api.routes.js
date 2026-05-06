@@ -62,8 +62,23 @@ router.get('/data', auth.requireActiveSubscription, async (req, res) => {
       [userId]
     );
 
+    // Punch card + streak stats (paid tiers only)
+    let punchStats = null;
+    let streakStats = null;
+    let memberCode = null;
+    if (['rewards', 'coach'].includes(req.user.subscription_tier)) {
+      try {
+        const memberRewards = require('../lib/member-rewards');
+        memberCode = await memberRewards.ensureMemberCode(userId);
+        punchStats = await memberRewards.getPunchStats(userId);
+        streakStats = await memberRewards.getStreakStats(userId);
+      } catch (e) {
+        console.error('[api/data] member rewards lookup failed:', e.message);
+      }
+    }
+
     res.json({
-      user: { id: req.user.id, email: req.user.email, name: req.user.name, tier: req.user.subscription_tier, status: req.user.subscription_status },
+      user: { id: req.user.id, email: req.user.email, name: req.user.name, tier: req.user.subscription_tier, status: req.user.subscription_status, member_code: memberCode },
       snapshots,
       prescriptions: prescriptions.map(p => ({ ...p, full_response: p.full_response, feedback: fbByDate[dateKey(p.date)] || null })),
       activities,
@@ -78,6 +93,8 @@ router.get('/data', auth.requireActiveSubscription, async (req, res) => {
         lifetime_cents: parseInt(savingsRow?.lifetime_cents || 0),
         redemption_count: parseInt(savingsRow?.redemption_count || 0),
       },
+      punch: punchStats,
+      streak: streakStats,
       connections,
     });
   } catch (e) {
@@ -133,7 +150,19 @@ router.post('/checkin', auth.requireActiveSubscription, async (req, res) => {
     [req.user.id, date, sleep_quality || null, legs_feel || null,
      alcohol_drinks != null ? alcohol_drinks : null, stress_level || null, note || null]
   );
-  res.json({ success: true });
+
+  // Process streak (only for paid users — rewards/coach)
+  let streakResult = null;
+  if (['rewards', 'coach'].includes(req.user.subscription_tier)) {
+    try {
+      const memberRewards = require('../lib/member-rewards');
+      streakResult = await memberRewards.processCheckinForStreak(req.user.id, date);
+    } catch (e) {
+      console.error('[checkin] streak processing failed:', e.message);
+    }
+  }
+
+  res.json({ success: true, streak: streakResult });
 });
 
 // Disconnect an integration
