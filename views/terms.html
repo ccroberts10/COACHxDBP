@@ -4,58 +4,102 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Terms of Service — DBP Coach</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,700;12..96,800&display=swap" rel="stylesheet">
 <style>
-  body{font-family:-apple-system,BlinkMacSystemFont,sans-serif;max-width:720px;margin:40px auto;padding:0 24px;color:#1a1a1a;line-height:1.65;background:#fff}
-  h1{font-size:1.8em;margin-bottom:4px}
-  h2{font-size:1.15em;margin-top:32px;color:#333}
-  .updated{color:#888;font-size:0.9em;margin-bottom:32px}
-  a{color:#2563eb}
+:root {
+  --ink: #0A0A0A; --paper: #FAFAF7; --bone: #EFEDE5; --hi-vis: #F2E600;
+  --line: rgba(10,10,10,0.10); --line-strong: rgba(10,10,10,0.20);
+  --muted: rgba(10,10,10,0.55);
+  --maxi-round: 'Bricolage Grotesque', system-ui, sans-serif;
+  --maxi-mono: 'DM Mono', monospace;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { background: var(--bone); color: var(--ink); font-family: var(--maxi-mono); font-size: 15px; line-height: 1.65; -webkit-font-smoothing: antialiased; }
+.container { max-width: 760px; margin: 0 auto; padding: 30px 24px 60px; }
+.nav { padding-bottom: 18px; border-bottom: 1px solid var(--line-strong); margin-bottom: 38px; display: flex; justify-content: space-between; align-items: center; }
+.brand { font-family: var(--maxi-round); font-weight: 800; font-size: 1.3rem; letter-spacing: -0.03em; text-transform: uppercase; line-height: 1; }
+.brand .accent { background: var(--hi-vis); padding: 0 6px; }
+.back-link { font-family: var(--maxi-mono); font-size: 0.7rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); text-decoration: none; }
+.back-link:hover { color: var(--ink); }
+.section-tag { font-family: var(--maxi-mono); font-size: 0.62rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); margin-bottom: 18px; padding-bottom: 10px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; }
+.section-tag .num { color: var(--muted); }
+h1 { font-family: var(--maxi-round); font-weight: 800; font-size: clamp(2.2rem, 6vw, 3.2rem); letter-spacing: -0.03em; text-transform: uppercase; line-height: 0.95; margin-bottom: 8px; }
+.updated { font-family: var(--maxi-mono); font-size: 0.78rem; letter-spacing: 0.05em; color: var(--muted); margin-bottom: 36px; padding-bottom: 14px; border-bottom: 1px solid var(--line); }
+h2 { font-family: var(--maxi-round); font-weight: 700; font-size: 1.2rem; letter-spacing: -0.015em; text-transform: uppercase; margin-top: 36px; margin-bottom: 12px; }
+p, ul, ol { font-family: var(--maxi-mono); font-size: 0.92rem; color: var(--ink); line-height: 1.7; margin-bottom: 14px; }
+ul, ol { padding-left: 22px; }
+ul li, ol li { margin-bottom: 6px; }
+strong { font-weight: 500; color: var(--ink); }
+a { color: var(--ink); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+a:hover { background: var(--hi-vis); }
+.footer { margin-top: 48px; padding-top: 18px; border-top: 1px solid var(--line); font-family: var(--maxi-mono); font-size: 0.65rem; color: var(--muted); letter-spacing: 0.12em; text-align: center; text-transform: uppercase; }
 </style>
 </head>
 <body>
-<h1>Terms of Service — DBP Coach</h1>
-<p class="updated">Last updated: May 4, 2026</p>
+<div class="container">
+  <div class="nav">
+    <div class="brand">DBP <span class="accent">COACH</span></div>
+    <a class="back-link" href="/">← Home</a>
+  </div>
 
-<p>By using DBP Coach, you agree to these Terms. If you do not agree, do not use the service.</p>
+  <div class="section-tag">
+    <span class="num">02</span>
+    <span>TERMS OF SERVICE</span>
+    <span class="num">LEGAL</span>
+  </div>
 
-<h2>1. The service</h2>
-<p>DBP Coach is a software service operated by Durango Bike Project ("DBP", "we") that uses your WHOOP and Strava data to generate AI-powered training and nutrition recommendations. The "Elite" tier additionally includes in-shop perks at the DBP location in Durango, CO.</p>
+  <h1>Terms of<br>Service</h1>
+  <p class="updated">LAST UPDATED · MAY 6, 2026</p>
 
-<h2>2. Your account</h2>
-<p>You must be 18 or older to use DBP Coach. You are responsible for maintaining the security of your email account, which is used for sign-in. You agree to provide accurate information during onboarding.</p>
+  <p>By using DBP Coach, you agree to these Terms. If you do not agree, do not use the service.</p>
 
-<h2>3. Subscriptions and billing</h2>
-<p>DBP Coach is offered on monthly and annual subscription plans via Stripe. New subscriptions include a 7-day free trial. After the trial, you will be charged the subscription fee on a recurring basis until you cancel. You may cancel at any time via the billing portal; your access continues through the end of the current billing period.</p>
-<p>We may change pricing with 30 days' notice via email. Refunds are at our discretion.</p>
+  <h2>1. The Service</h2>
+  <p>DBP Coach is a software service operated by Durango Bike Project ("DBP", "we") that provides two products:</p>
+  <ul>
+    <li><strong>Rewards membership</strong> — DBP loyalty perks (free Sunday coffee, retail discounts, free flat fixes, free annual tune-up, group rides) redeemable in person at the DBP location.</li>
+    <li><strong>Coach membership</strong> — Includes all Rewards perks plus an AI-powered training and nutrition coach that uses your WHOOP and/or Strava data to generate daily prescriptions.</li>
+  </ul>
 
-<h2>4. Health and safety disclaimer</h2>
-<p><strong>DBP Coach is not a medical service.</strong> Recommendations are AI-generated based on your data and general training principles. They are not medical advice, not a substitute for professional coaching, and should not replace consultation with a doctor or qualified coach. Always consult a physician before starting a new training program. Listen to your body — if a recommended workout feels wrong, skip it. You assume all risks associated with physical activity.</p>
+  <h2>2. Your Account</h2>
+  <p>You must be 18 or older to use DBP Coach. You are responsible for maintaining the security of your email account, which is used for sign-in. You agree to provide accurate information during onboarding.</p>
 
-<h2>5. Acceptable use</h2>
-<p>You agree not to: (a) reverse-engineer the service, (b) use automated tools to scrape data, (c) share your account, (d) use the service for illegal purposes, (e) attempt to access other users' data.</p>
+  <h2>3. Subscriptions and Billing</h2>
+  <p>DBP Coach is offered on monthly and annual subscription plans via Stripe. New subscriptions include a 7-day free trial. After the trial, you will be charged the subscription fee on a recurring basis until you cancel. You may cancel at any time via the billing portal; your access continues through the end of the current billing period.</p>
+  <p>We may change pricing with 30 days' notice via email. Refunds are at our discretion.</p>
 
-<h2>6. Elite tier perks</h2>
-<p>Elite-tier perks (drinks, service discounts, free flat fixes, etc.) are redeemable only at Durango Bike Project, 225 E 8th Ave, Durango, CO. Perk codes are single-use and expire as noted on each code. Perks have no cash value and cannot be transferred to other people. We reserve the right to modify perks with 30 days' notice.</p>
+  <h2>4. Health and Safety Disclaimer</h2>
+  <p><strong>DBP Coach is not a medical service.</strong> Recommendations are AI-generated based on your data and general training principles. They are not medical advice, not a substitute for professional coaching, and should not replace consultation with a doctor or qualified coach. Always consult a physician before starting a new training program. Listen to your body — if a recommended workout feels wrong, skip it. You assume all risks associated with physical activity.</p>
 
-<h2>7. Data ownership</h2>
-<p>You retain ownership of all data you provide. We retain ownership of the software, models, and aggregated insights derived from anonymized usage. See <a href="/privacy">Privacy Policy</a> for details.</p>
+  <h2>5. Acceptable Use</h2>
+  <p>You agree not to: (a) reverse-engineer the service, (b) use automated tools to scrape data, (c) share your account, (d) use the service for illegal purposes, (e) attempt to access other users' data.</p>
 
-<h2>8. Service availability</h2>
-<p>We aim for high availability but do not guarantee uninterrupted service. Daily prescriptions may be delayed if WHOOP, Strava, Anthropic, or other upstream services are unavailable.</p>
+  <h2>6. Member Rewards</h2>
+  <p>DBP member rewards (drinks, service discounts, free flat fixes, free tune-up, etc.) are redeemable only in person at Durango Bike Project, 225 E 8th Ave, Durango, CO. Reward codes are single-use and expire as noted on each code. Rewards have no cash value and cannot be transferred to other people. We reserve the right to modify rewards with 30 days' notice.</p>
 
-<h2>9. Limitation of liability</h2>
-<p>To the maximum extent permitted by law, DBP and its operators are not liable for any indirect, incidental, special, or consequential damages, including injuries arising from following recommendations. Our total liability shall not exceed the amount you paid in the prior 12 months.</p>
+  <h2>7. Data Ownership</h2>
+  <p>You retain ownership of all data you provide. We retain ownership of the software, models, and aggregated insights derived from anonymized usage. See <a href="/privacy">Privacy Policy</a> for details.</p>
 
-<h2>10. Termination</h2>
-<p>You may cancel anytime. We may terminate accounts that violate these Terms. Upon termination, your data will be deleted within 30 days.</p>
+  <h2>8. Service Availability</h2>
+  <p>We aim for high availability but do not guarantee uninterrupted service. Daily prescriptions may be delayed if WHOOP, Strava, AI services, or other upstream services are unavailable.</p>
 
-<h2>11. Changes</h2>
-<p>We may update these Terms with notice via email. Continued use after changes constitutes acceptance.</p>
+  <h2>9. Limitation of Liability</h2>
+  <p>To the maximum extent permitted by law, DBP and its operators are not liable for any indirect, incidental, special, or consequential damages, including injuries arising from following recommendations. Our total liability shall not exceed the amount you paid in the prior 12 months.</p>
 
-<h2>12. Governing law</h2>
-<p>These Terms are governed by the laws of the State of Colorado, USA.</p>
+  <h2>10. Termination</h2>
+  <p>You may cancel anytime. We may terminate accounts that violate these Terms. Upon termination, your data will be deleted within 30 days.</p>
 
-<h2>Contact</h2>
-<p><a href="mailto:ccroberts10@gmail.com">ccroberts10@gmail.com</a> · Durango Bike Project, 225 E 8th Ave, Durango, CO</p>
+  <h2>11. Changes</h2>
+  <p>We may update these Terms with notice via email. Continued use after changes constitutes acceptance.</p>
+
+  <h2>12. Governing Law</h2>
+  <p>These Terms are governed by the laws of the State of Colorado, USA.</p>
+
+  <h2>Contact</h2>
+  <p><a href="mailto:ccroberts10@gmail.com">ccroberts10@gmail.com</a><br>Durango Bike Project · 225 E 8th Ave · Durango, CO 81301</p>
+
+  <div class="footer">DBP COACH · 225 E 8TH AVE · DURANGO, CO 81301</div>
+</div>
 </body>
 </html>
