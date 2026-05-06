@@ -1275,7 +1275,6 @@ function renderToday(){
   const recCol = recColor(snap.recovery_pct);
   const recStateLabel = recState(snap.recovery_pct);
   const acStatus = snap.acute_chronic_ratio < 0.8 ? 'detraining' : snap.acute_chronic_ratio < 1.3 ? 'optimal' : snap.acute_chronic_ratio < 1.5 ? 'building' : 'overreaching';
-  const isElite = appData.user?.tier === 'elite';
 
   // Sync pendingFeedback to this prescription's feedback only when the date changes.
   // This means: yesterday's typed-but-unsaved notes don't carry into today,
