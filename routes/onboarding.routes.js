@@ -77,13 +77,30 @@ router.post('/save', async (req, res) => {
 // Mark onboarding complete (after WHOOP + Strava connected + benchmarks saved)
 router.post('/complete', async (req, res) => {
   const userId = req.user.id;
-  // Verify integrations exist
+  // Get user tier to determine integration requirements
+  const user = await db.one(`SELECT subscription_tier FROM users WHERE id = $1`, [userId]);
+  const tier = user?.subscription_tier;
+
+  // Verify integrations based on tier
   const ints = await db.many(`SELECT service FROM integrations WHERE user_id = $1`, [userId]);
   const services = ints.map(i => i.service);
-  if (!services.includes('whoop') || !services.includes('strava')) {
-    return res.status(400).json({ error: 'Connect both WHOOP and Strava before completing onboarding' });
+
+  // Rewards tier: no integrations required
+  // Coach tier: at minimum Strava required (WHOOP optional but recommended)
+  if (tier === 'coach' && !services.includes('strava')) {
+    return res.status(400).json({ error: 'Connect Strava to use Coach (WHOOP recommended but optional).' });
   }
+
   await db.query(`UPDATE users SET onboarding_completed = TRUE WHERE id = $1`, [userId]);
+
+  // Generate member code if missing
+  try {
+    const memberRewards = require('../lib/member-rewards');
+    await memberRewards.ensureMemberCode(userId);
+  } catch (e) {
+    console.error('[onboarding] member code generation failed:', e.message);
+  }
+
   res.json({ success: true });
 });
 
