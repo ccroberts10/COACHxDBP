@@ -4,53 +4,93 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Privacy Policy — DBP Coach</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,700;12..96,800&display=swap" rel="stylesheet">
 <style>
-  body{font-family:-apple-system,BlinkMacSystemFont,sans-serif;max-width:720px;margin:40px auto;padding:0 24px;color:#1a1a1a;line-height:1.65;background:#fff}
-  h1{font-size:1.8em;margin-bottom:4px}
-  h2{font-size:1.15em;margin-top:32px;color:#333}
-  .updated{color:#888;font-size:0.9em;margin-bottom:32px}
-  a{color:#2563eb}
+:root {
+  --ink: #0A0A0A; --paper: #FAFAF7; --bone: #EFEDE5; --hi-vis: #F2E600;
+  --line: rgba(10,10,10,0.10); --line-strong: rgba(10,10,10,0.20);
+  --muted: rgba(10,10,10,0.55);
+  --maxi-round: 'Bricolage Grotesque', system-ui, sans-serif;
+  --maxi-mono: 'DM Mono', monospace;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { background: var(--bone); color: var(--ink); font-family: var(--maxi-mono); font-size: 15px; line-height: 1.65; -webkit-font-smoothing: antialiased; }
+.container { max-width: 760px; margin: 0 auto; padding: 30px 24px 60px; }
+.nav { padding-bottom: 18px; border-bottom: 1px solid var(--line-strong); margin-bottom: 38px; display: flex; justify-content: space-between; align-items: center; }
+.brand { font-family: var(--maxi-round); font-weight: 800; font-size: 1.3rem; letter-spacing: -0.03em; text-transform: uppercase; line-height: 1; }
+.brand .accent { background: var(--hi-vis); padding: 0 6px; }
+.back-link { font-family: var(--maxi-mono); font-size: 0.7rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); text-decoration: none; }
+.back-link:hover { color: var(--ink); }
+.section-tag { font-family: var(--maxi-mono); font-size: 0.62rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); margin-bottom: 18px; padding-bottom: 10px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; }
+.section-tag .num { color: var(--muted); }
+h1 { font-family: var(--maxi-round); font-weight: 800; font-size: clamp(2.2rem, 6vw, 3.2rem); letter-spacing: -0.03em; text-transform: uppercase; line-height: 0.95; margin-bottom: 8px; }
+.updated { font-family: var(--maxi-mono); font-size: 0.78rem; letter-spacing: 0.05em; color: var(--muted); margin-bottom: 36px; padding-bottom: 14px; border-bottom: 1px solid var(--line); }
+h2 { font-family: var(--maxi-round); font-weight: 700; font-size: 1.2rem; letter-spacing: -0.015em; text-transform: uppercase; margin-top: 36px; margin-bottom: 12px; }
+p, ul, ol { font-family: var(--maxi-mono); font-size: 0.92rem; color: var(--ink); line-height: 1.7; margin-bottom: 14px; }
+ul, ol { padding-left: 22px; }
+ul li, ol li { margin-bottom: 6px; }
+strong { font-weight: 500; color: var(--ink); }
+a { color: var(--ink); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+a:hover { background: var(--hi-vis); }
+.footer { margin-top: 48px; padding-top: 18px; border-top: 1px solid var(--line); font-family: var(--maxi-mono); font-size: 0.65rem; color: var(--muted); letter-spacing: 0.12em; text-align: center; text-transform: uppercase; }
 </style>
 </head>
 <body>
-<h1>Privacy Policy — DBP Coach</h1>
-<p class="updated">Last updated: May 4, 2026</p>
+<div class="container">
+  <div class="nav">
+    <div class="brand">DBP <span class="accent">COACH</span></div>
+    <a class="back-link" href="/">← Home</a>
+  </div>
 
-<p>DBP Coach is a personalized AI training and nutrition application operated by Durango Bike Project ("we", "DBP"). This policy describes what data we access, how we use it, and your rights regarding it.</p>
+  <div class="section-tag">
+    <span class="num">01</span>
+    <span>PRIVACY POLICY</span>
+    <span class="num">LEGAL</span>
+  </div>
 
-<h2>Data we access</h2>
-<p>With your explicit authorization via OAuth, DBP Coach accesses the following data from connected services:</p>
-<ul>
-  <li><strong>WHOOP:</strong> recovery score, heart rate variability (HRV), resting heart rate, sleep stages and duration, daily strain, workout records, and basic profile data.</li>
-  <li><strong>Strava:</strong> activity records including type, duration, distance, heart rate, power, elevation, and route data for activities you have recorded.</li>
-</ul>
-<p>We also collect: your email address (for sign-in), name (optional), birthdate (for birthday perks, Elite tier only), bodyweight, training preferences, and benchmarks you provide.</p>
+  <h1>Privacy<br>Policy</h1>
+  <p class="updated">LAST UPDATED · MAY 6, 2026</p>
 
-<h2>How we use your data</h2>
-<p>Data is used solely to generate your personalized training and nutrition recommendations. Your metrics are sent to the Anthropic API (Claude) for analysis to produce daily prescriptions. Your data is not sold, shared with advertisers, or used to train AI models.</p>
+  <p>DBP Coach is a personalized AI training and nutrition application operated by Durango Bike Project ("we", "DBP"). This policy describes what data we access, how we use it, and your rights regarding it.</p>
 
-<h2>How we store your data</h2>
-<p>Your data is stored in a private Postgres database hosted on Railway. Access tokens are encrypted at rest. Only DBP Coach systems and authorized DBP staff (for support purposes only) can access your data.</p>
+  <h2>Data We Access</h2>
+  <p>With your explicit authorization via OAuth, DBP Coach accesses the following data from connected services:</p>
+  <ul>
+    <li><strong>WHOOP:</strong> recovery score, heart rate variability (HRV), resting heart rate, sleep stages and duration, daily strain, workout records, and basic profile data.</li>
+    <li><strong>Strava:</strong> activity records including type, duration, distance, heart rate, power, elevation, and route data for activities you have recorded.</li>
+  </ul>
+  <p>We also collect: your email address (for sign-in), name (optional), birthdate (for birthday perks, paid tiers only), bodyweight, training preferences, and benchmarks you provide.</p>
 
-<h2>Third-party services</h2>
-<p>DBP Coach transmits data to:</p>
-<ul>
-  <li><strong>Anthropic</strong> — for generating recommendations. <a href="https://www.anthropic.com/legal/privacy">Anthropic's privacy policy</a>.</li>
-  <li><strong>Stripe</strong> — for billing only. We never see your full payment information. <a href="https://stripe.com/privacy">Stripe's privacy policy</a>.</li>
-  <li><strong>Resend</strong> — for transactional email. <a href="https://resend.com/legal/privacy-policy">Resend's privacy policy</a>.</li>
-  <li><strong>OpenWeather</strong> — for weather context (only your approximate city, not exact coordinates).</li>
-</ul>
+  <h2>How We Use Your Data</h2>
+  <p>Data is used solely to generate your personalized training and nutrition recommendations and to operate your DBP membership. Your metrics may be sent to AI services for analysis to produce daily prescriptions. Your data is not sold, shared with advertisers, or used to train AI models.</p>
 
-<h2>Data retention and deletion</h2>
-<p>You can revoke DBP Coach's access to WHOOP at any time at <a href="https://app.prod.whoop.com/data-and-privacy">your WHOOP privacy settings</a> and Strava at <a href="https://www.strava.com/settings/apps">your Strava settings</a>. To delete your DBP Coach account and all associated data, email <a href="mailto:ccroberts10@gmail.com">ccroberts10@gmail.com</a>. We will permanently delete all data within 30 days.</p>
+  <h2>How We Store Your Data</h2>
+  <p>Your data is stored in a private Postgres database hosted on Railway. Access tokens are encrypted at rest. Only DBP Coach systems and authorized DBP staff (for support purposes only) can access your data.</p>
 
-<h2>Children's privacy</h2>
-<p>DBP Coach is intended for users 18 and older. We do not knowingly collect data from anyone under 18.</p>
+  <h2>Third-Party Services</h2>
+  <p>DBP Coach transmits data to:</p>
+  <ul>
+    <li><strong>Anthropic</strong> — for generating recommendations. <a href="https://www.anthropic.com/legal/privacy">Anthropic's privacy policy</a>.</li>
+    <li><strong>Stripe</strong> — for billing only. We never see your full payment information. <a href="https://stripe.com/privacy">Stripe's privacy policy</a>.</li>
+    <li><strong>Resend</strong> — for transactional email. <a href="https://resend.com/legal/privacy-policy">Resend's privacy policy</a>.</li>
+    <li><strong>OpenWeather</strong> — for weather context (only your approximate city, not exact coordinates).</li>
+  </ul>
 
-<h2>Changes to this policy</h2>
-<p>We will notify users of material changes by email. The "Last updated" date above reflects the most recent revision.</p>
+  <h2>Data Retention and Deletion</h2>
+  <p>You can revoke DBP Coach's access to WHOOP at any time at <a href="https://app.prod.whoop.com/data-and-privacy">your WHOOP privacy settings</a> and Strava at <a href="https://www.strava.com/settings/apps">your Strava settings</a>. To delete your DBP Coach account and all associated data, email <a href="mailto:ccroberts10@gmail.com">ccroberts10@gmail.com</a>. We will permanently delete all data within 30 days.</p>
 
-<h2>Contact</h2>
-<p>Questions: <a href="mailto:ccroberts10@gmail.com">ccroberts10@gmail.com</a> · Durango Bike Project, 225 E 8th Ave, Durango, CO</p>
+  <h2>Children's Privacy</h2>
+  <p>DBP Coach is intended for users 18 and older. We do not knowingly collect data from anyone under 18.</p>
+
+  <h2>Changes to This Policy</h2>
+  <p>We will notify users of material changes by email. The "Last updated" date above reflects the most recent revision.</p>
+
+  <h2>Contact</h2>
+  <p>Questions: <a href="mailto:ccroberts10@gmail.com">ccroberts10@gmail.com</a><br>Durango Bike Project · 225 E 8th Ave · Durango, CO 81301</p>
+
+  <div class="footer">DBP COACH · 225 E 8TH AVE · DURANGO, CO 81301</div>
+</div>
 </body>
 </html>
