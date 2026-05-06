@@ -113,6 +113,11 @@ td { font-family: var(--maxi-mono); }
 .code-cell { font-family: var(--maxi-mono); font-weight: 500; letter-spacing: 0.06em; }
 
 .empty { text-align: center; padding: 40px; color: var(--muted); font-size: 0.85rem; }
+.audience-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 8px; }
+.audience-btn { padding: 14px 12px; background: var(--paper); border: 1px solid var(--line-strong); font-family: var(--maxi-mono); font-size: 0.78rem; letter-spacing: 0.12em; text-transform: uppercase; font-weight: 500; cursor: pointer; color: var(--ink); }
+.audience-btn:hover { border-color: var(--ink); }
+.audience-btn.active { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.audience-btn.active span { color: var(--hi-vis) !important; }
 .spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid var(--line); border-top-color: var(--ink); border-radius: 50%; animation: spin 0.8s linear infinite; vertical-align: middle; margin-right: 8px; }
 @keyframes spin { to { transform: rotate(360deg); } }
 
@@ -148,6 +153,8 @@ td { font-family: var(--maxi-mono); }
   <div id="adminApp" style="display:none">
     <div class="tabs">
       <button class="tab-btn active" onclick="setTab('issue')">Issue Reward</button>
+      <button class="tab-btn" onclick="setTab('broadcast')">Broadcast</button>
+      <button class="tab-btn" onclick="setTab('triggers')">Auto-Triggers</button>
       <button class="tab-btn" onclick="setTab('analytics')">Analytics</button>
       <button class="tab-btn" onclick="setTab('history')">History</button>
     </div>
@@ -184,6 +191,170 @@ td { font-family: var(--maxi-mono); }
       </div>
 
       <div class="result" id="issueResult"></div>
+    </div>
+
+    <!-- BROADCAST TAB -->
+    <div class="view" id="broadcastView">
+      <div class="card">
+        <label>1. Audience</label>
+        <div class="audience-grid">
+          <button class="audience-btn active" data-audience="all" onclick="pickAudience('all')">All members<span id="cnt-all" style="margin-left:6px;color:var(--muted)">—</span></button>
+          <button class="audience-btn" data-audience="paying" onclick="pickAudience('paying')">Paying<span id="cnt-paying" style="margin-left:6px;color:var(--muted)">—</span></button>
+          <button class="audience-btn" data-audience="elite" onclick="pickAudience('elite')">Elite only<span id="cnt-elite" style="margin-left:6px;color:var(--muted)">—</span></button>
+          <button class="audience-btn" data-audience="coach" onclick="pickAudience('coach')">Coach only<span id="cnt-coach" style="margin-left:6px;color:var(--muted)">—</span></button>
+        </div>
+      </div>
+
+      <div class="card">
+        <label>2. Message</label>
+        <div style="display:grid;gap:10px">
+          <div>
+            <label style="font-size:0.6rem">Email subject</label>
+            <input type="text" id="bcSubject" placeholder="$1 off lattes this afternoon">
+          </div>
+          <div>
+            <label style="font-size:0.6rem">Headline (shown big in email)</label>
+            <input type="text" id="bcHeadline" placeholder="$1 off any latte today">
+          </div>
+          <div>
+            <label style="font-size:0.6rem">Body</label>
+            <textarea id="bcBody" rows="4" placeholder="Stop by between 1-5pm. Show this code at the bar. See you soon!"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <label>3. Optional: include a redeemable reward</label>
+        <p style="font-size:0.78rem;color:var(--muted);margin-bottom:8px">If selected, a code will be issued to each recipient and included in the email. Leave blank for message-only.</p>
+        <div class="template-grid" id="bcTemplateGrid"></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px">
+          <div>
+            <label style="font-size:0.6rem">Expires in (days)</label>
+            <input type="number" id="bcExpiresIn" placeholder="default" min="0">
+          </div>
+          <div style="display:flex;align-items:flex-end">
+            <button class="btn" onclick="clearBcTemplate()" style="width:100%">Clear reward</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <button class="btn btn-primary" id="bcSendBtn" onclick="sendBroadcast()" style="width:100%">Send broadcast</button>
+        <p style="font-size:0.7rem;color:var(--muted);text-align:center;margin-top:10px">Sends to <strong id="bcRecipientCount">0</strong> recipients · cannot be undone</p>
+      </div>
+
+      <div class="result" id="bcResult"></div>
+    </div>
+
+    <!-- TRIGGERS TAB -->
+    <div class="view" id="triggersView">
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+          <div>
+            <div style="font-family:var(--maxi-round);font-weight:700;font-size:1.1rem;letter-spacing:-0.01em;text-transform:uppercase">Active Triggers</div>
+            <div style="font-family:var(--maxi-mono);font-size:0.72rem;color:var(--muted);margin-top:4px">Auto-issue rewards when activities match conditions</div>
+          </div>
+          <div style="display:flex;gap:8px">
+            <button class="btn" onclick="runTriggersNow()" id="runTriggersBtn">Run now</button>
+            <button class="btn btn-primary" onclick="showCreateTrigger()">+ New trigger</button>
+          </div>
+        </div>
+        <div id="triggersList"><div class="empty">Loading…</div></div>
+      </div>
+
+      <!-- Create trigger form (hidden by default) -->
+      <div class="card" id="createTriggerCard" style="display:none">
+        <div style="font-family:var(--maxi-round);font-weight:700;font-size:1.1rem;letter-spacing:-0.01em;text-transform:uppercase;margin-bottom:14px">New Auto-Trigger</div>
+        <div style="display:grid;gap:12px">
+          <div>
+            <label>Name</label>
+            <input type="text" id="trgName" placeholder="Big ride bonus">
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+            <div>
+              <label>Trigger type</label>
+              <select id="trgType">
+                <option value="big_ride">Big ride finished</option>
+              </select>
+            </div>
+            <div>
+              <label>Audience</label>
+              <select id="trgAudience">
+                <option value="paying">Paying members (Coach + Elite)</option>
+                <option value="elite">Elite only</option>
+                <option value="coach">Coach only</option>
+                <option value="all">All members (incl. free)</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label>Reward to issue</label>
+            <select id="trgTemplate"><option value="">— Pick a reward —</option></select>
+          </div>
+
+          <div style="background:var(--bone);padding:12px;border:1px solid var(--line)">
+            <div style="font-family:var(--maxi-mono);font-size:0.65rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--muted);margin-bottom:8px">Conditions (any match fires the trigger)</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+              <div>
+                <label style="font-size:0.6rem">Min distance (km)</label>
+                <input type="number" id="trgMinDist" placeholder="40" min="0" step="0.1">
+              </div>
+              <div>
+                <label style="font-size:0.6rem">Min duration (min)</label>
+                <input type="number" id="trgMinDur" placeholder="(blank = ignore)" min="0">
+              </div>
+              <div>
+                <label style="font-size:0.6rem">Min elevation (m)</label>
+                <input type="number" id="trgMinElev" placeholder="(blank = ignore)" min="0">
+              </div>
+              <div>
+                <label style="font-size:0.6rem">Min suffer score</label>
+                <input type="number" id="trgMinSuf" placeholder="(blank = ignore)" min="0">
+              </div>
+            </div>
+            <div style="margin-top:10px">
+              <label style="font-size:0.6rem">Activity types</label>
+              <div style="display:flex;gap:6px;flex-wrap:wrap">
+                <label style="display:inline-flex;align-items:center;font-size:0.78rem;font-family:var(--maxi-mono);text-transform:none;letter-spacing:0;color:var(--ink);cursor:pointer"><input type="checkbox" value="Ride" checked style="width:auto;margin-right:6px"> Road ride</label>
+                <label style="display:inline-flex;align-items:center;font-size:0.78rem;font-family:var(--maxi-mono);text-transform:none;letter-spacing:0;color:var(--ink);cursor:pointer"><input type="checkbox" value="VirtualRide" checked style="width:auto;margin-right:6px"> Virtual ride</label>
+                <label style="display:inline-flex;align-items:center;font-size:0.78rem;font-family:var(--maxi-mono);text-transform:none;letter-spacing:0;color:var(--ink);cursor:pointer"><input type="checkbox" value="MountainBikeRide" checked style="width:auto;margin-right:6px"> MTB</label>
+                <label style="display:inline-flex;align-items:center;font-size:0.78rem;font-family:var(--maxi-mono);text-transform:none;letter-spacing:0;color:var(--ink);cursor:pointer"><input type="checkbox" value="GravelRide" checked style="width:auto;margin-right:6px"> Gravel</label>
+                <label style="display:inline-flex;align-items:center;font-size:0.78rem;font-family:var(--maxi-mono);text-transform:none;letter-spacing:0;color:var(--ink);cursor:pointer"><input type="checkbox" value="Run" style="width:auto;margin-right:6px"> Run</label>
+                <label style="display:inline-flex;align-items:center;font-size:0.78rem;font-family:var(--maxi-mono);text-transform:none;letter-spacing:0;color:var(--ink);cursor:pointer"><input type="checkbox" value="Hike" style="width:auto;margin-right:6px"> Hike</label>
+              </div>
+            </div>
+          </div>
+
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+            <div>
+              <label>Cooldown (hours)</label>
+              <input type="number" id="trgCooldown" value="24" min="0">
+              <div style="font-family:var(--maxi-mono);font-size:0.62rem;color:var(--muted);margin-top:4px">Min hours between firings per user</div>
+            </div>
+            <div>
+              <label>Reward expires in (days)</label>
+              <input type="number" id="trgExpires" value="1" min="0">
+              <div style="font-family:var(--maxi-mono);font-size:0.62rem;color:var(--muted);margin-top:4px">1 = today only · 0 = never expires</div>
+            </div>
+          </div>
+
+          <div>
+            <label>Email subject (optional)</label>
+            <input type="text" id="trgSubject" placeholder="🎁 Recovery latte on us">
+          </div>
+          <div>
+            <label>Email body (optional)</label>
+            <textarea id="trgBody" rows="3" placeholder="That looked brutal — recovery latte on us, today only."></textarea>
+            <div style="font-family:var(--maxi-mono);font-size:0.62rem;color:var(--muted);margin-top:4px">Leave blank for auto-generated message based on ride stats</div>
+          </div>
+
+          <div style="display:flex;gap:8px;margin-top:6px">
+            <button class="btn" onclick="hideCreateTrigger()" style="background:var(--paper);color:var(--ink)">Cancel</button>
+            <button class="btn btn-primary" onclick="saveTrigger()" id="saveTriggerBtn" style="flex:1">Create trigger</button>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- ANALYTICS TAB -->
@@ -235,6 +406,9 @@ function setTab(name) {
   document.getElementById(name + 'View').classList.add('active');
   if (name === 'analytics') loadAnalytics();
   if (name === 'history') loadHistory();
+  if (name === 'triggers') loadTriggers();
+  if (name === 'broadcast') loadAudienceCounts && loadAudienceCounts();
+  if (name === 'broadcast') initBroadcast();
 }
 
 let searchTimeout = null;
@@ -445,6 +619,280 @@ async function loadHistory() {
       </tbody>
     </table>
   `;
+}
+
+// ===== BROADCAST =====
+let bcAudience = 'all';
+let bcSelectedTemplate = null;
+
+async function initBroadcast() {
+  // Fetch counts for each audience
+  for (const aud of ['all', 'paying', 'elite', 'coach']) {
+    try {
+      const r = await fetch('/api/perks/admin/broadcast/audience', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ pin: currentPin, audience: aud }),
+      });
+      const data = await r.json();
+      document.getElementById(`cnt-${aud}`).textContent = `(${data.total})`;
+      if (aud === bcAudience) document.getElementById('bcRecipientCount').textContent = data.total;
+    } catch(e) {}
+  }
+  // Render templates
+  renderBcTemplates();
+}
+
+function pickAudience(aud) {
+  bcAudience = aud;
+  document.querySelectorAll('.audience-btn').forEach(b => b.classList.toggle('active', b.dataset.audience === aud));
+  // Update recipient count
+  const el = document.getElementById(`cnt-${aud}`);
+  if (el) {
+    const m = el.textContent.match(/\((\d+)\)/);
+    document.getElementById('bcRecipientCount').textContent = m ? m[1] : '0';
+  }
+}
+
+function renderBcTemplates() {
+  const el = document.getElementById('bcTemplateGrid');
+  if (!el) return;
+  el.innerHTML = templates.map(t => {
+    const valueLabel = t.is_percentage
+      ? `${t.percentage_off}% off`
+      : `${fmtCents(t.default_retail_cents)} value`;
+    return `<div class="template-card ${bcSelectedTemplate?.id === t.id ? 'selected' : ''}" onclick='selectBcTemplate(${JSON.stringify(t).replace(/'/g, "&#39;")})'>
+      <div class="cat">${t.category}</div>
+      <div class="name">${t.name}</div>
+      <div class="value">${valueLabel}</div>
+    </div>`;
+  }).join('');
+}
+
+function selectBcTemplate(t) {
+  bcSelectedTemplate = t;
+  renderBcTemplates();
+}
+
+function clearBcTemplate() {
+  bcSelectedTemplate = null;
+  renderBcTemplates();
+}
+
+async function sendBroadcast() {
+  const subject = document.getElementById('bcSubject').value.trim();
+  const headline = document.getElementById('bcHeadline').value.trim();
+  const body = document.getElementById('bcBody').value.trim();
+  if (!subject || !headline || !body) {
+    showBcResult(false, 'Fill in subject, headline, and body');
+    return;
+  }
+  const recipients = parseInt(document.getElementById('bcRecipientCount').textContent || '0');
+  if (recipients === 0) {
+    showBcResult(false, 'No recipients in this audience');
+    return;
+  }
+  const rewardLine = bcSelectedTemplate ? ` AND issue "${bcSelectedTemplate.name}" to each recipient` : '';
+  if (!confirm(`Send to ${recipients} recipient${recipients === 1 ? '' : 's'}${rewardLine}?\n\nThis cannot be undone.`)) return;
+
+  const btn = document.getElementById('bcSendBtn');
+  btn.disabled = true;
+  btn.textContent = 'Sending…';
+  try {
+    const expiresIn = document.getElementById('bcExpiresIn').value;
+    const r = await fetch('/api/perks/admin/broadcast/send', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        pin: currentPin,
+        audience: bcAudience,
+        template_id: bcSelectedTemplate?.id || null,
+        expires_in_days: expiresIn !== '' ? parseInt(expiresIn) : null,
+        subject, headline, body,
+        send_email: true,
+      }),
+    });
+    const data = await r.json();
+    if (!data.success) throw new Error(data.error || 'Failed');
+    showBcResult(true,
+      `✓ Broadcast sent`,
+      `<div>Recipients: ${data.recipients_total}</div>` +
+      `<div>Emails sent: ${data.emails_sent}</div>` +
+      (data.rewards_issued ? `<div>Rewards issued: ${data.rewards_issued}</div>` : '') +
+      (data.error_count ? `<div style="margin-top:6px;font-size:0.78rem;opacity:0.8">${data.error_count} errors (first few: ${data.errors.map(e=>e.email).join(', ')})</div>` : '')
+    );
+    // Clear form
+    document.getElementById('bcSubject').value = '';
+    document.getElementById('bcHeadline').value = '';
+    document.getElementById('bcBody').value = '';
+    document.getElementById('bcExpiresIn').value = '';
+    bcSelectedTemplate = null;
+    renderBcTemplates();
+  } catch(e) {
+    showBcResult(false, 'Failed to send', e.message);
+  }
+  btn.disabled = false;
+  btn.textContent = 'Send broadcast';
+}
+
+function showBcResult(success, title, body = '') {
+  const el = document.getElementById('bcResult');
+  el.className = 'result show ' + (success ? 'success' : 'error');
+  el.innerHTML = `<strong>${title}</strong>${body}`;
+}
+// ============== AUTO-TRIGGERS ==============
+async function loadTriggers() {
+  const el = document.getElementById('triggersList');
+  el.innerHTML = '<div class="empty"><span class="spinner"></span>Loading…</div>';
+  const r = await fetch('/api/perks/admin/triggers/list', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ pin: currentPin }),
+  });
+  const data = await r.json();
+  if (!data.triggers?.length) {
+    el.innerHTML = '<div class="empty">No triggers yet — create one to auto-issue rewards based on activity.</div>';
+    return;
+  }
+  el.innerHTML = `
+    <table>
+      <thead><tr><th>Name</th><th>Conditions</th><th>Reward</th><th>Audience</th><th>Fired</th><th>Status</th><th></th></tr></thead>
+      <tbody>
+        ${data.triggers.map(t => {
+          const c = t.conditions || {};
+          const condBits = [];
+          if (c.min_distance_km) condBits.push(`≥ ${c.min_distance_km}km`);
+          if (c.min_duration_min) condBits.push(`≥ ${c.min_duration_min}min`);
+          if (c.min_elevation_m) condBits.push(`≥ ${c.min_elevation_m}m elev`);
+          if (c.min_suffer_score) condBits.push(`≥ ${c.min_suffer_score} sufferscore`);
+          if (c.activity_types?.length) condBits.push(c.activity_types.join('/'));
+          const lastFired = t.last_fired_at ? new Date(t.last_fired_at).toLocaleString() : 'never';
+          return `<tr>
+            <td><strong>${t.name}</strong><div style="font-size:0.7rem;color:var(--muted)">${t.trigger_type}</div></td>
+            <td style="font-size:0.78rem">${condBits.join(' · ') || '—'}</td>
+            <td style="font-size:0.78rem">${t.template_name || '—'}</td>
+            <td><span class="tier ${t.audience}">${t.audience}</span></td>
+            <td style="font-size:0.78rem">${t.fire_count} ×<div style="font-size:0.65rem;color:var(--muted)">${lastFired}</div></td>
+            <td><span class="badge ${t.active ? 'active' : 'expired'}">${t.active ? 'On' : 'Off'}</span></td>
+            <td>
+              <button class="btn" style="padding:4px 8px;font-size:0.62rem" onclick="toggleTrigger('${t.id}', ${!t.active})">${t.active ? 'Disable' : 'Enable'}</button>
+              <button class="btn" style="padding:4px 8px;font-size:0.62rem;background:var(--rec-red);color:var(--paper);border-color:var(--rec-red);margin-left:4px" onclick="deleteTrigger('${t.id}')">Del</button>
+            </td>
+          </tr>`;
+        }).join('')}
+      </tbody>
+    </table>
+  `;
+}
+
+function showCreateTrigger() {
+  document.getElementById('createTriggerCard').style.display = 'block';
+  // Populate template dropdown
+  const sel = document.getElementById('trgTemplate');
+  sel.innerHTML = '<option value="">— Pick a reward —</option>' + templates.map(t =>
+    `<option value="${t.id}">${t.name}${t.default_retail_cents ? ' ($' + (t.default_retail_cents/100).toFixed(2) + ')' : ''}</option>`
+  ).join('');
+  document.getElementById('trgName').focus();
+}
+
+function hideCreateTrigger() {
+  document.getElementById('createTriggerCard').style.display = 'none';
+  // Clear inputs
+  ['trgName','trgMinDist','trgMinDur','trgMinElev','trgMinSuf','trgSubject','trgBody'].forEach(id => {
+    const e = document.getElementById(id);
+    if (e) e.value = '';
+  });
+  document.getElementById('trgCooldown').value = '24';
+  document.getElementById('trgExpires').value = '1';
+  document.getElementById('trgTemplate').value = '';
+}
+
+async function saveTrigger() {
+  const name = document.getElementById('trgName').value.trim();
+  const template_id = document.getElementById('trgTemplate').value;
+  if (!name || !template_id) { alert('Name and reward are required.'); return; }
+
+  const types = Array.from(document.querySelectorAll('#createTriggerCard input[type=checkbox]:checked')).map(c => c.value);
+
+  const conditions = {};
+  const minDist = parseFloat(document.getElementById('trgMinDist').value);
+  const minDur = parseFloat(document.getElementById('trgMinDur').value);
+  const minElev = parseFloat(document.getElementById('trgMinElev').value);
+  const minSuf = parseFloat(document.getElementById('trgMinSuf').value);
+  if (!isNaN(minDist) && minDist > 0) conditions.min_distance_km = minDist;
+  if (!isNaN(minDur) && minDur > 0) conditions.min_duration_min = minDur;
+  if (!isNaN(minElev) && minElev > 0) conditions.min_elevation_m = minElev;
+  if (!isNaN(minSuf) && minSuf > 0) conditions.min_suffer_score = minSuf;
+  if (types.length) conditions.activity_types = types;
+
+  const btn = document.getElementById('saveTriggerBtn');
+  btn.disabled = true;
+  btn.textContent = 'Saving…';
+  try {
+    const r = await fetch('/api/perks/admin/triggers/create', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        pin: currentPin,
+        name,
+        trigger_type: document.getElementById('trgType').value,
+        template_id,
+        conditions,
+        audience: document.getElementById('trgAudience').value,
+        message_subject: document.getElementById('trgSubject').value.trim() || null,
+        message_body: document.getElementById('trgBody').value.trim() || null,
+        cooldown_hours: parseInt(document.getElementById('trgCooldown').value) || 0,
+        expires_in_days: parseInt(document.getElementById('trgExpires').value) || 0,
+      }),
+    });
+    const data = await r.json();
+    if (!data.success) throw new Error(data.error || 'Failed');
+    hideCreateTrigger();
+    loadTriggers();
+  } catch (e) {
+    alert('Failed: ' + e.message);
+  }
+  btn.disabled = false;
+  btn.textContent = 'Create trigger';
+}
+
+async function toggleTrigger(triggerId, active) {
+  await fetch('/api/perks/admin/triggers/toggle', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ pin: currentPin, trigger_id: triggerId, active }),
+  });
+  loadTriggers();
+}
+
+async function deleteTrigger(triggerId) {
+  if (!confirm('Delete this trigger? This will not undo any rewards already issued.')) return;
+  await fetch('/api/perks/admin/triggers/delete', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ pin: currentPin, trigger_id: triggerId }),
+  });
+  loadTriggers();
+}
+
+async function runTriggersNow() {
+  const btn = document.getElementById('runTriggersBtn');
+  btn.disabled = true;
+  btn.textContent = 'Running…';
+  try {
+    const r = await fetch('/api/perks/admin/triggers/run-now', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ pin: currentPin }),
+    });
+    const data = await r.json();
+    alert(`Processed ${data.activities_processed} activities, issued ${data.rewards_issued} rewards.`);
+    loadTriggers();
+  } catch (e) {
+    alert('Failed: ' + e.message);
+  }
+  btn.disabled = false;
+  btn.textContent = 'Run now';
 }
 </script>
 </body>
