@@ -302,7 +302,7 @@ async function sendLink(){
   btn.textContent = 'Sending…';
 
   try {
-    const r = await fetch('/auth/magic-link', {
+    const r = await fetch('/auth/request', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email }),
