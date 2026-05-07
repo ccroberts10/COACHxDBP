@@ -58,6 +58,13 @@ input.code-input { text-transform: uppercase; letter-spacing: 0.08em; font-weigh
 .punch-dot.filled { background: var(--hi-vis); }
 
 .active-rewards { margin: 12px 0; }
+.caps-section { margin: 14px 0 12px; padding: 10px 0; border-top: 1px solid rgba(250,250,247,0.15); }
+.caps-header { font-family: var(--maxi-mono); font-size: 0.58rem; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(250,250,247,0.55); margin-bottom: 8px; }
+.cap-row { display: flex; justify-content: space-between; align-items: center; padding: 4px 0; font-family: var(--maxi-mono); font-size: 0.72rem; letter-spacing: 0.02em; color: rgba(250,250,247,0.85); }
+.cap-row.blocked { color: rgba(250,250,247,0.4); text-decoration: line-through; }
+.cap-row.blocked .cap-usage { color: var(--rec-red, #FF6B6B); text-decoration: none; }
+.cap-name { font-weight: 500; }
+.cap-usage { font-size: 0.65rem; color: rgba(250,250,247,0.55); letter-spacing: 0.05em; }
 .reward-row { background: var(--hi-vis); padding: 10px 12px; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center; }
 .reward-row .desc { font-family: var(--maxi-mono); font-size: 0.78rem; flex: 1; }
 .reward-row .code { font-family: var(--maxi-mono); font-weight: 600; letter-spacing: 0.06em; font-size: 0.85rem; background: var(--ink); color: var(--hi-vis); padding: 4px 8px; }
@@ -217,6 +224,28 @@ function renderMember(m) {
 
   const punchDots = Array.from({length: 10}, (_, i) => `<div class="punch-dot${i < punch.current ? ' filled' : ''}"></div>`).join('');
 
+  // Caps section: show remaining quota for capped perks (flat repair, tune-up, etc.)
+  let capsHtml = '';
+  if (m.caps && m.caps.length > 0) {
+    const capRows = m.caps.map(c => {
+      const isBlocked = !c.currently_allowed;
+      const limit = c.max_per_year ? `${c.used.year}/${c.max_per_year} this year`
+                  : c.max_per_month ? `${c.used.month}/${c.max_per_month} this month`
+                  : c.max_per_week ? `${c.used.week}/${c.max_per_week} this week`
+                  : 'no limit';
+      return `<div class="cap-row${isBlocked ? ' blocked' : ''}">
+        <div class="cap-name">${c.name}</div>
+        <div class="cap-usage">${limit}${isBlocked ? ' · UNAVAILABLE' : ''}</div>
+      </div>`;
+    }).join('');
+    capsHtml = `
+      <div class="caps-section">
+        <div class="caps-header">PERK QUOTA</div>
+        ${capRows}
+      </div>
+    `;
+  }
+
   document.getElementById('memberCard').innerHTML = `
     <div class="member-card">
       <div class="name">${m.user_name || 'Member'}</div>
@@ -234,6 +263,7 @@ function renderMember(m) {
           <div class="stat-sub">days · longest ${streak.longest}</div>
         </div>
       </div>
+      ${capsHtml}
       ${rewardsHtml}
     </div>
   `;
