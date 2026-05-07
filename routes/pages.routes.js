@@ -58,16 +58,19 @@ router.get('/integrations/whoop/callback', async (req, res) => {
     const { code, state, error } = req.query;
     if (error) throw new Error(error);
     if (!code || !state) throw new Error('Missing code or state');
-    const userId = state.split('.')[0];
-    if (!userId) throw new Error('Invalid state');
-    // Verify session matches user (security: prevent CSRF / token theft)
-    const sessionToken = req.cookies?.session;
-    const sessionUser = await auth.getUserFromSession(sessionToken);
-    if (!sessionUser || sessionUser.id !== userId) throw new Error('Session mismatch');
+
+    // Validate state via HMAC signature (cookies don't always survive WHOOP's redirect)
+    const userId = whoop.verifyState(state);
+    if (!userId) throw new Error('Invalid or expired state — please try connecting again');
 
     const tokens = await whoop.exchangeCode(code);
     await whoop.saveTokens(userId, tokens);
-    res.redirect(req.user?.onboarding_completed ? '/settings?whoop=ok' : '/onboarding?step=integrations&whoop=ok');
+
+    // Look up user to determine where to redirect
+    const user = await require('../db/client').one(
+      `SELECT onboarding_completed FROM users WHERE id = $1`, [userId]
+    );
+    res.redirect(user?.onboarding_completed ? '/settings?whoop=ok' : '/onboarding?step=integrations&whoop=ok');
   } catch (e) {
     console.error('[whoop callback]', e);
     res.status(400).send(`<p>WHOOP connection failed: ${e.message}. <a href="/onboarding">Try again</a></p>`);
@@ -83,14 +86,17 @@ router.get('/integrations/strava/callback', async (req, res) => {
     const { code, state, error } = req.query;
     if (error) throw new Error(error);
     if (!code || !state) throw new Error('Missing code or state');
-    const userId = state;
-    const sessionToken = req.cookies?.session;
-    const sessionUser = await auth.getUserFromSession(sessionToken);
-    if (!sessionUser || sessionUser.id !== userId) throw new Error('Session mismatch');
+
+    const userId = strava.verifyState(state);
+    if (!userId) throw new Error('Invalid or expired state — please try connecting again');
 
     const tokens = await strava.exchangeCode(code);
     await strava.saveTokens(userId, tokens);
-    res.redirect(req.user?.onboarding_completed ? '/settings?strava=ok' : '/onboarding?step=integrations&strava=ok');
+
+    const user = await require('../db/client').one(
+      `SELECT onboarding_completed FROM users WHERE id = $1`, [userId]
+    );
+    res.redirect(user?.onboarding_completed ? '/settings?strava=ok' : '/onboarding?step=integrations&strava=ok');
   } catch (e) {
     console.error('[strava callback]', e);
     res.status(400).send(`<p>Strava connection failed: ${e.message}. <a href="/onboarding">Try again</a></p>`);
