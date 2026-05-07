@@ -292,6 +292,13 @@ CREATE TABLE IF NOT EXISTS perk_templates (
   created_at              TIMESTAMPTZ DEFAULT NOW()
 );
 
+-- Phase 4: redemption caps (max per year/month/week) and seasonal restrictions
+ALTER TABLE perk_templates ADD COLUMN IF NOT EXISTS max_per_year INTEGER;
+ALTER TABLE perk_templates ADD COLUMN IF NOT EXISTS max_per_month INTEGER;
+ALTER TABLE perk_templates ADD COLUMN IF NOT EXISTS max_per_week INTEGER;
+ALTER TABLE perk_templates ADD COLUMN IF NOT EXISTS redemption_months INTEGER[];   -- [10,11,12,1,2,3] for Oct-Mar restriction
+ALTER TABLE perk_templates ADD COLUMN IF NOT EXISTS cap_notes TEXT;                -- human-readable note for staff
+
 CREATE INDEX IF NOT EXISTS idx_perk_templates_active ON perk_templates(active, sort_order);
 
 -- Seed standard templates if not present
@@ -310,6 +317,14 @@ FROM (VALUES
   ('Bring a friend free coffee', 'drink', 'Buy a coffee, your friend gets one free.', 600, 150, FALSE, NULL::INTEGER, 30, 100)
 ) AS v(name, category, description, default_retail_cents, default_cost_cents, is_percentage, percentage_off, default_expires_days, sort_order)
 WHERE NOT EXISTS (SELECT 1 FROM perk_templates WHERE perk_templates.name = v.name);
+
+-- Apply caps to perk templates (idempotent - safe to re-run on every boot)
+UPDATE perk_templates SET max_per_year = 4, cap_notes = 'Up to 4×/year. Member buys tube.'
+  WHERE name = 'Free flat repair';
+UPDATE perk_templates SET max_per_year = 1, redemption_months = ARRAY[10,11,12,1,2,3], cap_notes = '1×/year, redeemable Oct–Mar only.'
+  WHERE name = 'Free tune-up';
+UPDATE perk_templates SET max_per_month = 5, cap_notes = 'Free Sunday coffee: max 5/month.'
+  WHERE name = 'Free 12oz drink' AND cap_notes IS NULL;
 
 -- Track service requests / priority queue
 CREATE TABLE IF NOT EXISTS service_requests (
