@@ -109,7 +109,7 @@ router.post('/admin/templates', async (req, res) => {
 });
 
 router.post('/admin/issue', async (req, res) => {
-  const { pin, user_email, template_id, expires_in_days, custom_description } = req.body;
+  const { pin, user_email, template_id, expires_in_days, custom_description, bypass_caps } = req.body;
   const staff = await verifyStaffPin(pin, 'manager');
   if (!staff) return res.status(401).json({ error: 'Manager PIN required' });
   if (!user_email || !template_id) return res.status(400).json({ error: 'user_email and template_id required' });
@@ -125,6 +125,7 @@ router.post('/admin/issue', async (req, res) => {
       issuedBy: staff.staff_name,
       expiresInDays: expires_in_days,
       customDescription: custom_description,
+      bypassCaps: !!bypass_caps,
     });
 
     // Send email notification (non-fatal if it fails)
@@ -139,6 +140,14 @@ router.post('/admin/issue', async (req, res) => {
 
     res.json({ success: true, ...result, user: { name: user.name, email: user.email } });
   } catch (e) {
+    if (e.code === 'CAP_REACHED') {
+      return res.status(409).json({
+        error: e.message,
+        code: 'CAP_REACHED',
+        cap_info: e.capInfo,
+        suggestion: 'Use bypass_caps=true to override (manager discretion).',
+      });
+    }
     res.status(500).json({ error: e.message });
   }
 });
@@ -312,6 +321,9 @@ router.post('/purchase/lookup-member', async (req, res) => {
     [user.id]
   );
 
+  // Cap usage (free flat repair, free tune-up, etc.)
+  const caps = await perks.getMemberCapsSummary(user.id);
+
   res.json({
     member_code: user.member_code,
     user_name: user.name,
@@ -320,6 +332,7 @@ router.post('/purchase/lookup-member', async (req, res) => {
     punch,
     streak,
     active_rewards: activePerks,
+    caps,
   });
 });
 
