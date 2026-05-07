@@ -650,6 +650,96 @@ html, body { background: var(--bone); color: var(--ink); font-family: var(--maxi
   text-transform: uppercase;
 }
 
+.mch-qr-btn {
+  display: inline-block;
+  margin-top: 14px;
+  padding: 10px 18px;
+  font-family: var(--maxi-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--ink);
+  background: var(--hi-vis);
+  border: 1px solid var(--hi-vis);
+  cursor: pointer;
+}
+.mch-qr-btn:active { transform: scale(0.97); }
+
+/* QR Modal */
+.qr-modal-backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(10,10,10,0.92);
+  z-index: 9999;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.qr-modal-backdrop.show { display: flex; }
+.qr-modal {
+  background: var(--paper);
+  padding: 28px 24px;
+  max-width: 380px;
+  width: 100%;
+  border: 2px solid var(--ink);
+  text-align: center;
+}
+.qr-modal h2 {
+  font-family: var(--maxi-round);
+  font-weight: 800;
+  font-size: 1.4rem;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  color: var(--ink);
+  margin-bottom: 4px;
+}
+.qr-modal .qr-name {
+  font-family: var(--maxi-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(10,10,10,0.55);
+  margin-bottom: 18px;
+}
+.qr-modal .qr-canvas-wrap {
+  background: white;
+  padding: 20px;
+  margin: 0 auto;
+  display: inline-block;
+  border: 1px solid rgba(10,10,10,0.1);
+}
+.qr-modal .qr-code-text {
+  font-family: var(--maxi-round);
+  font-weight: 800;
+  font-size: 1.4rem;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+  margin: 16px 0 8px;
+}
+.qr-modal .qr-instruction {
+  font-family: var(--maxi-mono);
+  font-size: 0.78rem;
+  color: rgba(10,10,10,0.65);
+  margin-bottom: 18px;
+  line-height: 1.5;
+}
+.qr-modal-close {
+  display: inline-block;
+  padding: 12px 24px;
+  font-family: var(--maxi-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-weight: 600;
+  background: var(--ink);
+  color: var(--paper);
+  border: 1px solid var(--ink);
+  cursor: pointer;
+}
+.qr-modal-close:active { transform: scale(0.98); }
+
 .rewards-stat-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -995,6 +1085,20 @@ html, body { background: var(--bone); color: var(--ink); font-family: var(--maxi
 </head>
 <body>
 
+<!-- QR Modal -->
+<div class="qr-modal-backdrop" id="qrModal" onclick="if(event.target===this)hideMemberQR()">
+  <div class="qr-modal">
+    <h2>Member QR</h2>
+    <div class="qr-name" id="qrModalName">—</div>
+    <div class="qr-canvas-wrap">
+      <canvas id="memberQrCanvas" width="240" height="240"></canvas>
+    </div>
+    <div class="qr-code-text" id="qrModalCode">—</div>
+    <div class="qr-instruction">Show this to DBP staff at checkout. They'll scan it.</div>
+    <button class="qr-modal-close" onclick="hideMemberQR()">Close</button>
+  </div>
+</div>
+
 <div class="container">
 
   <!-- HEADER -->
@@ -1026,6 +1130,36 @@ html, body { background: var(--bone); color: var(--ink); font-family: var(--maxi
   <button class="tab" data-view="trends" onclick="switchView('trends')"><span class="tab-indicator"></span>Trends</button>
   <button class="tab" data-view="history" onclick="switchView('history')"><span class="tab-indicator"></span>History</button>
 </div>
+
+<!-- QRious: tiny QR code library, ~6KB minified -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
+<script>
+function showMemberQR() {
+  const code = appData?.user?.member_code;
+  const name = appData?.user?.name || 'Member';
+  if (!code) { alert('Member code not yet generated. Refresh and try again.'); return; }
+  document.getElementById('qrModalName').textContent = name;
+  document.getElementById('qrModalCode').textContent = code;
+  document.getElementById('qrModal').classList.add('show');
+  // Generate QR
+  try {
+    new QRious({
+      element: document.getElementById('memberQrCanvas'),
+      value: code,
+      size: 240,
+      level: 'H',                 // High error correction (works through scratched phone screens)
+      foreground: '#0A0A0A',
+      background: '#FFFFFF',
+    });
+  } catch (e) {
+    console.error('QR generation failed:', e);
+  }
+}
+
+function hideMemberQR() {
+  document.getElementById('qrModal').classList.remove('show');
+}
+</script>
 
 <script>
 let appData = null;
@@ -1345,6 +1479,7 @@ function renderToday(){
           <div class="mch-label">YOUR MEMBER CODE</div>
           <div class="mch-code">${memberCode}</div>
           <div class="mch-sub">Show at DBP for purchases · earn punches · redeem rewards</div>
+          <button class="mch-qr-btn" onclick="showMemberQR()">📱 Show QR Code</button>
         </div>` : ''}
 
         <!-- Punch + Streak Row -->
