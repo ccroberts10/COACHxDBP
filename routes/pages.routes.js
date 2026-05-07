@@ -66,6 +66,12 @@ router.get('/integrations/whoop/callback', async (req, res) => {
     const tokens = await whoop.exchangeCode(code);
     await whoop.saveTokens(userId, tokens);
 
+    // Re-establish session — WHOOP's in-app browser sometimes drops cookies
+    const sessionToken = await auth.createSessionForUser(userId, {
+      ip: req.ip, userAgent: req.headers['user-agent'],
+    });
+    auth.setSessionCookie(res, sessionToken);
+
     // Look up user to determine where to redirect
     const user = await require('../db/client').one(
       `SELECT onboarding_completed FROM users WHERE id = $1`, [userId]
@@ -92,6 +98,12 @@ router.get('/integrations/strava/callback', async (req, res) => {
 
     const tokens = await strava.exchangeCode(code);
     await strava.saveTokens(userId, tokens);
+
+    // Re-establish session — in-app browser may have dropped cookies
+    const sessionToken = await auth.createSessionForUser(userId, {
+      ip: req.ip, userAgent: req.headers['user-agent'],
+    });
+    auth.setSessionCookie(res, sessionToken);
 
     const user = await require('../db/client').one(
       `SELECT onboarding_completed FROM users WHERE id = $1`, [userId]
