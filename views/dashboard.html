@@ -1272,8 +1272,28 @@ function renderToday(){
   }
 
   const p = presc.full_response;
-  const recCol = recColor(snap.recovery_pct);
-  const recStateLabel = recState(snap.recovery_pct);
+
+  // Detect if user has WHOOP connected (snapshot has recovery_pct or hrv data)
+  const hasWhoop = snap.recovery_pct != null || snap.hrv != null;
+
+  // For Strava-only users, derive a soft inferred recovery from check-in
+  let inferredRecovery = null;
+  if (!hasWhoop && appData.today_checkin) {
+    const c = appData.today_checkin;
+    const legsScore = { fresh: 4, normal: 3, heavy: 2, trashed: 1 }[c.legs_feel] || 3;
+    const sleepScore = c.sleep_quality || 3;
+    let score = (legsScore * 20) + (sleepScore * 10);
+    if (c.alcohol_drinks >= 4) score -= 30;
+    else if (c.alcohol_drinks >= 2) score -= 15;
+    if (c.stress_level === 'high') score -= 10;
+    inferredRecovery = Math.max(15, Math.min(95, score));
+  }
+
+  const displayRec = hasWhoop ? snap.recovery_pct : inferredRecovery;
+  const recoveryLabel = hasWhoop ? 'WHOOP Recovery' : (inferredRecovery != null ? 'Inferred Recovery' : 'Connect WHOOP or Check In');
+
+  const recCol = recColor(displayRec ?? 0);
+  const recStateLabel = recState(displayRec ?? 0);
   const acStatus = snap.acute_chronic_ratio < 0.8 ? 'detraining' : snap.acute_chronic_ratio < 1.3 ? 'optimal' : snap.acute_chronic_ratio < 1.5 ? 'building' : 'overreaching';
 
   // Sync pendingFeedback to this prescription's feedback only when the date changes.
@@ -1401,18 +1421,24 @@ function renderToday(){
           <span>Today / ${new Date().toLocaleDateString('en-US',{month:'short',day:'numeric'}).toUpperCase()}</span>
           <span>${recStateLabel}</span>
         </div>
-        <div class="recovery-pct">${snap.recovery_pct ?? '—'}<span class="pct-sign">%</span></div>
-        <div class="recovery-state">WHOOP Recovery</div>
+        <div class="recovery-pct">${displayRec ?? '—'}<span class="pct-sign">%</span></div>
+        <div class="recovery-state">${recoveryLabel}</div>
         ${p?.headline ? `<div class="recovery-headline">${p.headline}</div>` : ''}
       </div>
 
-      <div class="stat-grid">
+      ${hasWhoop ? `<div class="stat-grid">
         <div class="stat-tile"><div class="stat-label">HRV</div><div class="stat-value">${snap.hrv?.toFixed?.(0) ?? '—'}${arrow(snap.hrv, appData.benchmarks?.hrv_baseline)}</div><div class="stat-sub">ms · base ${appData.benchmarks?.hrv_baseline ?? '—'}</div></div>
         <div class="stat-tile"><div class="stat-label">RHR</div><div class="stat-value">${snap.rhr ?? '—'}${arrow(appData.benchmarks?.rhr_baseline, snap.rhr)}</div><div class="stat-sub">bpm · base ${appData.benchmarks?.rhr_baseline ?? '—'}</div></div>
         <div class="stat-tile"><div class="stat-label">Sleep</div><div class="stat-value">${snap.sleep_hours?.toFixed?.(1) ?? '—'}<span style="font-size:0.85rem">h</span></div><div class="stat-sub">${snap.deep_sleep_min ?? '—'} deep</div></div>
         <div class="stat-tile"><div class="stat-label">Strain Yest</div><div class="stat-value">${snap.yesterday_strain?.toFixed?.(1) ?? '—'}</div><div class="stat-sub">/ 21</div></div>
         <div class="stat-tile"><div class="stat-label">AC Ratio</div><div class="stat-value">${snap.acute_chronic_ratio ?? '—'}</div><div class="stat-sub">${acStatus}</div></div>
-        <div class="stat-tile"><div class="stat-label">Wkly Avg</div><div class="stat-value">${snap.weekly_strain_avg?.toFixed?.(1) ?? '—'}</div><div class="stat-sub">strain</div></div>
+        <div class="stat-tile"><div class="stat-label">Wkly Avg</div><div class="stat-value">${snap.weekly_strain_avg?.toFixed?.(1) ?? '—'}</div><div class="stat-sub">strain</div></div>` : `<div class="stat-grid">
+        <div class="stat-tile"><div class="stat-label">Legs Feel</div><div class="stat-value" style="font-size:1.2rem">${appData.today_checkin?.legs_feel || '—'}</div><div class="stat-sub">self-reported</div></div>
+        <div class="stat-tile"><div class="stat-label">Sleep</div><div class="stat-value">${appData.today_checkin?.sleep_quality ?? '—'}<span style="font-size:0.85rem">/5</span></div><div class="stat-sub">self-reported</div></div>
+        <div class="stat-tile"><div class="stat-label">Stress</div><div class="stat-value" style="font-size:1.2rem">${appData.today_checkin?.stress_level || '—'}</div><div class="stat-sub">self-reported</div></div>
+        <div class="stat-tile"><div class="stat-label">AC Ratio</div><div class="stat-value">${snap.acute_chronic_ratio ?? '—'}</div><div class="stat-sub">${acStatus}</div></div>
+        <div class="stat-tile"><div class="stat-label">Wkly Hrs</div><div class="stat-value">${snap.weekly_strain_avg?.toFixed?.(1) ?? '—'}</div><div class="stat-sub">avg load</div></div>
+        <div class="stat-tile"><div class="stat-label">Drinks Last</div><div class="stat-value">${appData.today_checkin?.alcohol_drinks ?? '—'}</div><div class="stat-sub">last night</div></div>`}
       </div>
 
       ${appData.weather ? `
