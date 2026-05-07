@@ -82,12 +82,26 @@ ol li strong { color: var(--ink); font-weight: 500; }
 </html>`;
 
   try {
-    const session = await stripeLib.getStripe().checkout.sessions.retrieve(session_id);
+    const session = await stripeLib.getStripe().checkout.sessions.retrieve(session_id, {
+      expand: ['subscription'],
+    });
     const email = session.customer_details?.email || session.customer_email;
     if (email) await auth.requestMagicLink(email);
 
+    // Pull trial info from subscription if present
+    let trialNote = '';
+    const sub = session.subscription;
+    if (sub && typeof sub === 'object' && sub.trial_end) {
+      const trialEnd = new Date(sub.trial_end * 1000);
+      const now = new Date();
+      const daysLeft = Math.max(0, Math.round((trialEnd - now) / 86400000));
+      const trialEndStr = trialEnd.toLocaleDateString('en-US', { month: 'long', day: 'numeric' });
+      trialNote = `<p class="lede" style="background:var(--hi-vis);color:var(--ink);padding:10px 14px;margin-top:14px;font-size:0.88rem;font-weight:500">🎉 You're on a free trial — ${daysLeft} days free, first charge ${trialEndStr}.</p>`;
+    }
+
     const successBody = `
       <p class="lede">Your subscription is active. We just emailed a sign-in link to <span class="email-call">${email || 'your inbox'}</span>.</p>
+      ${trialNote}
       <p class="lede" style="opacity:0.6;font-size:0.82rem">Tap the link in your inbox to access your dashboard and finish setup. The link expires in 15 minutes.</p>
     `;
 
