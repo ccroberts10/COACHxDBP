@@ -35,8 +35,12 @@ router.get('/terms', (req, res) => send(res, 'terms.html'));
 router.get('/onboarding', auth.requireAuth, (req, res) => send(res, 'onboarding.html'));
 router.get('/dashboard', auth.requireAuth, (req, res) => {
   if (!req.user.onboarding_completed) return res.redirect('/onboarding');
-  if (req.user.subscription_status !== 'active' && req.user.subscription_status !== 'trialing') {
-    return res.redirect('/');
+  // Free tier always allowed; paid tiers must have active or trialing subscription
+  const tier = req.user.subscription_tier;
+  if (['rewards', 'coach'].includes(tier)) {
+    if (req.user.subscription_status !== 'active' && req.user.subscription_status !== 'trialing') {
+      return res.redirect('/');
+    }
   }
   send(res, 'dashboard.html');
 });
