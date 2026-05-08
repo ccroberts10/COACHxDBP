@@ -48,13 +48,15 @@ app.use((err, req, res, next) => {
 // ===== Cron jobs =====
 
 // Daily prescription pipeline: 6:30am MST for every active user
+// 6:30 AM reminder — emails active Coach users that today's prescription is ready to generate
+// (Generation happens on-demand when user opens app; this is just the wake-up trigger)
 cron.schedule('30 6 * * *', async () => {
-  const { runDailyForAllUsers } = require('./lib/pipeline');
-  console.log('[cron] Daily pipeline starting');
+  const { sendDailyReminders } = require('./lib/pipeline');
+  console.log('[cron] Daily reminder emails');
   try {
-    await runDailyForAllUsers();
+    await sendDailyReminders();
   } catch (e) {
-    console.error('[cron] Daily pipeline error:', e);
+    console.error('[cron] Daily reminder error:', e);
   }
 }, { timezone: TZ });
 
