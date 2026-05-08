@@ -19,7 +19,7 @@ router.get('/data', auth.requireActiveSubscription, async (req, res) => {
       const userTzPre = req.user.timezone || 'America/Denver';
       const todayInUserTzPre = new Date().toLocaleDateString('en-CA', { timeZone: userTzPre });
       const todaysPresc = await db.one(
-        `SELECT id FROM prescriptions WHERE user_id = $1 AND date = $2`,
+        `SELECT user_id FROM prescriptions WHERE user_id = $1 AND date = $2`,
         [userId, todayInUserTzPre]
       );
       if (!todaysPresc) {
