@@ -1312,7 +1312,27 @@ async function loadData(){
   try{
     const r = await fetch('/api/data');
     if (r.status === 401) { clearInterval(msgInterval); window.location = '/login'; return; }
+    if (r.status === 402) {
+      // Subscription required — redirect to billing
+      clearInterval(msgInterval);
+      const errData = await r.json();
+      document.getElementById('loadingView').innerHTML =
+        '<div style="text-align:center;padding:40px;font-family:var(--maxi-mono)">' +
+        '<div style="margin-bottom:16px">SUBSCRIPTION REQUIRED</div>' +
+        '<div style="font-size:0.85rem;opacity:0.6;margin-bottom:20px">Status: ' + (errData.status || 'unknown') + '</div>' +
+        '<a href="/" style="color:var(--ink);text-decoration:underline">← Back to home</a>' +
+        '</div>';
+      return;
+    }
     appData = await r.json();
+
+    // Defensive defaults — make sure all expected arrays exist even if API returned partial data
+    appData.snapshots = appData.snapshots || [];
+    appData.prescriptions = appData.prescriptions || [];
+    appData.activities = appData.activities || [];
+    appData.checkins = appData.checkins || [];
+    appData.perks = appData.perks || [];
+
     if (appData.today_checkin) {
       pendingCheckin = {
         sleep_quality: appData.today_checkin.sleep_quality,
