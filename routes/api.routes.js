@@ -62,11 +62,11 @@ router.get('/data', auth.requireActiveSubscription, async (req, res) => {
       [userId]
     );
 
-    // Punch card + streak stats (paid tiers only)
+    // Member code + punch card + streak (all tiers including free)
     let punchStats = null;
     let streakStats = null;
     let memberCode = null;
-    if (['rewards', 'coach'].includes(req.user.subscription_tier)) {
+    if (['free', 'rewards', 'coach'].includes(req.user.subscription_tier)) {
       try {
         const memberRewards = require('../lib/member-rewards');
         memberCode = await memberRewards.ensureMemberCode(userId);
@@ -151,9 +151,9 @@ router.post('/checkin', auth.requireActiveSubscription, async (req, res) => {
      alcohol_drinks != null ? alcohol_drinks : null, stress_level || null, note || null]
   );
 
-  // Process streak (only for paid users — rewards/coach)
+  // Process streak (all tiers including free)
   let streakResult = null;
-  if (['rewards', 'coach'].includes(req.user.subscription_tier)) {
+  if (['free', 'rewards', 'coach'].includes(req.user.subscription_tier)) {
     try {
       const memberRewards = require('../lib/member-rewards');
       streakResult = await memberRewards.processCheckinForStreak(req.user.id, date);
