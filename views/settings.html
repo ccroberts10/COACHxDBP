@@ -146,8 +146,26 @@ input:focus, select:focus { outline: none; border-color: var(--ink); background:
           <select id="primary_focus" onchange="saveBenchmarks()">
             <option value="cycling">Cycling</option>
             <option value="cycling-balanced">Cycling + strength</option>
+            <option value="running">Running</option>
+            <option value="running-balanced">Running + strength</option>
+            <option value="multisport">Multisport (Run + Bike)</option>
             <option value="general">General fitness</option>
             <option value="aerobic_base">Aerobic base</option>
+          </select>
+        </div>
+        <div class="form-row"><label>5K time (mm:ss)</label><input type="text" id="five_k_time" placeholder="e.g. 22:30" onblur="saveBenchmarks()"></div>
+        <div class="form-row"><label>Weekly miles</label><input type="number" id="weekly_miles_target" step="1" onblur="saveBenchmarks()"></div>
+        <div class="form-row">
+          <label>Long run day</label>
+          <select id="long_run_day" onchange="saveBenchmarks()">
+            <option value="">—</option>
+            <option value="saturday">Saturday</option>
+            <option value="sunday">Sunday</option>
+            <option value="monday">Monday</option>
+            <option value="tuesday">Tuesday</option>
+            <option value="wednesday">Wednesday</option>
+            <option value="thursday">Thursday</option>
+            <option value="friday">Friday</option>
           </select>
         </div>
       </div>
@@ -171,11 +189,16 @@ input:focus, select:focus { outline: none; border-color: var(--ink); background:
           <label>Type</label>
           <select id="current_event_type" onchange="saveBenchmarks()">
             <option value="">—</option>
-            <option value="road">Road</option>
+            <option value="road">Road (cycling)</option>
             <option value="gravel">Gravel</option>
             <option value="mtb">MTB</option>
             <option value="gran_fondo">Gran Fondo</option>
             <option value="crit">Crit</option>
+            <option value="5k">5K run</option>
+            <option value="10k">10K run</option>
+            <option value="half_marathon">Half marathon</option>
+            <option value="marathon">Marathon</option>
+            <option value="ultra">Ultra / trail run</option>
           </select>
         </div>
       </div>
@@ -230,7 +253,7 @@ function render(){
   else { sEl2.textContent = '✗ Disconnected'; sEl2.classList.add('red'); }
 
   const b = data.benchmarks || {};
-  ['ftp_watts','max_hr','lthr','bodyweight_kg','rhr_baseline','hrv_baseline','squat_1rm_lb','deadlift_1rm_lb','bench_1rm_lb','weekly_hours_target','strength_target_per_week','primary_focus','current_event_name','current_event_date','current_event_type','current_event_distance_km','current_event_elevation_m'].forEach(k => {
+  ['ftp_watts','max_hr','lthr','bodyweight_kg','rhr_baseline','hrv_baseline','squat_1rm_lb','deadlift_1rm_lb','bench_1rm_lb','weekly_hours_target','strength_target_per_week','primary_focus','five_k_time','weekly_miles_target','long_run_day','current_event_name','current_event_date','current_event_type','current_event_distance_km','current_event_elevation_m'].forEach(k => {
     const el = document.getElementById(k);
     if (el && b[k] != null) {
       // For date, slice to YYYY-MM-DD
@@ -242,7 +265,7 @@ function render(){
 
 async function saveBenchmarks(){
   const payload = {};
-  ['ftp_watts','max_hr','lthr','bodyweight_kg','rhr_baseline','hrv_baseline','squat_1rm_lb','deadlift_1rm_lb','bench_1rm_lb','weekly_hours_target','strength_target_per_week','primary_focus','current_event_name','current_event_date','current_event_type','current_event_distance_km','current_event_elevation_m'].forEach(k => {
+  ['ftp_watts','max_hr','lthr','bodyweight_kg','rhr_baseline','hrv_baseline','squat_1rm_lb','deadlift_1rm_lb','bench_1rm_lb','weekly_hours_target','strength_target_per_week','primary_focus','five_k_time','weekly_miles_target','long_run_day','current_event_name','current_event_date','current_event_type','current_event_distance_km','current_event_elevation_m'].forEach(k => {
     const el = document.getElementById(k);
     if (!el) return;
     const v = el.value;
@@ -250,7 +273,7 @@ async function saveBenchmarks(){
       payload[k] = null;
     } else if (['ftp_watts','max_hr','lthr','rhr_baseline','squat_1rm_lb','deadlift_1rm_lb','bench_1rm_lb','strength_target_per_week','current_event_elevation_m'].includes(k)) {
       payload[k] = parseInt(v);
-    } else if (['bodyweight_kg','hrv_baseline','weekly_hours_target','current_event_distance_km'].includes(k)) {
+    } else if (['bodyweight_kg','hrv_baseline','weekly_hours_target','weekly_miles_target','current_event_distance_km'].includes(k)) {
       payload[k] = parseFloat(v);
     } else {
       payload[k] = v;
