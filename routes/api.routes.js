@@ -13,6 +13,28 @@ router.use(auth.requireAuthApi);
 router.get('/data', auth.requireActiveSubscription, async (req, res) => {
   const userId = req.user.id;
   try {
+    // Lazy on-demand prescription generation for Coach tier
+    // (Replaces 6:30 AM cron — generation now happens when user actually opens the app)
+    if (req.user.subscription_tier === 'coach' && req.user.onboarding_completed) {
+      const userTzPre = req.user.timezone || 'America/Denver';
+      const todayInUserTzPre = new Date().toLocaleDateString('en-CA', { timeZone: userTzPre });
+      const todaysPresc = await db.one(
+        `SELECT id FROM prescriptions WHERE user_id = $1 AND date = $2`,
+        [userId, todayInUserTzPre]
+      );
+      if (!todaysPresc) {
+        // Generate fresh prescription using freshest data right now (non-fatal — if it fails, user can manually retry)
+        try {
+          const { runDailyForUser } = require('../lib/pipeline');
+          await runDailyForUser(userId);
+          console.log(`[api/data] lazy-generated prescription for user ${userId}`);
+        } catch (e) {
+          console.error(`[api/data] lazy generation failed for ${userId}:`, e.message);
+          // Continue — user will see "no prescription" state and can tap Run manually
+        }
+      }
+    }
+
     const [snapshots, prescriptions, activities, feedback, checkins, integrations, benchmarks, perks] = await Promise.all([
       db.many(`SELECT * FROM daily_snapshots WHERE user_id = $1 ORDER BY date DESC LIMIT 14`, [userId]),
       db.many(`SELECT * FROM prescriptions WHERE user_id = $1 ORDER BY date DESC LIMIT 14`, [userId]),
