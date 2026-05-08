@@ -13,6 +13,17 @@ router.post('/request', async (req, res) => {
   }
 });
 
+// Free-tier signup — creates account with tier='free' (no Stripe)
+router.post('/signup-free', async (req, res) => {
+  try {
+    const { email, name } = req.body;
+    const result = await auth.requestMagicLink(email, { name, tier: 'free' });
+    res.json(result);
+  } catch (e) {
+    res.status(400).json({ error: e.message });
+  }
+});
+
 router.get('/verify', async (req, res) => {
   try {
     const { token } = req.query;
