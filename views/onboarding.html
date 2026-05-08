@@ -182,10 +182,13 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--i
 
     <label>Primary focus</label>
     <div class="options" id="focus-options">
-      <div class="option" data-value="cycling">Cycling Performance</div>
-      <div class="option" data-value="cycling-balanced">Cycling + Strength</div>
-      <div class="option" data-value="general">General Fitness</div>
-      <div class="option" data-value="aerobic_base">Aerobic Base</div>
+      <div class="option" data-value="cycling" data-sport="cycling">Cycling Performance</div>
+      <div class="option" data-value="cycling-balanced" data-sport="cycling">Cycling + Strength</div>
+      <div class="option" data-value="running" data-sport="running">Running Performance</div>
+      <div class="option" data-value="running-balanced" data-sport="running">Running + Strength</div>
+      <div class="option" data-value="multisport" data-sport="multisport">Multisport (Run + Bike)</div>
+      <div class="option" data-value="general" data-sport="cycling">General Fitness</div>
+      <div class="option" data-value="aerobic_base" data-sport="cycling">Aerobic Base</div>
     </div>
 
     <div class="row" style="margin-top:16px">
@@ -204,9 +207,39 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--i
       </div>
     </div>
 
-    <label>FTP (cycling threshold watts)</label>
-    <input type="number" id="ftp_watts" placeholder="If unknown, leave blank">
-    <div class="field-help">Tip: do a 20-min FTP test in Zwift or outside. Until then, we estimate from your best 20-min normalized power on Strava.</div>
+    <!-- Cycling benchmarks (shown when sport=cycling or multisport) -->
+    <div id="cycling-benchmarks" class="sport-benchmarks">
+      <label>FTP (cycling threshold watts)</label>
+      <input type="number" id="ftp_watts" placeholder="If unknown, leave blank">
+      <div class="field-help">Tip: do a 20-min FTP test in Zwift or outside. Until then, we estimate from your best 20-min normalized power on Strava.</div>
+    </div>
+
+    <!-- Running benchmarks (shown when sport=running or multisport) -->
+    <div id="running-benchmarks" class="sport-benchmarks" style="display:none">
+      <div class="row" style="margin-top:16px">
+        <div>
+          <label>Recent 5K time</label>
+          <input type="text" id="five_k_time" placeholder="mm:ss · e.g. 22:30">
+          <div class="field-help">Used to calculate pace zones. If you haven't raced recently, estimate from a hard 5K effort.</div>
+        </div>
+        <div>
+          <label>Weekly miles</label>
+          <input type="number" id="weekly_miles_target" placeholder="e.g. 25" step="1" min="0" max="100">
+        </div>
+      </div>
+      <label>Long run day</label>
+      <select id="long_run_day">
+        <option value="">— pick one —</option>
+        <option value="saturday">Saturday</option>
+        <option value="sunday" selected>Sunday</option>
+        <option value="monday">Monday</option>
+        <option value="tuesday">Tuesday</option>
+        <option value="wednesday">Wednesday</option>
+        <option value="thursday">Thursday</option>
+        <option value="friday">Friday</option>
+      </select>
+      <div class="field-help">Coach will schedule your long run on this day, with easy/recovery before and after.</div>
+    </div>
 
     <div class="actions">
       <button class="btn btn-secondary" onclick="prevStep()">← Back</button>
@@ -249,7 +282,7 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--i
     <div class="err" id="finishErr"></div>
   </div>
 
-  <!-- STEP REWARDS_DONE — for Rewards tier users who just need basic setup -->
+  <!-- STEP REWARDS_DONE — for Free + Rewards tier users (just basic info needed) -->
   <div class="step" id="stepRewardsDone" style="display:none">
     <div class="step-tag">
       <span class="num">02</span>
@@ -258,9 +291,9 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--i
     </div>
 
     <h1>You're<br>set.</h1>
-    <p class="step-sub">Your DBP membership is active. Your member code unlocks rewards in person at the shop.</p>
+    <p class="step-sub" id="doneSubtext">Your DBP membership is active. Your member code unlocks rewards in person at the shop.</p>
 
-    <div class="notice">
+    <div class="notice" id="doneUpsell">
       <strong>Want training too?</strong> Upgrade to Coach anytime from Settings — adds AI training prescriptions to your membership for $20 more per month.
     </div>
 
@@ -296,8 +329,15 @@ async function loadState(){
       if (b.strength_target_per_week != null) get('strength_target_per_week').value = b.strength_target_per_week;
       if (b.primary_focus) {
         const focus = document.querySelector(`#focus-options [data-value="${b.primary_focus}"]`);
-        if (focus) focus.classList.add('selected');
+        if (focus) {
+          focus.classList.add('selected');
+          updateSportBenchmarks(focus.dataset.sport);
+        }
       }
+      // Restore running benchmarks
+      if (b.five_k_time && get('five_k_time')) get('five_k_time').value = b.five_k_time;
+      if (b.weekly_miles_target && get('weekly_miles_target')) get('weekly_miles_target').value = b.weekly_miles_target;
+      if (b.long_run_day && get('long_run_day')) get('long_run_day').value = b.long_run_day;
       if (b.home_gym_equipment) {
         b.home_gym_equipment.forEach(v => {
           const el = document.querySelector(`#equipment-options [data-value="${v}"]`);
@@ -321,8 +361,8 @@ async function loadState(){
 
 function updateProgressForTier() {
   const progress = document.getElementById('progress');
-  if (userTier === 'rewards') {
-    // Only 2 steps for rewards
+  if (userTier === 'rewards' || userTier === 'free') {
+    // Single info step for free + rewards (no integrations needed)
     progress.innerHTML = '<div class="progress-pip active"></div><div class="progress-pip"></div>';
   } else {
     // 4 steps for coach
@@ -354,8 +394,25 @@ document.querySelectorAll('#focus-options .option').forEach(el => {
   el.addEventListener('click', () => {
     document.querySelectorAll('#focus-options .option').forEach(x => x.classList.remove('selected'));
     el.classList.add('selected');
+    updateSportBenchmarks(el.dataset.sport);
   });
 });
+
+function updateSportBenchmarks(sport) {
+  const cy = document.getElementById('cycling-benchmarks');
+  const rn = document.getElementById('running-benchmarks');
+  if (sport === 'running') {
+    cy.style.display = 'none';
+    rn.style.display = 'block';
+  } else if (sport === 'multisport') {
+    cy.style.display = 'block';
+    rn.style.display = 'block';
+  } else {
+    // cycling, general, aerobic_base
+    cy.style.display = 'block';
+    rn.style.display = 'none';
+  }
+}
 
 document.querySelectorAll('#equipment-options .option').forEach(el => {
   el.addEventListener('click', () => { el.classList.toggle('selected'); });
@@ -379,6 +436,14 @@ async function saveStep(){
     data.strength_target_per_week = parseInt(document.getElementById('strength_target_per_week').value);
     const ftp = parseInt(document.getElementById('ftp_watts').value);
     if (ftp) data.ftp_watts = ftp;
+
+    // Running benchmarks
+    const fiveK = document.getElementById('five_k_time')?.value?.trim();
+    if (fiveK) data.five_k_time = fiveK;
+    const miles = parseFloat(document.getElementById('weekly_miles_target')?.value);
+    if (miles) data.weekly_miles_target = miles;
+    const longRun = document.getElementById('long_run_day')?.value;
+    if (longRun) data.long_run_day = longRun;
   } else if (currentStep === 4) {
     const equipment = [...document.querySelectorAll('#equipment-options .option.selected')].map(el => el.dataset.value);
     data.home_gym_equipment = equipment;
@@ -394,8 +459,8 @@ async function saveStep(){
 async function nextStep(){
   await saveStep();
 
-  // Rewards tier: only 1 step (account info), then skip to done
-  if (userTier === 'rewards') {
+  // Free + Rewards: only 1 step (account info), then skip to done
+  if (userTier === 'rewards' || userTier === 'free') {
     if (currentStep === 1) {
       goTo('rewardsDone');
       return;
@@ -416,7 +481,7 @@ async function nextStep(){
 }
 
 function prevStep(){
-  if (userTier === 'rewards' && currentStep === 'rewardsDone') {
+  if ((userTier === 'rewards' || userTier === 'free') && currentStep === 'rewardsDone') {
     goTo(1);
     return;
   }
@@ -427,6 +492,16 @@ function goTo(n){
   document.querySelectorAll('.step').forEach(s => s.style.display = 'none');
 
   if (n === 'rewardsDone') {
+    // Customize done screen by tier
+    const subtext = document.getElementById('doneSubtext');
+    const upsell = document.getElementById('doneUpsell');
+    if (userTier === 'free') {
+      subtext.textContent = 'Your free DBP account is set up. Your member code earns punches at the shop — every 10th drink free, plus a free drink on your birthday.';
+      upsell.innerHTML = '<strong>Want more?</strong> Upgrade to <strong>Rewards</strong> ($19/mo) for free Sunday coffee, 10% off retail, free flat fixes, and more — or <strong>Coach</strong> ($39/mo) for AI training plus all rewards. Anytime, from Settings.';
+    } else if (userTier === 'rewards') {
+      subtext.textContent = 'Your DBP membership is active. Your member code unlocks rewards in person at the shop.';
+      upsell.innerHTML = '<strong>Want training too?</strong> Upgrade to Coach anytime from Settings — adds AI training prescriptions to your membership for $20 more per month.';
+    }
     document.getElementById('stepRewardsDone').style.display = 'block';
     document.querySelectorAll('#progress .progress-pip').forEach(d => d.classList.add('active'));
     currentStep = 'rewardsDone';
