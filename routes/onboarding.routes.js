@@ -32,6 +32,8 @@ router.post('/save', async (req, res) => {
     home_gym_equipment, has_indoor_trainer,
     ftp_watts, max_hr, lthr, squat_1rm_lb, deadlift_1rm_lb, bench_1rm_lb,
     current_event_name, current_event_date, current_event_type, current_event_distance_km, current_event_elevation_m,
+    // Running benchmarks
+    five_k_time, weekly_miles_target, long_run_day,
   } = req.body;
 
   // Update user table
@@ -58,6 +60,8 @@ router.post('/save', async (req, res) => {
     has_indoor_trainer,
     ftp_watts, max_hr, lthr, squat_1rm_lb, deadlift_1rm_lb, bench_1rm_lb,
     current_event_name, current_event_date, current_event_type, current_event_distance_km, current_event_elevation_m,
+    // Running benchmarks
+    five_k_time, weekly_miles_target, long_run_day,
   };
   for (const [key, val] of Object.entries(fields)) {
     if (val === undefined) continue;
