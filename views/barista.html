@@ -229,10 +229,17 @@ function renderMember(m) {
   if (m.caps && m.caps.length > 0) {
     const capRows = m.caps.map(c => {
       const isBlocked = !c.currently_allowed;
-      const limit = c.max_per_year ? `${c.used.year}/${c.max_per_year} this year`
-                  : c.max_per_month ? `${c.used.month}/${c.max_per_month} this month`
-                  : c.max_per_week ? `${c.used.week}/${c.max_per_week} this week`
-                  : 'no limit';
+      const used = c.used || { year: 0, month: 0, week: 0 };
+      let limit;
+      if (c.max_per_year) limit = `${used.year || 0}/${c.max_per_year} this year`;
+      else if (c.max_per_month) limit = `${used.month || 0}/${c.max_per_month} this month`;
+      else if (c.max_per_week) limit = `${used.week || 0}/${c.max_per_week} this week`;
+      else if (c.redemption_months && c.redemption_months.length > 0) {
+        const monthNames = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+        const allowed = c.redemption_months.map(m => monthNames[m-1]).join(', ');
+        limit = `Available ${allowed}`;
+      }
+      else limit = 'no limit';
       return `<div class="cap-row${isBlocked ? ' blocked' : ''}">
         <div class="cap-name">${c.name}</div>
         <div class="cap-usage">${limit}${isBlocked ? ' · UNAVAILABLE' : ''}</div>
