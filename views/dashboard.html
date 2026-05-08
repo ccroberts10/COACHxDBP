@@ -1210,7 +1210,8 @@ html, body { background: var(--bone); color: var(--ink); font-family: var(--maxi
   </div>
 
   <div id="loadingView" class="loading">
-    <span class="spinner"></span>Loading
+    <span class="spinner"></span>
+    <span id="loadingMessage">Loading</span>
   </div>
 
   <div id="connectionBanners"></div>
@@ -1291,9 +1292,26 @@ function dismissRewardBanner() {
 
 async function loadData(){
   document.getElementById('loadingView').style.display='block';
+
+  // Rotate through messages while loading — gives the AI generation wait a "thinking" feel
+  const loadingMessages = [
+    'Reading your latest data',
+    'Pulling recovery from WHOOP',
+    'Analyzing recent training load',
+    'Building today\'s prescription',
+    'Almost ready',
+  ];
+  let msgIdx = 0;
+  const msgEl = document.getElementById('loadingMessage');
+  msgEl.textContent = loadingMessages[0];
+  const msgInterval = setInterval(() => {
+    msgIdx = (msgIdx + 1) % loadingMessages.length;
+    if (msgEl) msgEl.textContent = loadingMessages[msgIdx];
+  }, 2500);
+
   try{
     const r = await fetch('/api/data');
-    if (r.status === 401) { window.location = '/login'; return; }
+    if (r.status === 401) { clearInterval(msgInterval); window.location = '/login'; return; }
     appData = await r.json();
     if (appData.today_checkin) {
       pendingCheckin = {
@@ -1313,9 +1331,11 @@ async function loadData(){
       if (runBtn) runBtn.style.display = 'none';
     }
   }catch(e){
+    clearInterval(msgInterval);
     document.getElementById('loadingView').innerHTML = '<div style="color:var(--rec-red)">Error: '+e.message+'</div>';
     return;
   }
+  clearInterval(msgInterval);
   document.getElementById('loadingView').style.display='none';
 }
 
