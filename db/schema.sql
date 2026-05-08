@@ -96,6 +96,11 @@ CREATE TABLE IF NOT EXISTS user_benchmarks (
   updated_at              TIMESTAMPTZ DEFAULT NOW()
 );
 
+-- Running benchmarks (Phase 5: running support)
+ALTER TABLE user_benchmarks ADD COLUMN IF NOT EXISTS five_k_time TEXT;          -- 'mm:ss' format, e.g. '22:30'
+ALTER TABLE user_benchmarks ADD COLUMN IF NOT EXISTS weekly_miles_target REAL;
+ALTER TABLE user_benchmarks ADD COLUMN IF NOT EXISTS long_run_day TEXT;         -- 'sunday', 'saturday', etc.
+
 -- ===================================================================
 -- INTEGRATIONS (WHOOP, STRAVA TOKENS)
 -- ===================================================================
