@@ -708,7 +708,7 @@ a { color: inherit; text-decoration: none; }
           <li class="muted">No AI coach</li>
           <li class="muted">No member rewards</li>
         </ul>
-        <a class="btn btn-ink" href="/login">Sign up free</a>
+        <button class="btn btn-ink" onclick="signupFree()">Sign up free</button>
       </div>
 
       <!-- REWARDS -->
@@ -885,6 +885,24 @@ async function checkout(tier){
     const data = await r.json();
     if (data.url) window.location = data.url;
     else alert('Error: ' + (data.error || 'unknown'));
+  } catch (e) { alert('Error: ' + e.message); }
+}
+
+async function signupFree(){
+  const email = prompt('Sign up for a free DBP account — what\'s your email?');
+  if (!email) return;
+  try {
+    const r = await fetch('/auth/signup-free', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email }),
+    });
+    const data = await r.json();
+    if (data.sent) {
+      alert(`Check your inbox! We sent a sign-in link to ${data.email}. Tap it to finish setup.`);
+    } else {
+      alert('Error: ' + (data.error || 'unknown'));
+    }
   } catch (e) { alert('Error: ' + e.message); }
 }
 </script>
