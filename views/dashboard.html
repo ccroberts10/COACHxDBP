@@ -322,6 +322,34 @@ html, body { background: var(--bone); color: var(--ink); font-family: var(--maxi
   color: var(--ink);
 }
 .checkin-note:focus { outline: none; border-color: var(--ink); }
+.garmin-inputs {
+  display: flex;
+  gap: 10px;
+  margin-top: 6px;
+}
+.garmin-input {
+  flex: 1;
+}
+.garmin-label {
+  display: block;
+  font-family: var(--maxi-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(10,10,10,0.55);
+  margin-bottom: 4px;
+}
+.garmin-input input {
+  width: 100%;
+  background: var(--bone);
+  border: 1px solid var(--line);
+  padding: 10px 12px;
+  font-size: 0.95rem;
+  font-family: var(--maxi-mono);
+  color: var(--ink);
+  text-align: center;
+}
+.garmin-input input:focus { outline: none; border-color: var(--ink); }
 .btn-save {
   width: 100%;
   margin-top: 16px;
@@ -835,6 +863,24 @@ html, body { background: var(--bone); color: var(--ink); font-family: var(--maxi
   color: var(--ink);
   padding: 4px 10px;
 }
+.ar-actions, .perk-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.perk-qr-btn {
+  background: var(--ink);
+  color: var(--paper);
+  border: none;
+  padding: 6px 10px;
+  font-family: var(--maxi-mono);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.perk-qr-btn:active { transform: scale(0.97); }
 
 .rewards-stat-row {
   display: grid;
@@ -1184,13 +1230,13 @@ html, body { background: var(--bone); color: var(--ink); font-family: var(--maxi
 <!-- QR Modal -->
 <div class="qr-modal-backdrop" id="qrModal" onclick="if(event.target===this)hideMemberQR()">
   <div class="qr-modal">
-    <h2>Member QR</h2>
+    <h2 id="qrModalTitle">Member QR</h2>
     <div class="qr-name" id="qrModalName">—</div>
     <div class="qr-canvas-wrap">
       <canvas id="memberQrCanvas" width="240" height="240"></canvas>
     </div>
     <div class="qr-code-text" id="qrModalCode">—</div>
-    <div class="qr-instruction">Show this to DBP staff at checkout. They'll scan it.</div>
+    <div class="qr-instruction" id="qrModalInstruction">Show this to DBP staff at checkout. They'll scan it.</div>
     <button class="qr-modal-close" onclick="hideMemberQR()">Close</button>
   </div>
 </div>
@@ -1235,8 +1281,10 @@ function showMemberQR() {
   const code = appData?.user?.member_code;
   const name = appData?.user?.name || 'Member';
   if (!code) { alert('Member code not yet generated. Refresh and try again.'); return; }
+  document.getElementById('qrModalTitle').textContent = 'Member QR';
   document.getElementById('qrModalName').textContent = name;
   document.getElementById('qrModalCode').textContent = code;
+  document.getElementById('qrModalInstruction').textContent = "Show this to DBP staff at checkout. They'll scan it.";
   document.getElementById('qrModal').classList.add('show');
   // Generate QR
   try {
@@ -1253,6 +1301,27 @@ function showMemberQR() {
   }
 }
 
+function showRewardQR(code, description) {
+  if (!code) return;
+  document.getElementById('qrModalTitle').textContent = 'Reward QR';
+  document.getElementById('qrModalName').textContent = description || 'Reward';
+  document.getElementById('qrModalCode').textContent = code;
+  document.getElementById('qrModalInstruction').textContent = "Show at checkout. Staff will scan to redeem.";
+  document.getElementById('qrModal').classList.add('show');
+  try {
+    new QRious({
+      element: document.getElementById('memberQrCanvas'),
+      value: code,
+      size: 240,
+      level: 'H',
+      foreground: '#0A0A0A',
+      background: '#FFFFFF',
+    });
+  } catch (e) {
+    console.error('QR generation failed:', e);
+  }
+}
+
 function hideMemberQR() {
   document.getElementById('qrModal').classList.remove('show');
 }
@@ -1261,7 +1330,7 @@ function hideMemberQR() {
 <script>
 let appData = null;
 let pendingFeedback = { status: null, rpe: 7, actual_workout_type: null, actual_workout_detail: '', skip_reason: null, note: '' };
-let pendingCheckin = { sleep_quality: null, legs_feel: null, alcohol_drinks: null, stress_level: null, note: '' };
+let pendingCheckin = { sleep_quality: null, legs_feel: null, alcohol_drinks: null, stress_level: null, note: '', garmin_sleep_score: null, garmin_body_battery: null };
 
 function _toDate(s) {
   if (!s) return null;
@@ -1340,6 +1409,8 @@ async function loadData(){
         alcohol_drinks: appData.today_checkin.alcohol_drinks,
         stress_level: appData.today_checkin.stress_level,
         note: appData.today_checkin.note || '',
+        garmin_sleep_score: appData.today_checkin.garmin_sleep_score ?? null,
+        garmin_body_battery: appData.today_checkin.garmin_body_battery ?? null,
       };
     }
     renderAll();
@@ -1485,6 +1556,20 @@ function renderCheckinCard(){
     </div>
 
     <div class="checkin-row">
+      <div class="checkin-row-label">Garmin metrics (optional)</div>
+      <div class="garmin-inputs">
+        <div class="garmin-input">
+          <label class="garmin-label">Sleep score</label>
+          <input type="number" min="0" max="100" inputmode="numeric" placeholder="0–100" value="${pendingCheckin.garmin_sleep_score ?? ''}" oninput="pendingCheckin.garmin_sleep_score = this.value === '' ? null : parseInt(this.value)">
+        </div>
+        <div class="garmin-input">
+          <label class="garmin-label">Body battery</label>
+          <input type="number" min="0" max="100" inputmode="numeric" placeholder="0–100" value="${pendingCheckin.garmin_body_battery ?? ''}" oninput="pendingCheckin.garmin_body_battery = this.value === '' ? null : parseInt(this.value)">
+        </div>
+      </div>
+    </div>
+
+    <div class="checkin-row">
       <div class="checkin-row-label">Anything else? (optional)</div>
       <textarea class="checkin-note" placeholder="Soreness, mood, sickness, life stuff…" rows="2" oninput="pendingCheckin.note = this.value">${pendingCheckin.note || ''}</textarea>
     </div>
@@ -1510,6 +1595,8 @@ async function saveCheckin(){
         alcohol_drinks: pendingCheckin.alcohol_drinks,
         stress_level: pendingCheckin.stress_level,
         note: pendingCheckin.note,
+        garmin_sleep_score: pendingCheckin.garmin_sleep_score,
+        garmin_body_battery: pendingCheckin.garmin_body_battery,
       }),
     });
     const data = await r.json();
@@ -1548,7 +1635,10 @@ function renderFreeDashboard() {
         ${appData.perks.map(p => `
           <div class="active-reward-item">
             <div class="ar-desc">${p.description || 'Reward'}</div>
-            <div class="ar-code">${p.code}</div>
+            <div class="ar-actions">
+              <div class="ar-code">${p.code}</div>
+              <button class="perk-qr-btn" onclick="showRewardQR('${p.code}','${(p.description||'Reward').replace(/'/g,"\\'")}')">📱 QR</button>
+            </div>
           </div>
         `).join('')}
       </div>
@@ -1781,7 +1871,10 @@ function renderToday(){
           <div style="font-family:var(--maxi-mono);font-size:0.65rem;letter-spacing:0.15em;text-transform:uppercase;color:rgba(10,10,10,0.6);margin-bottom:8px">${appData.perks.length} ACTIVE REWARD${appData.perks.length > 1 ? 'S' : ''}</div>
           ${appData.perks.map(perk => `<div class="perk-item">
             <div class="perk-info"><strong>${perk.description||perk.perk_type}</strong><span>Show at DBP · ${perk.expires_at?'expires '+new Date(perk.expires_at).toLocaleDateString():'no expiration'}</span></div>
-            <div class="perk-code">${perk.code}</div>
+            <div class="perk-actions">
+              <div class="perk-code">${perk.code}</div>
+              <button class="perk-qr-btn" onclick="showRewardQR('${perk.code}','${(perk.description||perk.perk_type||'').replace(/'/g,"\\'")}')">📱 QR</button>
+            </div>
           </div>`).join('')}
         </div>` : ''}
       </div>
