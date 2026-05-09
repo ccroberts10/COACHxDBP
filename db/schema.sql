@@ -328,8 +328,8 @@ UPDATE perk_templates SET max_per_year = 4, cap_notes = 'Up to 4×/year. Member 
   WHERE name = 'Free flat repair';
 UPDATE perk_templates SET max_per_year = 1, redemption_months = ARRAY[10,11,12,1,2,3], cap_notes = '1×/year, redeemable Oct–Mar only.'
   WHERE name = 'Free tune-up';
-UPDATE perk_templates SET max_per_month = 5, cap_notes = 'Free Sunday coffee: max 5/month.'
-  WHERE name = 'Free 12oz drink' AND cap_notes IS NULL;
+UPDATE perk_templates SET max_per_month = 4, cap_notes = 'Free Sunday recovery drink: max 4/month.'
+  WHERE name = 'Free 12oz drink';
 
 -- Track service requests / priority queue
 CREATE TABLE IF NOT EXISTS service_requests (
