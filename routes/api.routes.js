@@ -6,11 +6,9 @@ const db = require('../db/client');
 const { runDailyForUser } = require('../lib/pipeline');
 const { getWeather } = require('../lib/weather');
 
-// All /api endpoints require active subscription (except billing webhook, mounted separately)
-router.use(auth.requireAuthApi);
-
+// Per-route auth applied below — perks routes (mounted at /api/perks before this) handle their own auth via staff PIN
 // Dashboard data endpoint
-router.get('/data', auth.requireActiveSubscription, async (req, res) => {
+router.get('/data', auth.requireAuthApi, auth.requireActiveSubscription, async (req, res) => {
   const userId = req.user.id;
   try {
     // Lazy on-demand prescription generation for Coach tier
@@ -126,7 +124,7 @@ router.get('/data', auth.requireActiveSubscription, async (req, res) => {
 });
 
 // Trigger pipeline run
-router.post('/run', auth.requireActiveSubscription, async (req, res) => {
+router.post('/run', auth.requireAuthApi, auth.requireActiveSubscription, async (req, res) => {
   try {
     const result = await runDailyForUser(req.user.id);
     res.json({ success: true, prescription: result.prescription });
@@ -136,7 +134,7 @@ router.post('/run', auth.requireActiveSubscription, async (req, res) => {
 });
 
 // Save workout feedback
-router.post('/feedback', auth.requireActiveSubscription, async (req, res) => {
+router.post('/feedback', auth.requireAuthApi, auth.requireActiveSubscription, async (req, res) => {
   const { date, status, note, rpe, actual_workout_type, actual_workout_detail, skip_reason } = req.body;
   if (!date || !status) return res.status(400).json({ error: 'date and status required' });
   if (!['did_it', 'modified', 'skipped'].includes(status)) return res.status(400).json({ error: 'invalid status' });
@@ -156,7 +154,7 @@ router.post('/feedback', auth.requireActiveSubscription, async (req, res) => {
 });
 
 // Save daily wellness check-in (morning)
-router.post('/checkin', auth.requireActiveSubscription, async (req, res) => {
+router.post('/checkin', auth.requireAuthApi, auth.requireActiveSubscription, async (req, res) => {
   const { date, sleep_quality, legs_feel, alcohol_drinks, stress_level, note } = req.body;
   if (!date) return res.status(400).json({ error: 'date required' });
   await db.query(
@@ -188,7 +186,7 @@ router.post('/checkin', auth.requireActiveSubscription, async (req, res) => {
 });
 
 // Disconnect an integration
-router.post('/integrations/:service/disconnect', auth.requireActiveSubscription, async (req, res) => {
+router.post('/integrations/:service/disconnect', auth.requireAuthApi, auth.requireActiveSubscription, async (req, res) => {
   const { service } = req.params;
   if (!['whoop', 'strava'].includes(service)) return res.status(400).json({ error: 'invalid service' });
   await db.query(`DELETE FROM integrations WHERE user_id = $1 AND service = $2`, [req.user.id, service]);
