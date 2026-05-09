@@ -155,20 +155,31 @@ router.post('/feedback', auth.requireAuthApi, auth.requireActiveSubscription, as
 
 // Save daily wellness check-in (morning)
 router.post('/checkin', auth.requireAuthApi, auth.requireActiveSubscription, async (req, res) => {
-  const { date, sleep_quality, legs_feel, alcohol_drinks, stress_level, note } = req.body;
+  const { date, sleep_quality, legs_feel, alcohol_drinks, stress_level, note,
+          garmin_sleep_score, garmin_body_battery } = req.body;
   if (!date) return res.status(400).json({ error: 'date required' });
+
+  // Clamp Garmin values to 0-100 range, accept null
+  const clampGarmin = v => v == null || v === '' ? null : Math.max(0, Math.min(100, parseInt(v) || 0));
+  const sleepScore = clampGarmin(garmin_sleep_score);
+  const bodyBattery = clampGarmin(garmin_body_battery);
+
   await db.query(
-    `INSERT INTO daily_checkins (user_id, date, sleep_quality, legs_feel, alcohol_drinks, stress_level, note)
-     VALUES ($1, $2, $3, $4, $5, $6, $7)
+    `INSERT INTO daily_checkins (user_id, date, sleep_quality, legs_feel, alcohol_drinks, stress_level, note,
+                                 garmin_sleep_score, garmin_body_battery)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
      ON CONFLICT (user_id, date) DO UPDATE
      SET sleep_quality = EXCLUDED.sleep_quality,
          legs_feel = EXCLUDED.legs_feel,
          alcohol_drinks = EXCLUDED.alcohol_drinks,
          stress_level = EXCLUDED.stress_level,
          note = EXCLUDED.note,
+         garmin_sleep_score = EXCLUDED.garmin_sleep_score,
+         garmin_body_battery = EXCLUDED.garmin_body_battery,
          updated_at = NOW()`,
     [req.user.id, date, sleep_quality || null, legs_feel || null,
-     alcohol_drinks != null ? alcohol_drinks : null, stress_level || null, note || null]
+     alcohol_drinks != null ? alcohol_drinks : null, stress_level || null, note || null,
+     sleepScore, bodyBattery]
   );
 
   // Process streak (all tiers including free)
