@@ -94,6 +94,30 @@ router.post('/redeem', async (req, res) => {
   res.json(result);
 });
 
+// Staff inline-redeem from member's quota (no code required)
+// Used by barista app: tap "Redeem" next to a perk in the member's quota panel.
+router.post('/staff-redeem', async (req, res) => {
+  const { pin, member_code, template_id, note } = req.body;
+  if (!pin || !member_code || !template_id) {
+    return res.status(400).json({ error: 'pin, member_code, and template_id required' });
+  }
+  const staff = await verifyStaffPin(pin);
+  if (!staff) return res.status(401).json({ error: 'Invalid PIN' });
+
+  const memberRewards = require('../lib/member-rewards');
+  const user = await memberRewards.userByMemberCode(member_code);
+  if (!user) return res.status(404).json({ error: 'Member code not found' });
+
+  try {
+    const result = await perks.staffRedeemFromTemplate(user.id, template_id, staff.staff_name, { note });
+    if (!result.success) return res.status(400).json(result);
+    res.json(result);
+  } catch (e) {
+    console.error('[staff-redeem] error:', e);
+    res.status(500).json({ error: e.message });
+  }
+});
+
 // =====================================================
 // ADMIN — manager PIN required
 // =====================================================
