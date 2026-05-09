@@ -251,6 +251,10 @@ CREATE TABLE IF NOT EXISTS daily_checkins (
   PRIMARY KEY (user_id, date)
 );
 
+-- Phase 6: Garmin user manual-entry metrics (no API integration)
+ALTER TABLE daily_checkins ADD COLUMN IF NOT EXISTS garmin_sleep_score INTEGER;     -- 0-100
+ALTER TABLE daily_checkins ADD COLUMN IF NOT EXISTS garmin_body_battery INTEGER;    -- 0-100
+
 -- ===================================================================
 -- PERKS — DBP ELITE FEATURES
 -- ===================================================================
