@@ -350,6 +350,27 @@ html, body { background: var(--bone); color: var(--ink); font-family: var(--maxi
   text-align: center;
 }
 .garmin-input input:focus { outline: none; border-color: var(--ink); }
+
+.checkin-gate-notice {
+  background: var(--ink);
+  color: var(--paper);
+  padding: 18px 20px;
+  margin-bottom: 14px;
+}
+.cgn-title {
+  font-family: var(--maxi-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.18em;
+  font-weight: 700;
+  color: var(--hi-vis);
+  margin-bottom: 8px;
+}
+.cgn-body {
+  font-family: var(--maxi-mono);
+  font-size: 0.85rem;
+  line-height: 1.55;
+  opacity: 0.88;
+}
 .btn-save {
   width: 100%;
   margin-top: 16px;
@@ -1601,6 +1622,16 @@ async function saveCheckin(){
     });
     const data = await r.json();
     if (!data.success) throw new Error(data.error || 'Save failed');
+
+    // If the backend generated a prescription post-checkin (Strava-only user just unlocked their day),
+    // reload all dashboard data to render the fresh prescription.
+    if (data.prescription_generated) {
+      btn.textContent = '✓ Generating today\'s plan…';
+      // Full reload — picks up the new prescription
+      await loadData();
+      return;
+    }
+
     btn.textContent = '✓ Saved';
     btn.classList.add('saved');
     appData.today_checkin = { ...pendingCheckin, date: todayStr() };
@@ -1742,6 +1773,20 @@ function renderToday(){
 
   const snap = appData.snapshots[0];
   const presc = appData.prescriptions[0];
+
+  // Strava-only user without check-in — gate prescription on check-in
+  if (appData.needs_checkin) {
+    el.innerHTML = `
+      <div class="section">
+        ${sectionHeader('01', 'Daily Check-in', 'REQUIRED')}
+        <div class="checkin-gate-notice">
+          <div class="cgn-title">CHECK IN TO UNLOCK TODAY</div>
+          <div class="cgn-body">Without WHOOP, Coach uses your check-in to calibrate today's prescription. Takes 30 seconds. Save below to generate.</div>
+        </div>
+        ${renderCheckinCard()}
+      </div>`;
+    return;
+  }
 
   if(!snap || !presc){
     el.innerHTML = `
