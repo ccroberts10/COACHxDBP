@@ -13,6 +13,7 @@ router.get('/data', auth.requireAuthApi, auth.requireActiveSubscription, async (
   try {
     // Lazy on-demand prescription generation for Coach tier
     // (Replaces 6:30 AM cron — generation now happens when user actually opens the app)
+    let needsCheckin = false;
     if (req.user.subscription_tier === 'coach' && req.user.onboarding_completed) {
       const userTzPre = req.user.timezone || 'America/Denver';
       const todayInUserTzPre = new Date().toLocaleDateString('en-CA', { timeZone: userTzPre });
@@ -21,14 +22,35 @@ router.get('/data', auth.requireAuthApi, auth.requireActiveSubscription, async (
         [userId, todayInUserTzPre]
       );
       if (!todaysPresc) {
-        // Generate fresh prescription using freshest data right now (non-fatal — if it fails, user can manually retry)
-        try {
-          const { runDailyForUser } = require('../lib/pipeline');
-          await runDailyForUser(userId);
-          console.log(`[api/data] lazy-generated prescription for user ${userId}`);
-        } catch (e) {
-          console.error(`[api/data] lazy generation failed for ${userId}:`, e.message);
-          // Continue — user will see "no prescription" state and can tap Run manually
+        // Check if user has WHOOP connected — WHOOP users get auto-recovery, no check-in required
+        const whoopConn = await db.one(
+          `SELECT status FROM integrations WHERE user_id = $1 AND service = 'whoop' AND status = 'connected'`,
+          [userId]
+        );
+        const hasWhoop = !!whoopConn;
+
+        // Check if today's check-in exists
+        const todaysCheckin = await db.one(
+          `SELECT user_id FROM daily_checkins WHERE user_id = $1 AND date = $2`,
+          [userId, todayInUserTzPre]
+        );
+        const hasCheckin = !!todaysCheckin;
+
+        if (!hasWhoop && !hasCheckin) {
+          // Strava-only user without check-in → don't generate, gate on check-in
+          // Saves AI cost (no two-runs-per-day) AND ensures prescription has full context
+          needsCheckin = true;
+          console.log(`[api/data] user ${userId} needs check-in before generation (Strava-only, no check-in today)`);
+        } else {
+          // Either has WHOOP, or has check-in — proceed with generation
+          try {
+            const { runDailyForUser } = require('../lib/pipeline');
+            await runDailyForUser(userId);
+            console.log(`[api/data] lazy-generated prescription for user ${userId}`);
+          } catch (e) {
+            console.error(`[api/data] lazy generation failed for ${userId}:`, e.message);
+            // Continue — user will see "no prescription" state and can tap Run manually
+          }
         }
       }
     }
@@ -108,6 +130,7 @@ router.get('/data', auth.requireAuthApi, auth.requireActiveSubscription, async (
       checkins,
       today_checkin: checkinByDate[todayInUserTz] || null,
       today_date: todayInUserTz,
+      needs_checkin: needsCheckin,  // True if Strava-only user hasn't checked in yet today (gates AI generation)
       savings: {
         month_cents: parseInt(savingsRow?.month_cents || 0),
         lifetime_cents: parseInt(savingsRow?.lifetime_cents || 0),
@@ -193,7 +216,27 @@ router.post('/checkin', auth.requireAuthApi, auth.requireActiveSubscription, asy
     }
   }
 
-  res.json({ success: true, streak: streakResult });
+  // For Coach users: if no prescription exists for today, generate now (since check-in was the gate)
+  // This is the "single AI call per day" path for Strava-only users
+  let prescriptionGenerated = false;
+  if (req.user.subscription_tier === 'coach' && req.user.onboarding_completed) {
+    const todaysPresc = await db.one(
+      `SELECT user_id FROM prescriptions WHERE user_id = $1 AND date = $2`,
+      [req.user.id, date]
+    );
+    if (!todaysPresc) {
+      try {
+        const { runDailyForUser } = require('../lib/pipeline');
+        await runDailyForUser(req.user.id);
+        prescriptionGenerated = true;
+        console.log(`[checkin] post-checkin prescription generated for ${req.user.id}`);
+      } catch (e) {
+        console.error(`[checkin] post-checkin generation failed for ${req.user.id}:`, e.message);
+      }
+    }
+  }
+
+  res.json({ success: true, streak: streakResult, prescription_generated: prescriptionGenerated });
 });
 
 // Disconnect an integration
