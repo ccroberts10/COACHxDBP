@@ -27,6 +27,7 @@ app.use('/auth', require('./routes/auth.routes'));
 app.use('/billing', require('./routes/billing.routes').router);
 app.use('/onboarding', require('./routes/onboarding.routes'));
 app.use('/api/perks', require('./routes/perks.routes'));
+app.use('/api/waitlist', require('./routes/waitlist.routes'));
 app.use('/api', require('./routes/api.routes'));
 app.use('/', require('./routes/pages.routes'));
 
