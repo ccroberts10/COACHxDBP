@@ -10,6 +10,17 @@ router.post('/checkout', async (req, res) => {
   try {
     const { priceKey, email } = req.body;
     if (!priceKey || !email) return res.status(400).json({ error: 'priceKey and email required' });
+
+    // Coach tier is in soft-launch phase pending Strava/WHOOP partnership approval.
+    // Block direct checkout to keep the friend launch focused on Rewards.
+    // Owner (Casey) is already on Coach via OWNER100 — existing subscriptions unaffected.
+    if (priceKey === 'coach_monthly' || priceKey === 'coach_annual') {
+      return res.status(403).json({
+        error: 'Coach tier is launching soon. Join the waitlist on the landing page and we\'ll notify you when it goes live.',
+        coach_pending: true,
+      });
+    }
+
     const session = await stripeLib.createCheckoutSession({ priceKey, email });
     res.json({ url: session.url });
   } catch (e) {
@@ -86,7 +97,16 @@ ol li strong { color: var(--ink); font-weight: 500; }
       expand: ['subscription'],
     });
     const email = session.customer_details?.email || session.customer_email;
-    if (email) await auth.requestMagicLink(email);
+    let magicLinkSent = false;
+    if (email) {
+      try {
+        await auth.requestMagicLink(email);
+        magicLinkSent = true;
+        console.log(`[billing/success] Magic link sent to ${email}`);
+      } catch (linkErr) {
+        console.error(`[billing/success] Magic link send FAILED for ${email}:`, linkErr.message, linkErr.stack);
+      }
+    }
 
     // Pull trial info from subscription if present
     let trialNote = '';
@@ -99,18 +119,22 @@ ol li strong { color: var(--ink); font-weight: 500; }
       trialNote = `<p class="lede" style="background:var(--hi-vis);color:var(--ink);padding:10px 14px;margin-top:14px;font-size:0.88rem;font-weight:500">🎉 You're on a free trial — ${daysLeft} days free, first charge ${trialEndStr}.</p>`;
     }
 
-    const successBody = `
-      <p class="lede">Your subscription is active. We just emailed a sign-in link to <span class="email-call">${email || 'your inbox'}</span>.</p>
+    const successBody = magicLinkSent ? `
+      <p class="lede">Your subscription is active. We just emailed a sign-in link to <span class="email-call">${email}</span>.</p>
       ${trialNote}
-      <p class="lede" style="opacity:0.6;font-size:0.82rem">Tap the link in your inbox to access your dashboard and finish setup. The link expires in 15 minutes.</p>
+      <p class="lede" style="opacity:0.6;font-size:0.82rem">Tap the link in your inbox to access your dashboard and finish setup. The link expires in 15 minutes. Check spam if you don't see it.</p>
+    ` : `
+      <p class="lede">Your subscription is active. Sign in below to access your dashboard.</p>
+      ${trialNote}
+      <p class="lede" style="opacity:0.6;font-size:0.82rem">We had trouble emailing your sign-in link automatically. Click below to request one.</p>
     `;
 
     res.send(renderPage({
       title: 'Welcome',
-      headline: 'You\'re in.<br>Check your inbox.',
+      headline: magicLinkSent ? 'You\'re in.<br>Check your inbox.' : 'You\'re in.<br>Sign in below.',
       body: successBody,
-      cta: null,
-      ctaUrl: null,
+      cta: magicLinkSent ? null : 'Request sign-in link →',
+      ctaUrl: magicLinkSent ? null : '/login',
     }));
   } catch (e) {
     console.error('[billing/success] Stripe session lookup failed:', e.message);
