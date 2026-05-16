@@ -503,3 +503,18 @@ CREATE TABLE IF NOT EXISTS streak_milestones (
   UNIQUE(user_id, milestone_days)
 );
 CREATE INDEX IF NOT EXISTS idx_streak_milestones_user ON streak_milestones(user_id);
+
+
+-- ============= COACH WAITLIST (Phase 7 soft launch) =============
+-- Email signups while Coach tier waits for Strava/WHOOP partnership approval.
+-- We notify these emails when Coach launches.
+CREATE TABLE IF NOT EXISTS coach_waitlist (
+  id              UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  email           TEXT NOT NULL UNIQUE,
+  source          TEXT DEFAULT 'landing',
+  notified        BOOLEAN DEFAULT FALSE,
+  notified_at     TIMESTAMPTZ,
+  created_at      TIMESTAMPTZ DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS idx_waitlist_email ON coach_waitlist(email);
+CREATE INDEX IF NOT EXISTS idx_waitlist_notified ON coach_waitlist(notified) WHERE notified = FALSE;
