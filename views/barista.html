@@ -69,6 +69,114 @@ input.code-input { text-transform: uppercase; letter-spacing: 0.08em; font-weigh
 .cap-usage { font-size: 0.65rem; color: rgba(250,250,247,0.55); letter-spacing: 0.05em; margin-top: 2px; }
 .cap-redeem-btn { background: var(--hi-vis, #F2E600); color: var(--ink, #0a0a0a); border: none; padding: 6px 12px; font-family: var(--maxi-mono); font-size: 0.62rem; font-weight: 700; letter-spacing: 0.14em; cursor: pointer; flex-shrink: 0; }
 .cap-redeem-btn:active { transform: scale(0.97); }
+
+/* ============= AMOUNT DISPLAY (taps to open keypad) ============= */
+.amount-display {
+  background: var(--bone);
+  border: 2px solid var(--ink);
+  padding: 18px 20px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: var(--maxi-mono);
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.amount-display:active { background: rgba(10,10,10,0.05); }
+.amount-value {
+  font-family: var(--maxi-round);
+  font-weight: 700;
+  font-size: 1.6rem;
+  color: var(--ink);
+  letter-spacing: -0.01em;
+}
+.amount-value.empty { color: rgba(10,10,10,0.35); }
+.amount-tap-hint {
+  font-family: var(--maxi-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.18em;
+  color: rgba(10,10,10,0.55);
+}
+
+/* ============= NUMBER KEYPAD MODAL ============= */
+.keypad-modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(10,10,10,0.7);
+  z-index: 1000;
+  align-items: flex-end;
+  justify-content: center;
+}
+.keypad-modal.show { display: flex; }
+.keypad {
+  background: var(--paper);
+  width: 100%;
+  max-width: 440px;
+  padding: 24px 20px 32px;
+  border-top: 3px solid var(--ink);
+}
+.keypad-display {
+  background: var(--ink);
+  color: var(--paper);
+  padding: 20px 24px;
+  margin-bottom: 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.keypad-label {
+  font-family: var(--maxi-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.2em;
+  color: var(--hi-vis);
+}
+.keypad-value {
+  font-family: var(--maxi-round);
+  font-weight: 700;
+  font-size: 2rem;
+  color: var(--paper);
+  letter-spacing: -0.02em;
+}
+.keypad-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-bottom: 14px;
+}
+.kp-btn {
+  background: var(--bone);
+  border: 1.5px solid var(--ink);
+  padding: 22px 0;
+  font-family: var(--maxi-round);
+  font-weight: 700;
+  font-size: 1.5rem;
+  color: var(--ink);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+.kp-btn:active { background: var(--ink); color: var(--paper); }
+.kp-btn-secondary {
+  background: rgba(10,10,10,0.06);
+  font-size: 1rem;
+  letter-spacing: 0.05em;
+}
+.kp-confirm {
+  width: 100%;
+  background: var(--hi-vis);
+  color: var(--ink);
+  border: 1.5px solid var(--ink);
+  padding: 18px 0;
+  font-family: var(--maxi-mono);
+  font-weight: 700;
+  font-size: 0.95rem;
+  letter-spacing: 0.18em;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.kp-confirm:active { background: var(--ink); color: var(--hi-vis); }
 .reward-row { background: var(--hi-vis); padding: 10px 12px; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center; }
 .reward-row .desc { font-family: var(--maxi-mono); font-size: 0.78rem; flex: 1; }
 .reward-row .code { font-family: var(--maxi-mono); font-weight: 600; letter-spacing: 0.06em; font-size: 0.85rem; background: var(--ink); color: var(--hi-vis); padding: 4px 8px; }
@@ -136,7 +244,11 @@ input.code-input { text-transform: uppercase; letter-spacing: 0.08em; font-weigh
 
         <div class="field">
           <label>Amount ($)</label>
-          <input type="number" id="pAmount" step="0.01" min="0" inputmode="decimal" placeholder="6.00">
+          <div class="amount-display" id="amountDisplay" onclick="openKeypad()">
+            <span class="amount-value empty" id="amountValue">$0.00</span>
+            <span class="amount-tap-hint">TAP TO ENTER</span>
+          </div>
+          <input type="hidden" id="pAmount" value="">
         </div>
 
         <div class="field">
@@ -145,6 +257,31 @@ input.code-input { text-transform: uppercase; letter-spacing: 0.08em; font-weigh
         </div>
 
         <button class="btn btn-primary" onclick="logPurchase()" id="logBtn">Log Purchase</button>
+      </div>
+    </div>
+
+    <!-- Custom number pad modal — works even when Bluetooth scanner suppresses iOS keyboard -->
+    <div class="keypad-modal" id="keypadModal" onclick="if(event.target===this)closeKeypad()">
+      <div class="keypad">
+        <div class="keypad-display">
+          <span class="keypad-label">AMOUNT</span>
+          <span class="keypad-value" id="keypadValue">$0.00</span>
+        </div>
+        <div class="keypad-grid">
+          <button class="kp-btn" onclick="kpPress('1')">1</button>
+          <button class="kp-btn" onclick="kpPress('2')">2</button>
+          <button class="kp-btn" onclick="kpPress('3')">3</button>
+          <button class="kp-btn" onclick="kpPress('4')">4</button>
+          <button class="kp-btn" onclick="kpPress('5')">5</button>
+          <button class="kp-btn" onclick="kpPress('6')">6</button>
+          <button class="kp-btn" onclick="kpPress('7')">7</button>
+          <button class="kp-btn" onclick="kpPress('8')">8</button>
+          <button class="kp-btn" onclick="kpPress('9')">9</button>
+          <button class="kp-btn kp-btn-secondary" onclick="kpClear()">CLR</button>
+          <button class="kp-btn" onclick="kpPress('0')">0</button>
+          <button class="kp-btn kp-btn-secondary" onclick="kpBack()">←</button>
+        </div>
+        <button class="kp-confirm" onclick="closeKeypad()">DONE</button>
       </div>
     </div>
 
@@ -297,6 +434,66 @@ function selectCat(cat, btn) {
   btn.classList.add('selected');
 }
 
+// ============== CUSTOM NUMBER KEYPAD ==============
+// Works even when Bluetooth scanner is connected (iOS hides software keyboard
+// when external keyboard is paired, so we render our own number pad in HTML).
+let keypadDigits = '';  // raw digit string, last 2 digits are cents
+
+function openKeypad() {
+  document.getElementById('keypadModal').classList.add('show');
+  renderKeypad();
+}
+
+function closeKeypad() {
+  document.getElementById('keypadModal').classList.remove('show');
+  // Sync value to hidden input
+  const dollars = formatKeypadAmount(keypadDigits);
+  document.getElementById('pAmount').value = dollars;
+  updateAmountDisplay(dollars);
+}
+
+function kpPress(digit) {
+  if (keypadDigits.length >= 6) return;  // cap at 9999.99
+  // Don't allow leading zeros
+  if (keypadDigits === '' && digit === '0') return;
+  keypadDigits += digit;
+  renderKeypad();
+}
+
+function kpBack() {
+  keypadDigits = keypadDigits.slice(0, -1);
+  renderKeypad();
+}
+
+function kpClear() {
+  keypadDigits = '';
+  renderKeypad();
+}
+
+function formatKeypadAmount(digits) {
+  if (!digits) return '0.00';
+  const padded = digits.padStart(3, '0');
+  const dollars = padded.slice(0, -2);
+  const cents = padded.slice(-2);
+  return `${parseInt(dollars, 10)}.${cents}`;
+}
+
+function renderKeypad() {
+  const formatted = formatKeypadAmount(keypadDigits);
+  document.getElementById('keypadValue').textContent = `$${formatted}`;
+}
+
+function updateAmountDisplay(value) {
+  const el = document.getElementById('amountValue');
+  if (!value || parseFloat(value) === 0) {
+    el.textContent = '$0.00';
+    el.classList.add('empty');
+  } else {
+    el.textContent = `$${parseFloat(value).toFixed(2)}`;
+    el.classList.remove('empty');
+  }
+}
+
 async function logPurchase() {
   if (!currentMember) return;
   if (!currentCategory) { showResult('p', false, 'Pick a category'); return; }
@@ -336,6 +533,8 @@ async function logPurchase() {
 
     // Reset form for next purchase, keep PIN + code
     document.getElementById('pAmount').value = '';
+    keypadDigits = '';
+    updateAmountDisplay('');
     document.getElementById('pNotes').value = '';
     currentCategory = null;
     document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('selected'));
