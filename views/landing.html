@@ -351,6 +351,10 @@ a { color: inherit; text-decoration: none; }
 .price-card.popular .price-tag-line { color: rgba(250,250,247,0.7); }
 .price-card.popular .price-amount { color: var(--paper); }
 .price-card.popular .per { color: rgba(250,250,247,0.55); }
+.price-card.coming-soon { opacity: 0.85; position: relative; }
+.price-card.coming-soon ul li { color: rgba(10,10,10,0.55); }
+.price-card.coming-soon .price-amount,
+.price-card.coming-soon .per { color: rgba(10,10,10,0.55); }
 .popular-badge {
   position: absolute;
   top: 0; right: 24px;
@@ -712,7 +716,8 @@ a { color: inherit; text-decoration: none; }
       </div>
 
       <!-- REWARDS -->
-      <div class="price-card">
+      <div class="price-card popular">
+        <span class="popular-badge">Available Now</span>
         <div class="price-card-meta">TIER 02 · LAUNCH OFFER</div>
         <h3>Rewards</h3>
         <div class="price-tag-line">DBP loyalty membership · First month free.</div>
@@ -729,17 +734,16 @@ a { color: inherit; text-decoration: none; }
           <li>Monthly DBP group ride</li>
           <li>Birthday month: free 12oz drink</li>
           <li>Punch card: 10th drink free</li>
-          <li class="muted">No AI coach</li>
         </ul>
-        <button class="btn btn-ink" onclick="checkout('rewards')">Start 30-day free trial</button>
+        <button class="btn btn-primary" onclick="checkout('rewards')">Start 30-day free trial</button>
       </div>
 
-      <!-- COACH -->
-      <div class="price-card popular">
-        <span class="popular-badge">Most Popular</span>
-        <div class="price-card-meta">TIER 03 · LAUNCH OFFER</div>
+      <!-- COACH (COMING SOON) -->
+      <div class="price-card coming-soon">
+        <span class="popular-badge" style="background:rgba(10,10,10,0.6);color:var(--bone)">Coming Soon</span>
+        <div class="price-card-meta">TIER 03 · AVAILABLE SOON</div>
         <h3>Coach</h3>
-        <div class="price-tag-line">Training + all rewards · First month free.</div>
+        <div class="price-tag-line">AI training + all rewards.</div>
         <div class="price-row">
           <span class="price-amount" data-price="coach">$39</span>
           <span class="per" data-per="coach">/mo</span>
@@ -747,15 +751,20 @@ a { color: inherit; text-decoration: none; }
         <ul>
           <li>Everything in Rewards</li>
           <li>Daily AI workout + nutrition prescription</li>
-          <li>Strava required, WHOOP optional</li>
-          <li>Recovery, HRV, sleep, training load (with WHOOP)</li>
-          <li>Self-reported recovery (without WHOOP)</li>
+          <li>Tailored for cyclists AND runners</li>
+          <li>Strava required, WHOOP or Garmin optional</li>
+          <li>Recovery, HRV, sleep, training load</li>
           <li>Workout history with feedback loop</li>
           <li>Weather-aware route suggestions</li>
-          <li>Email + in-app delivery</li>
-          <li>Check-in streak rewards</li>
+          <li>Event-specific plans (5K, marathon, gran fondo, etc.)</li>
         </ul>
-        <button class="btn btn-primary" onclick="checkout('coach')">Start 30-day free trial</button>
+        <div id="waitlistArea">
+          <div style="font-family:var(--maxi-mono);font-size:0.7rem;letter-spacing:0.04em;color:rgba(10,10,10,0.7);line-height:1.5;margin:0 0 12px;">
+            Strava partnership pending review. Join the waitlist — we'll email when Coach goes live.
+          </div>
+          <input type="email" id="waitlistEmail" placeholder="your@email.com" style="width:100%;padding:12px;border:1px solid var(--line);background:var(--bone);font-family:var(--maxi-mono);font-size:0.9rem;color:var(--ink);margin-bottom:8px;box-sizing:border-box;">
+          <button class="btn btn-ink" onclick="joinWaitlist()" id="waitlistBtn">Join Waitlist</button>
+        </div>
       </div>
     </div>
   </div>
@@ -788,8 +797,8 @@ a { color: inherit; text-decoration: none; }
 
     <div class="faq-grid">
       <div class="faq-item">
-        <div class="faq-q">Do I need a WHOOP for Coach?</div>
-        <div class="faq-a">No — Coach works with just Strava + a daily check-in. WHOOP adds HRV-based recovery precision but isn't required. If you have WHOOP, connect it for the full experience. If you don't, the AI uses your check-in (sleep quality, legs feel, alcohol, stress) plus Strava activity to infer recovery state.</div>
+        <div class="faq-q">When does Coach launch?</div>
+        <div class="faq-a">Coach is awaiting partnership approval from Strava and WHOOP. Once approved (usually 1-2 weeks), Coach goes live. Join the waitlist on the pricing card above and we'll email you when it's ready. Existing trial members keep their access uninterrupted.</div>
       </div>
       <div class="faq-item">
         <div class="faq-q">What's the difference between Rewards and Coach?</div>
@@ -908,6 +917,38 @@ async function signupFree(){
       alert('Error: ' + (data.error || 'unknown'));
     }
   } catch (e) { alert('Error: ' + e.message); }
+}
+
+async function joinWaitlist(){
+  const emailEl = document.getElementById('waitlistEmail');
+  const btn = document.getElementById('waitlistBtn');
+  const email = emailEl.value.trim();
+  if (!email || !email.includes('@')) {
+    alert('Please enter a valid email address.');
+    return;
+  }
+  btn.disabled = true;
+  btn.textContent = 'Saving…';
+  try {
+    const r = await fetch('/api/waitlist/coach', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email }),
+    });
+    const data = await r.json();
+    if (data.success) {
+      document.getElementById('waitlistArea').innerHTML = `
+        <div style="font-family:var(--maxi-mono);font-size:0.85rem;letter-spacing:0.02em;color:var(--ink);line-height:1.5;padding:14px 0;">
+          ✓ You're on the list. We'll email <strong>${email}</strong> when Coach launches.
+        </div>`;
+    } else {
+      throw new Error(data.error || 'unknown');
+    }
+  } catch (e) {
+    btn.disabled = false;
+    btn.textContent = 'Join Waitlist';
+    alert('Error: ' + e.message);
+  }
 }
 </script>
 </body>
