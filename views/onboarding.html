@@ -313,6 +313,17 @@ let userTier = 'coach'; // assume coach by default; updated from server
 async function loadState(){
   try {
     const r = await fetch('/onboarding/state');
+    // If session expired or never set, redirect to login (cleanly, no error screen)
+    if (r.status === 401) {
+      window.location = '/login?next=/onboarding';
+      return;
+    }
+    if (!r.ok) {
+      console.error('[onboarding] loadState failed:', r.status);
+      // Show fallback message instead of broken UI
+      document.body.innerHTML = '<div style="padding:40px;font-family:DM Mono, monospace;text-align:center;"><h2>Something went wrong</h2><p>Try refreshing, or <a href="/login">sign in again</a>.</p></div>';
+      return;
+    }
     const data = await r.json();
     state = data;
     userTier = data.user?.tier || 'coach';
