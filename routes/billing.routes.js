@@ -133,8 +133,9 @@ ol li strong { color: var(--ink); font-weight: 500; }
       title: 'Welcome',
       headline: magicLinkSent ? 'You\'re in.<br>Check your inbox.' : 'You\'re in.<br>Sign in below.',
       body: successBody,
-      cta: magicLinkSent ? null : 'Request sign-in link →',
-      ctaUrl: magicLinkSent ? null : '/login',
+      // Always show a fallback button — even if magic link was sent, the user might not receive it (spam, typo, etc).
+      cta: magicLinkSent ? 'Didn\'t get the email? →' : 'Request sign-in link →',
+      ctaUrl: '/login',
     }));
   } catch (e) {
     console.error('[billing/success] Stripe session lookup failed:', e.message);
