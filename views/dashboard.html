@@ -862,6 +862,29 @@ html, body { background: var(--bone); color: var(--ink); font-family: var(--maxi
   background: var(--paper);
   border: 1px solid var(--line-strong);
 }
+.perks-summary {
+  background: var(--paper);
+  border: 1px solid var(--line-strong);
+  padding: 16px 18px;
+}
+.perks-summary .perk-line {
+  font-family: var(--maxi-mono);
+  font-size: 0.86rem;
+  color: var(--ink);
+  padding: 6px 0;
+  border-bottom: 1px solid var(--line);
+  line-height: 1.45;
+}
+.perks-summary .perk-line:last-of-type { border-bottom: none; }
+.perks-summary .perks-footer {
+  font-family: var(--maxi-mono);
+  font-size: 0.72rem;
+  color: rgba(10,10,10,0.55);
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid var(--line);
+  letter-spacing: 0.02em;
+}
 .active-reward-item {
   display: flex;
   justify-content: space-between;
@@ -1291,8 +1314,8 @@ html, body { background: var(--bone); color: var(--ink); font-family: var(--maxi
 
 <div class="tab-bar">
   <button class="tab active" data-view="today" onclick="switchView('today')"><span class="tab-indicator"></span>Today</button>
-  <button class="tab" data-view="trends" onclick="switchView('trends')"><span class="tab-indicator"></span>Trends</button>
-  <button class="tab" data-view="history" onclick="switchView('history')"><span class="tab-indicator"></span>History</button>
+  <button class="tab coach-tab" data-view="trends" onclick="switchView('trends')"><span class="tab-indicator"></span>Trends</button>
+  <button class="tab coach-tab" data-view="history" onclick="switchView('history')"><span class="tab-indicator"></span>History</button>
 </div>
 
 <!-- QRious: tiny QR code library, ~6KB minified -->
@@ -1436,8 +1459,10 @@ async function loadData(){
     }
     renderAll();
 
-    // Free tier: hide Trends/History tabs and Run button (no prescription data exists)
-    if (appData.user?.tier === 'free') {
+    // Free + Rewards: hide Trends/History tabs and Run button (no prescription data exists for these tiers)
+    // This is a belt-and-suspenders check; renderToday() also hides these, but it ensures clean initial render.
+    const tier = appData.user?.tier;
+    if (tier === 'free' || tier === 'rewards') {
       document.querySelectorAll('.tab[data-view="trends"], .tab[data-view="history"]').forEach(t => t.style.display = 'none');
       const runBtn = document.getElementById('refreshBtn');
       if (runBtn) runBtn.style.display = 'none';
@@ -1648,7 +1673,9 @@ function sectionHeader(num, name, meta) {
   return `<div class="section-header"><span class="section-num">${num}</span><span class="section-name">${name}</span><span class="section-meta">${meta || ''}</span></div>`;
 }
 
-function renderFreeDashboard() {
+function renderFreeDashboard(tier = 'free') {
+  const isRewards = tier === 'rewards';
+  const tierLabel = isRewards ? 'REWARDS' : 'FREE';
   const memberCode = appData.user?.member_code || '—';
   const userName = appData.user?.name || 'Member';
   const punch = appData.punch || { current: 0, target: 10, lifetime: 0, away_from_free: 10 };
@@ -1675,39 +1702,46 @@ function renderFreeDashboard() {
       </div>
     </div>` : '';
 
-  return `
+  // Perks summary section — different for Rewards vs Free
+  const perksSummary = isRewards ? `
     <div class="section">
-      ${sectionHeader('01', 'Member Card', 'FREE')}
-      <div class="member-code-hero">
-        <div class="mch-label">YOUR MEMBER CODE</div>
-        <div class="mch-code">${memberCode}</div>
-        <div class="mch-sub">Show at DBP for purchases · earn punches</div>
-        <button class="mch-qr-btn" onclick="showMemberQR()">📱 Show QR Code</button>
+      ${sectionHeader(hasActiveRewards ? '04' : '03', 'Your Member Perks', 'ACTIVE')}
+      <div class="perks-summary">
+        <div class="perk-line">☕ Free 12oz Sunday recovery drink (drip · $2 milk upgrade) · 4/mo</div>
+        <div class="perk-line">🚴 10% off all retail + consignment</div>
+        <div class="perk-line">🔧 Free flat repair · 4/year (member pays for tube)</div>
+        <div class="perk-line">🛠 Free annual tune-up · Oct–Mar</div>
+        <div class="perk-line">🎂 Free birthday drink</div>
+        <div class="perk-line">✊ Punch card: every 10th drink free</div>
+        <div class="perks-footer">Show your member code at the shop to use.</div>
       </div>
+    </div>
+  ` : '';
 
-      <div class="rewards-stat-row">
-        <div class="rewards-stat">
-          <div class="rs-label">Punch Card</div>
-          <div class="rs-value">${punch.current}<span style="opacity:0.5">/${punch.target}</span></div>
-          <div class="punch-bar">${punchDots}</div>
-          <div class="rs-sub">${punch.away_from_free === 0 ? '🎉 Award ready!' : punch.away_from_free + ' away from free drink'}</div>
+  // Upsell card — different for each tier
+  const upsellSection = isRewards ? `
+    <!-- Coach waitlist for Rewards users -->
+    <div class="section">
+      ${sectionHeader(hasActiveRewards ? '05' : '04', 'Coming Soon', 'COACH')}
+      <div class="upsell-card upsell-coach">
+        <div class="upsell-header">
+          <div class="upsell-tier">DBP Coach</div>
+          <div class="upsell-price">$39<span class="upsell-per">/mo</span></div>
         </div>
-        <div class="rewards-stat">
-          <div class="rs-label">Check-in Streak</div>
-          <div class="rs-value">${streak.current} <span style="font-size:0.8rem">days</span></div>
-          <div class="rs-sub">${streak.current > 0 ? 'Longest: ' + streak.longest : 'Check in to start'}</div>
+        <div class="upsell-perks">
+          + Everything in Rewards<br>
+          + Daily AI training prescription (cycling + running)<br>
+          + Strava + WHOOP integration<br>
+          + Workout history with feedback<br>
+          + Weather-aware route suggestions
+        </div>
+        <div style="font-family:var(--maxi-mono);font-size:0.72rem;color:rgba(10,10,10,0.6);margin:6px 0 12px;letter-spacing:0.02em;line-height:1.5;">
+          Strava partnership pending review. Launching soon — we'll email you.
         </div>
       </div>
     </div>
-
-    ${rewardsBlock}
-
-    <div class="section">
-      ${sectionHeader(hasActiveRewards ? '04' : '03', 'Daily Check-in', 'OPTIONAL')}
-      ${renderCheckinCard()}
-    </div>
-
-    <!-- UPSELL: Rewards -->
+  ` : `
+    <!-- UPSELL for Free users: Rewards + Coach waitlist -->
     <div class="section">
       ${sectionHeader(hasActiveRewards ? '05' : '04', 'Want More?', 'UPGRADE')}
       <div class="upsell-card">
@@ -1739,9 +1773,47 @@ function renderFreeDashboard() {
           + Workout history with feedback<br>
           + Weather-aware route suggestions
         </div>
-        <button class="upsell-btn upsell-btn-coach" onclick="upgradeFromFree('coach')">Upgrade to Coach →</button>
+        <div style="font-family:var(--maxi-mono);font-size:0.72rem;color:rgba(10,10,10,0.6);margin:4px 0 8px;letter-spacing:0.02em;">
+          Coach launching soon · join waitlist
+        </div>
       </div>
     </div>
+  `;
+
+  return `
+    <div class="section">
+      ${sectionHeader('01', 'Member Card', tierLabel)}
+      <div class="member-code-hero">
+        <div class="mch-label">YOUR MEMBER CODE</div>
+        <div class="mch-code">${memberCode}</div>
+        <div class="mch-sub">Show at DBP for purchases · earn punches</div>
+        <button class="mch-qr-btn" onclick="showMemberQR()">📱 Show QR Code</button>
+      </div>
+
+      <div class="rewards-stat-row">
+        <div class="rewards-stat">
+          <div class="rs-label">Punch Card</div>
+          <div class="rs-value">${punch.current}<span style="opacity:0.5">/${punch.target}</span></div>
+          <div class="punch-bar">${punchDots}</div>
+          <div class="rs-sub">${punch.away_from_free === 0 ? '🎉 Award ready!' : punch.away_from_free + ' away from free drink'}</div>
+        </div>
+        <div class="rewards-stat">
+          <div class="rs-label">Check-in Streak</div>
+          <div class="rs-value">${streak.current} <span style="font-size:0.8rem">days</span></div>
+          <div class="rs-sub">${streak.current > 0 ? 'Longest: ' + streak.longest : 'Check in to start'}</div>
+        </div>
+      </div>
+    </div>
+
+    ${rewardsBlock}
+    ${perksSummary}
+
+    <div class="section">
+      ${sectionHeader(hasActiveRewards && isRewards ? '05' : (hasActiveRewards || isRewards ? '04' : '03'), 'Daily Check-in', 'OPTIONAL')}
+      ${renderCheckinCard()}
+    </div>
+
+    ${upsellSection}
   `;
 }
 
@@ -1765,9 +1837,18 @@ function renderToday(){
   const el = document.getElementById('todayContent');
   const tier = appData.user?.tier;
 
-  // FREE TIER — simplified dashboard: member code, punch card, streak, upsells
-  if (tier === 'free') {
-    el.innerHTML = renderFreeDashboard();
+  // Hide Trends + History tabs for non-Coach users (they have no prescription data)
+  document.querySelectorAll('.coach-tab').forEach(t => {
+    t.style.display = (tier === 'coach') ? '' : 'none';
+  });
+  // Hide the Run prescription button for non-Coach users
+  const runBtn = document.getElementById('refreshBtn');
+  if (runBtn) runBtn.style.display = (tier === 'coach') ? '' : 'none';
+
+  // FREE + REWARDS TIERS — simplified dashboard: member code, punch card, streak, perks
+  // (Both have no Coach access — no prescription, no Strava/WHOOP data)
+  if (tier === 'free' || tier === 'rewards') {
+    el.innerHTML = renderFreeDashboard(tier);
     return;
   }
 
