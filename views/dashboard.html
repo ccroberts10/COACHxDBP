@@ -1808,11 +1808,6 @@ function renderFreeDashboard(tier = 'free') {
     ${rewardsBlock}
     ${perksSummary}
 
-    <div class="section">
-      ${sectionHeader(hasActiveRewards && isRewards ? '05' : (hasActiveRewards || isRewards ? '04' : '03'), 'Daily Check-in', 'OPTIONAL')}
-      ${renderCheckinCard()}
-    </div>
-
     ${upsellSection}
   `;
 }
