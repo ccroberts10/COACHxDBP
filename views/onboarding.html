@@ -109,7 +109,7 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--i
     <label>Birthdate <span class="lite">(unlocks birthday rewards)</span></label>
     <input type="date" id="birthdate">
 
-    <div class="row">
+    <div class="row coach-only" id="bodyweightRow">
       <div>
         <label>Bodyweight (kg)</label>
         <input type="number" id="bodyweight_kg" placeholder="e.g. 80" step="0.1">
@@ -375,9 +375,12 @@ function updateProgressForTier() {
   if (userTier === 'rewards' || userTier === 'free') {
     // Single info step for free + rewards (no integrations needed)
     progress.innerHTML = '<div class="progress-pip active"></div><div class="progress-pip"></div>';
+    // Hide coach-only fields (bodyweight, city) — not needed for rewards/free tiers
+    document.querySelectorAll('.coach-only').forEach(el => { el.style.display = 'none'; });
   } else {
     // 4 steps for coach
     progress.innerHTML = '<div class="progress-pip active"></div><div class="progress-pip"></div><div class="progress-pip"></div><div class="progress-pip"></div>';
+    document.querySelectorAll('.coach-only').forEach(el => { el.style.display = ''; });
   }
 }
 
