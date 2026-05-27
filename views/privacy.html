@@ -51,20 +51,35 @@ a:hover { background: var(--hi-vis); }
   </div>
 
   <h1>Privacy<br>Policy</h1>
-  <p class="updated">LAST UPDATED · MAY 6, 2026</p>
+  <p class="updated">LAST UPDATED · MAY 27, 2026</p>
 
   <p>DBP Coach is a personalized AI training and nutrition application operated by Durango Bike Project ("we", "DBP"). This policy describes what data we access, how we use it, and your rights regarding it.</p>
 
   <h2>Data We Access</h2>
   <p>With your explicit authorization via OAuth, DBP Coach accesses the following data from connected services:</p>
   <ul>
+    <li><strong>Strava:</strong> activity records including type, duration, distance, heart rate, power, elevation, pace, and route data for activities you have recorded. We use the official Strava API. You authorize this access via OAuth and can revoke it at any time.</li>
     <li><strong>WHOOP:</strong> recovery score, heart rate variability (HRV), resting heart rate, sleep stages and duration, daily strain, workout records, and basic profile data.</li>
-    <li><strong>Strava:</strong> activity records including type, duration, distance, heart rate, power, elevation, and route data for activities you have recorded.</li>
   </ul>
   <p>We also collect: your email address (for sign-in), name (optional), birthdate (for birthday perks, paid tiers only), bodyweight, training preferences, and benchmarks you provide.</p>
 
   <h2>How We Use Your Data</h2>
-  <p>Data is used solely to generate your personalized training and nutrition recommendations and to operate your DBP membership. Your metrics may be sent to AI services for analysis to produce daily prescriptions. Your data is not sold, shared with advertisers, or used to train AI models.</p>
+  <p>Data is used solely to generate your personalized training and nutrition recommendations and to operate your DBP membership. Specifically:</p>
+  <ul>
+    <li><strong>Coaching feedback:</strong> Your Strava activity data is used to help you understand your training and to generate daily, personalized feedback and workout recommendations that are visible only to you.</li>
+    <li><strong>Inference only, never training:</strong> Your Strava data and other personal metrics are sent to Anthropic's Claude API for inference (producing your daily prescription) only. <strong>Strava data is never used to train any artificial intelligence or machine learning model, by us or by any third party.</strong> Anthropic's API does not train models on customer inputs by default, per their terms of service.</li>
+    <li><strong>Visible to you only:</strong> Per Strava's API Agreement, your Strava activity data is only displayed to you within DBP Coach. It is not shared with other users, displayed in any public feed, heatmap, or leaderboard, or shown in any way you would not expect.</li>
+  </ul>
+  <p>Your data is not sold, shared with advertisers, or used for any purpose other than what is described here.</p>
+
+  <h2>Strava-Specific Disclosures</h2>
+  <p>In accordance with the Strava API Agreement:</p>
+  <ul>
+    <li>You agree that Strava may monitor and collect usage data related to DBP Coach's use of the Strava API, and that Strava may use such usage data for any business purpose at Strava's discretion (including ensuring compliance with the API Agreement, providing developer or user support, or improving the Strava platform).</li>
+    <li>Strava activity data accessed via the API is displayed only to you, the user who authorized the connection.</li>
+    <li>Strava activity data is not used in artificial intelligence model training, machine learning model training, or any similar application.</li>
+    <li>You can revoke DBP Coach's access to your Strava account at any time at <a href="https://www.strava.com/settings/apps">your Strava settings</a>. Doing so immediately stops all data access; previously synced data is removed within 30 days of disconnection per the deletion process below.</li>
+  </ul>
 
   <h2>How We Store Your Data</h2>
   <p>Your data is stored in a private Postgres database hosted on Railway. Access tokens are encrypted at rest. Only DBP Coach systems and authorized DBP staff (for support purposes only) can access your data.</p>
@@ -72,14 +87,14 @@ a:hover { background: var(--hi-vis); }
   <h2>Third-Party Services</h2>
   <p>DBP Coach transmits data to:</p>
   <ul>
-    <li><strong>Anthropic</strong> — for generating recommendations. <a href="https://www.anthropic.com/legal/privacy">Anthropic's privacy policy</a>.</li>
+    <li><strong>Anthropic</strong> — for inference only (generating recommendations). No customer data is used to train Anthropic's models per their default API terms. <a href="https://www.anthropic.com/legal/privacy">Anthropic's privacy policy</a>.</li>
     <li><strong>Stripe</strong> — for billing only. We never see your full payment information. <a href="https://stripe.com/privacy">Stripe's privacy policy</a>.</li>
     <li><strong>Resend</strong> — for transactional email. <a href="https://resend.com/legal/privacy-policy">Resend's privacy policy</a>.</li>
     <li><strong>OpenWeather</strong> — for weather context (only your approximate city, not exact coordinates).</li>
   </ul>
 
   <h2>Data Retention and Deletion</h2>
-  <p>You can revoke DBP Coach's access to WHOOP at any time at <a href="https://app.prod.whoop.com/data-and-privacy">your WHOOP privacy settings</a> and Strava at <a href="https://www.strava.com/settings/apps">your Strava settings</a>. To delete your DBP Coach account and all associated data, email <a href="mailto:ccroberts10@gmail.com">ccroberts10@gmail.com</a>. We will permanently delete all data within 30 days.</p>
+  <p>You can revoke DBP Coach's access to WHOOP at any time at <a href="https://app.prod.whoop.com/data-and-privacy">your WHOOP privacy settings</a> and Strava at <a href="https://www.strava.com/settings/apps">your Strava settings</a>. To delete your DBP Coach account and all associated data (including all Strava and WHOOP data we have stored), email <a href="mailto:coach@durangobikeproject.com">coach@durangobikeproject.com</a>. We will permanently delete all data within 30 days.</p>
 
   <h2>Children's Privacy</h2>
   <p>DBP Coach is intended for users 18 and older. We do not knowingly collect data from anyone under 18.</p>
@@ -88,7 +103,7 @@ a:hover { background: var(--hi-vis); }
   <p>We will notify users of material changes by email. The "Last updated" date above reflects the most recent revision.</p>
 
   <h2>Contact</h2>
-  <p>Questions: <a href="mailto:ccroberts10@gmail.com">ccroberts10@gmail.com</a><br>Durango Bike Project · 225 E 8th Ave · Durango, CO 81301</p>
+  <p>Questions: <a href="mailto:coach@durangobikeproject.com">coach@durangobikeproject.com</a><br>Durango Bike Project · 225 E 8th Ave · Durango, CO 81301</p>
 
   <div class="footer">DBP COACH · 225 E 8TH AVE · DURANGO, CO 81301</div>
 </div>
