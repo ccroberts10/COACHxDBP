@@ -511,7 +511,7 @@ function goTo(n){
     const upsell = document.getElementById('doneUpsell');
     if (userTier === 'free') {
       subtext.textContent = 'Your free DBP account is set up. Your member code earns punches at the shop — every 10th drink free, plus a free drink on your birthday.';
-      upsell.innerHTML = '<strong>Want more?</strong> Upgrade to <strong>Rewards</strong> ($19/mo) for a free Sunday recovery drink (drip + $2 milk drink upgrade), 10% off retail, free flat fixes, and more — or <strong>Coach</strong> ($39/mo) for AI training plus all rewards. Anytime, from Settings.';
+      upsell.innerHTML = '<strong>Want more?</strong> Upgrade to <strong>Rewards</strong> ($19/mo) for a free Sunday recovery drink (drip + $2 milk drink upgrade), 10% off retail, free flat fixes, and more — or <strong>Coach</strong> ($29/mo) for AI training plus all rewards. Anytime, from Settings.';
     } else if (userTier === 'rewards') {
       subtext.textContent = 'Your DBP membership is active. Your member code unlocks rewards in person at the shop.';
       upsell.innerHTML = '<strong>Want training too?</strong> Upgrade to Coach anytime from Settings — adds AI training prescriptions to your membership for $20 more per month.';
