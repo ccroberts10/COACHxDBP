@@ -11,16 +11,6 @@ router.post('/checkout', async (req, res) => {
     const { priceKey, email } = req.body;
     if (!priceKey || !email) return res.status(400).json({ error: 'priceKey and email required' });
 
-    // Coach tier is in soft-launch phase pending Strava/WHOOP partnership approval.
-    // Block direct checkout to keep the friend launch focused on Rewards.
-    // Owner (Casey) is already on Coach via OWNER100 — existing subscriptions unaffected.
-    if (priceKey === 'coach_monthly' || priceKey === 'coach_annual') {
-      return res.status(403).json({
-        error: 'Coach tier is launching soon. Join the waitlist on the landing page and we\'ll notify you when it goes live.',
-        coach_pending: true,
-      });
-    }
-
     const session = await stripeLib.createCheckoutSession({ priceKey, email });
     res.json({ url: session.url });
   } catch (e) {
