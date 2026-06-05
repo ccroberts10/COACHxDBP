@@ -737,32 +737,29 @@ a { color: inherit; text-decoration: none; }
         <button class="btn btn-primary" onclick="checkout('rewards')">Start 30-day free trial</button>
       </div>
 
-      <!-- COACH (COMING SOON) -->
-      <div class="price-card coming-soon">
-        <span class="popular-badge" style="background:rgba(10,10,10,0.6);color:var(--bone)">Coming Soon</span>
-        <div class="price-card-meta">TIER 03 · AVAILABLE SOON</div>
+      <!-- COACH (LIVE — Strava approved May 31, 2026) -->
+      <div class="price-card">
+        <span class="popular-badge">New · Limited Beta</span>
+        <div class="price-card-meta">TIER 03 · LIVE</div>
         <h3>Coach</h3>
         <div class="price-tag-line">AI training + all rewards.</div>
         <div class="price-row">
-          <span class="price-amount" data-price="coach">$39</span>
+          <span class="price-amount" data-price="coach">$29</span>
           <span class="per" data-per="coach">/mo</span>
         </div>
         <ul>
           <li>Everything in Rewards</li>
           <li>Daily AI workout + nutrition prescription</li>
           <li>Tailored for cyclists AND runners</li>
-          <li>Strava required, WHOOP or Garmin optional</li>
+          <li>Strava required, WHOOP optional</li>
           <li>Recovery, HRV, sleep, training load</li>
           <li>Workout history with feedback loop</li>
           <li>Weather-aware route suggestions</li>
           <li>Event-specific plans (5K, marathon, gran fondo, etc.)</li>
         </ul>
-        <div id="waitlistArea">
-          <div style="font-family:var(--maxi-mono);font-size:0.7rem;letter-spacing:0.04em;color:rgba(10,10,10,0.7);line-height:1.5;margin:0 0 12px;">
-            Strava partnership pending review. Join the waitlist — we'll email when Coach goes live.
-          </div>
-          <input type="email" id="waitlistEmail" placeholder="your@email.com" style="width:100%;padding:12px;border:1px solid var(--line);background:var(--bone);font-family:var(--maxi-mono);font-size:0.9rem;color:var(--ink);margin-bottom:8px;box-sizing:border-box;">
-          <button class="btn btn-ink" onclick="joinWaitlist()" id="waitlistBtn">Join Waitlist</button>
+        <button class="btn btn-ink" onclick="checkout('coach')" style="width:100%;">Start 30-day free trial →</button>
+        <div style="font-family:var(--maxi-mono);font-size:0.7rem;letter-spacing:0.04em;color:rgba(10,10,10,0.6);line-height:1.5;margin-top:10px;text-align:center;">
+          Limited to 10 beta athletes during early access.
         </div>
       </div>
     </div>
@@ -796,12 +793,12 @@ a { color: inherit; text-decoration: none; }
 
     <div class="faq-grid">
       <div class="faq-item">
-        <div class="faq-q">When does Coach launch?</div>
-        <div class="faq-a">Coach is awaiting partnership approval from Strava and WHOOP. Once approved (usually 1-2 weeks), Coach goes live. Join the waitlist on the pricing card above and we'll email you when it's ready. Existing trial members keep their access uninterrupted.</div>
+        <div class="faq-q">Is Coach available now?</div>
+        <div class="faq-a">Yes. Coach is live in limited beta — we have room for 10 athletes during early access. Sign up directly from the Coach card above. 30-day free trial, cancel anytime. Once we hit 10 beta athletes we'll open a waitlist for the next batch.</div>
       </div>
       <div class="faq-item">
         <div class="faq-q">What's the difference between Rewards and Coach?</div>
-        <div class="faq-a">Rewards ($19/mo) is the loyalty membership — free Sunday recovery drink, 10% off retail, free flat fixes, free annual tune-up, group rides, punch card. Coach ($39/mo) includes everything in Rewards PLUS the AI training and nutrition coach. Pick Rewards if you just want DBP perks. Pick Coach if you also want training help.</div>
+        <div class="faq-a">Rewards ($19/mo) is the loyalty membership — free Sunday recovery drink, 10% off retail, free flat fixes, free annual tune-up, group rides, punch card. Coach ($29/mo) includes everything in Rewards PLUS the AI training and nutrition coach. Pick Rewards if you just want DBP perks. Pick Coach if you also want training help.</div>
       </div>
       <div class="faq-item">
         <div class="faq-q">Do I have to live in Durango?</div>
@@ -881,7 +878,7 @@ a { color: inherit; text-decoration: none; }
 let billing = 'monthly';
 const prices = {
   rewards: { monthly: { amount: '$19', per: '/mo' }, annual: { amount: '$14.92', per: '/mo, billed annually' } },
-  coach:   { monthly: { amount: '$39', per: '/mo' }, annual: { amount: '$29.08', per: '/mo, billed annually' } },
+  coach:   { monthly: { amount: '$29', per: '/mo' }, annual: { amount: '$20.75', per: '/mo, billed annually' } },
 };
 const tierLabels = { rewards: 'Rewards', coach: 'Coach' };
 function setBilling(mode){
