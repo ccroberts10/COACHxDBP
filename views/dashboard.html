@@ -1720,9 +1720,9 @@ function renderFreeDashboard(tier = 'free') {
 
   // Upsell card — different for each tier
   const upsellSection = isRewards ? `
-    <!-- Coach waitlist for Rewards users -->
+    <!-- Coach upgrade for Rewards users -->
     <div class="section">
-      ${sectionHeader(hasActiveRewards ? '05' : '04', 'Coming Soon', 'COACH')}
+      ${sectionHeader(hasActiveRewards ? '05' : '04', 'Upgrade', 'COACH')}
       <div class="upsell-card upsell-coach">
         <div class="upsell-header">
           <div class="upsell-tier">DBP Coach</div>
@@ -1735,8 +1735,9 @@ function renderFreeDashboard(tier = 'free') {
           + Workout history with feedback<br>
           + Weather-aware route suggestions
         </div>
-        <div style="font-family:var(--maxi-mono);font-size:0.72rem;color:rgba(10,10,10,0.6);margin:6px 0 12px;letter-spacing:0.02em;line-height:1.5;">
-          Strava partnership pending review. Launching soon — we'll email you.
+        <button class="upsell-btn upsell-btn-coach" onclick="upgradeFromFree('coach')">Add Coach →</button>
+        <div style="font-family:var(--maxi-mono);font-size:0.72rem;color:rgba(10,10,10,0.55);margin-top:10px;letter-spacing:0.02em;line-height:1.5;">
+          30-day free trial · cancel anytime · limited beta
         </div>
       </div>
     </div>
@@ -1773,8 +1774,9 @@ function renderFreeDashboard(tier = 'free') {
           + Workout history with feedback<br>
           + Weather-aware route suggestions
         </div>
-        <div style="font-family:var(--maxi-mono);font-size:0.72rem;color:rgba(10,10,10,0.6);margin:4px 0 8px;letter-spacing:0.02em;">
-          Coach launching soon · join waitlist
+        <button class="upsell-btn upsell-btn-coach" onclick="upgradeFromFree('coach')">Upgrade to Coach →</button>
+        <div style="font-family:var(--maxi-mono);font-size:0.72rem;color:rgba(10,10,10,0.55);margin-top:10px;letter-spacing:0.02em;">
+          30-day free trial · cancel anytime
         </div>
       </div>
     </div>
@@ -1814,7 +1816,17 @@ function renderFreeDashboard(tier = 'free') {
 
 async function upgradeFromFree(tier) {
   const email = appData.user?.email;
+  const currentTier = appData.user?.tier;
   if (!email) { alert('Could not detect your email. Please refresh.'); return; }
+
+  // Rewards user upgrading to Coach: they already have a subscription, so route them
+  // through the Stripe Customer Portal where they can change their plan (avoids double-billing).
+  if (currentTier === 'rewards' && tier === 'coach') {
+    window.location = '/billing/portal';
+    return;
+  }
+
+  // Free user (or any new signup): create a fresh checkout session
   const priceKey = `${tier}_monthly`;
   try {
     const r = await fetch('/billing/checkout', {
