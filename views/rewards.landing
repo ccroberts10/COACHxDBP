@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>DBP Rewards · Durango Bike Project</title>
+<meta name="description" content="DBP Rewards is a loyalty membership for the Durango Bike Project — free Sunday recovery drinks, 10% off retail, free flat repairs, and a free annual tune-up.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,700;12..96,800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #0A0A0A;
+  --paper: #FAFAF7;
+  --bone: #EFEDE5;
+  --hi-vis: #F2E600;
+  --line: rgba(10,10,10,0.10);
+  --line-strong: rgba(10,10,10,0.20);
+  --muted: rgba(10,10,10,0.55);
+  --maxi-round: 'Bricolage Grotesque', system-ui, sans-serif;
+  --maxi-mono: 'DM Mono', monospace;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body {
+  background: var(--bone);
+  color: var(--ink);
+  font-family: var(--maxi-mono);
+  font-size: 15px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+a { color: inherit; text-decoration: none; }
+.container { max-width: 900px; margin: 0 auto; padding: 0 24px; }
+
+/* NAV */
+.nav {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 18px 0; border-bottom: 1px solid var(--line-strong);
+}
+.brand-mark {
+  font-family: var(--maxi-round); font-weight: 800; font-size: 1.15rem;
+  letter-spacing: -0.02em; text-transform: uppercase;
+}
+.brand-mark .accent { background: var(--hi-vis); padding: 0 8px; }
+.nav-link { font-family: var(--maxi-mono); font-size: 0.75rem; letter-spacing: 0.15em; text-transform: uppercase; }
+
+/* HERO */
+.hero { background: var(--ink); color: var(--paper); padding: 70px 0 90px; }
+.hero-meta {
+  font-family: var(--maxi-mono); font-size: 0.72rem; letter-spacing: 0.2em;
+  color: var(--hi-vis); text-transform: uppercase; margin-bottom: 24px;
+}
+.hero-meta .num { background: var(--hi-vis); color: var(--ink); padding: 3px 10px; margin-right: 10px; }
+.hero h1 {
+  font-family: var(--maxi-round); font-weight: 800; font-size: 4.5rem;
+  line-height: 0.92; letter-spacing: -0.04em; text-transform: uppercase; margin-bottom: 26px;
+}
+.hero h1 .pop { background: var(--hi-vis); color: var(--ink); padding: 0 14px; display: inline-block; }
+.hero .lede {
+  font-family: var(--maxi-mono); font-size: 1rem; line-height: 1.6;
+  color: rgba(250,250,247,0.82); max-width: 600px; margin-bottom: 32px;
+}
+.hero-cta { display: flex; gap: 12px; flex-wrap: wrap; }
+.btn {
+  display: inline-block; padding: 16px 26px; font-family: var(--maxi-mono);
+  font-size: 0.78rem; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase;
+  border: 1.5px solid var(--ink); cursor: pointer; transition: transform 0.06s;
+}
+.btn:active { transform: scale(0.98); }
+.btn-primary { background: var(--hi-vis); color: var(--ink); border-color: var(--hi-vis); }
+.btn-outline { background: transparent; color: var(--paper); border-color: rgba(250,250,247,0.4); }
+
+/* PERKS */
+.perks-section { padding: 70px 0; }
+.section-tag {
+  font-family: var(--maxi-mono); font-size: 0.72rem; letter-spacing: 0.2em;
+  color: var(--muted); text-transform: uppercase; margin-bottom: 12px;
+}
+.section-tag .num { background: var(--ink); color: var(--hi-vis); padding: 3px 10px; margin-right: 10px; }
+.section-head {
+  font-family: var(--maxi-round); font-weight: 800; font-size: 2.6rem;
+  letter-spacing: -0.03em; line-height: 1; text-transform: uppercase; margin-bottom: 40px;
+}
+.section-head .pop { background: var(--hi-vis); padding: 0 12px; }
+
+/* PRICING */
+.price-cards {
+  display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin-top: 24px;
+}
+@media (max-width: 700px) { .price-cards { grid-template-columns: 1fr; } }
+.price-card {
+  background: var(--paper); border: 1.5px solid var(--ink);
+  padding: 32px 26px; display: flex; flex-direction: column;
+}
+.price-card.popular { background: var(--ink); color: var(--paper); position: relative; }
+.price-card.popular .price-tag-line { color: rgba(250,250,247,0.7); }
+.popular-badge {
+  position: absolute; top: -12px; right: 20px; background: var(--hi-vis); color: var(--ink);
+  padding: 4px 12px; font-family: var(--maxi-mono); font-size: 0.7rem; font-weight: 700;
+  letter-spacing: 0.1em; text-transform: uppercase;
+}
+.price-card-meta {
+  font-family: var(--maxi-mono); font-size: 0.7rem; letter-spacing: 0.18em;
+  text-transform: uppercase; opacity: 0.6; margin-bottom: 8px;
+}
+.price-card h3 {
+  font-family: var(--maxi-round); font-weight: 800; font-size: 2.3rem;
+  letter-spacing: -0.03em; line-height: 1; margin-bottom: 6px;
+}
+.price-tag-line { font-family: var(--maxi-mono); font-size: 0.85rem; color: var(--muted); margin-bottom: 20px; }
+.price-card.popular .price-tag-line { color: rgba(250,250,247,0.65); }
+.price-row { display: flex; align-items: baseline; margin-bottom: 22px; }
+.price-amount { font-family: var(--maxi-round); font-weight: 800; font-size: 2.8rem; letter-spacing: -0.03em; }
+.per { font-family: var(--maxi-mono); font-size: 0.8rem; margin-left: 6px; opacity: 0.6; }
+.price-card ul { list-style: none; margin-bottom: 26px; flex-grow: 1; }
+.price-card li {
+  font-family: var(--maxi-mono); font-size: 0.88rem; padding: 10px 0;
+  border-bottom: 1px solid var(--line);
+}
+.price-card.popular li { border-color: rgba(250,250,247,0.12); }
+.price-card .btn { width: 100%; text-align: center; }
+.price-card.popular .btn-primary { background: var(--hi-vis); color: var(--ink); border-color: var(--hi-vis); }
+
+/* HOW */
+.how-section { background: var(--paper); padding: 70px 0; border-top: 1.5px solid var(--ink); border-bottom: 1.5px solid var(--ink); }
+.how-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
+}
+@media (max-width: 700px) { .how-grid { grid-template-columns: 1fr; } }
+.how-step { }
+.how-num {
+  font-family: var(--maxi-round); font-weight: 800; font-size: 3rem;
+  letter-spacing: -0.03em; line-height: 1; color: var(--hi-vis);
+  background: var(--ink); display: inline-block; padding: 4px 14px; margin-bottom: 16px;
+}
+.how-step h3 {
+  font-family: var(--maxi-round); font-weight: 700; font-size: 1.15rem;
+  margin-bottom: 8px; text-transform: uppercase; letter-spacing: -0.01em;
+}
+.how-step p { font-family: var(--maxi-mono); font-size: 0.9rem; color: var(--muted); line-height: 1.55; }
+
+/* CTA STRIP */
+.cta-strip { background: var(--hi-vis); padding: 60px 0; text-align: center; }
+.cta-strip h2 {
+  font-family: var(--maxi-round); font-weight: 800; font-size: 3rem;
+  letter-spacing: -0.03em; line-height: 1; margin-bottom: 12px; text-transform: uppercase;
+}
+.cta-strip p {
+  font-family: var(--maxi-mono); font-size: 0.85rem; letter-spacing: 0.08em;
+  text-transform: uppercase; margin-bottom: 22px;
+}
+.cta-strip .btn { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+
+/* FOOTER */
+.footer { background: var(--ink); color: var(--paper); padding: 40px 0 32px; }
+.footer-inner {
+  display: flex; justify-content: space-between; align-items: flex-start; gap: 24px; flex-wrap: wrap;
+}
+.footer-brand { font-family: var(--maxi-round); font-weight: 800; font-size: 1.15rem; letter-spacing: -0.02em; text-transform: uppercase; }
+.footer-brand .accent { background: var(--hi-vis); color: var(--ink); padding: 0 8px; }
+.footer-meta { font-family: var(--maxi-mono); font-size: 0.7rem; letter-spacing: 0.12em; opacity: 0.6; text-transform: uppercase; }
+.footer-links { display: flex; gap: 20px; flex-wrap: wrap; }
+.footer-links a { font-family: var(--maxi-mono); font-size: 0.72rem; letter-spacing: 0.15em; text-transform: uppercase; opacity: 0.75; }
+.footer-links a:hover { opacity: 1; }
+</style>
+</head>
+<body>
+
+<div class="nav container">
+  <div class="brand-mark">DBP <span class="accent">REWARDS</span></div>
+  <a href="/login" class="nav-link">Sign in</a>
+</div>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-meta"><span class="num">01</span> DBP MEMBERSHIP</div>
+    <h1>Free coffee<br>every <span class="pop">Sunday</span>.</h1>
+    <p class="lede">DBP Rewards is a loyalty membership for the Durango Bike Project. Free Sunday recovery drinks, 10% off all retail and consignment, free flat repairs, free annual tune-up, and a punch card on every coffee.</p>
+    <div class="hero-cta">
+      <a class="btn btn-primary" href="#pricing">Join now</a>
+      <a class="btn btn-outline" href="#how">How it works</a>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section class="perks-section" id="pricing">
+  <div class="container">
+    <div class="section-tag"><span class="num">02</span> PICK A MEMBERSHIP</div>
+    <div class="section-head">Two ways in.</div>
+
+    <div class="price-cards">
+      <!-- FREE -->
+      <div class="price-card">
+        <div class="price-card-meta">TIER 01 · FREE FOREVER</div>
+        <h3>Free</h3>
+        <div class="price-tag-line">The basics. No card required.</div>
+        <div class="price-row">
+          <span class="price-amount">$0</span>
+        </div>
+        <ul>
+          <li>Digital member code</li>
+          <li>Punch card · every 10th drink free</li>
+          <li>Check-in streak</li>
+          <li>Free birthday drink</li>
+          <li>Member directory + newsletter</li>
+        </ul>
+        <button class="btn btn-primary" onclick="signupFree()">Sign up free →</button>
+      </div>
+
+      <!-- REWARDS -->
+      <div class="price-card popular">
+        <span class="popular-badge">Most popular</span>
+        <div class="price-card-meta">TIER 02 · MEMBER</div>
+        <h3>Rewards</h3>
+        <div class="price-tag-line">The full membership.</div>
+        <div class="price-row">
+          <span class="price-amount">$19</span>
+          <span class="per">/mo</span>
+        </div>
+        <ul>
+          <li>☕ Free 12oz Sunday recovery drink (drip · $2 milk upgrade) · 4/mo</li>
+          <li>🚴 10% off all retail + consignment</li>
+          <li>🔧 Free flat repair · 4/year (member pays for tube)</li>
+          <li>🛠 Free annual tune-up · Oct–Mar</li>
+          <li>🎂 Free birthday drink</li>
+          <li>✊ Punch card · every 10th drink free</li>
+          <li>Priority service appointments</li>
+        </ul>
+        <button class="btn btn-primary" onclick="checkout('rewards_monthly')">Start 30-day free trial →</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW -->
+<section class="how-section" id="how">
+  <div class="container">
+    <div class="section-tag"><span class="num">03</span> HOW IT WORKS</div>
+    <div class="section-head">Three steps.</div>
+
+    <div class="how-grid">
+      <div class="how-step">
+        <div class="how-num">01</div>
+        <h3>Sign up</h3>
+        <p>Enter your email — we send a sign-in link, no password needed. Takes about 30 seconds.</p>
+      </div>
+      <div class="how-step">
+        <div class="how-num">02</div>
+        <h3>Get your code</h3>
+        <p>You get a personal member code (e.g. DBP-YOURNAME). Show it (or scan the QR) at the counter.</p>
+      </div>
+      <div class="how-step">
+        <div class="how-num">03</div>
+        <h3>Redeem perks</h3>
+        <p>Free Sunday drinks, 10% off, flat repairs, birthday drink — right from the app.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-strip">
+  <div class="container">
+    <h2>See you Sunday.</h2>
+    <p>30-day free trial · Cancel anytime · No password</p>
+    <a class="btn" href="#pricing">Join now</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-inner">
+      <div>
+        <div class="footer-brand">DBP <span class="accent">REWARDS</span></div>
+        <div class="footer-meta" style="margin-top:8px">DURANGO BIKE PROJECT · 225 E 8TH AVE · DURANGO, CO 81301</div>
+      </div>
+      <div class="footer-links">
+        <a href="/privacy">Privacy</a>
+        <a href="/terms">Terms</a>
+        <a href="https://durangobikeproject.com">DBP Site</a>
+        <a href="mailto:coach@durangobikeproject.com">Contact</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+async function signupFree() {
+  const email = prompt('Sign up for a free DBP account — what\'s your email?');
+  if (!email) return;
+  try {
+    const r = await fetch('/auth/signup-free', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email }),
+    });
+    const data = await r.json();
+    if (data.sent) {
+      alert(`Check your inbox! We sent a sign-in link to ${data.email}. Tap it to finish setup.`);
+    } else {
+      alert('Error: ' + (data.error || 'unknown'));
+    }
+  } catch (e) { alert('Error: ' + e.message); }
+}
+
+async function checkout(priceKey) {
+  const email = prompt('Sign up for DBP Rewards — what\'s your email?');
+  if (!email) return;
+  try {
+    const r = await fetch('/billing/checkout', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ priceKey, email }),
+    });
+    const data = await r.json();
+    if (data.url) window.location = data.url;
+    else alert('Error: ' + (data.error || 'unknown'));
+  } catch (e) { alert('Error: ' + e.message); }
+}
+</script>
+</body>
+</html>
