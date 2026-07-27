@@ -31,6 +31,22 @@ router.get('/login', (req, res) => send(res, 'login.html'));
 router.get('/privacy', (req, res) => send(res, 'privacy.html'));
 router.get('/terms', (req, res) => send(res, 'terms.html'));
 
+// Shop-facing Rewards-only landing (no Coach content).
+// Use this URL on in-shop QR codes, flyers, and posters — walk-in customers see
+// only Free + Rewards, avoiding confusion about the AI coach product.
+router.get('/rewards', (req, res) => {
+  // If already logged in with an active sub, send them to dashboard
+  if (req.cookies?.session) {
+    return auth.getUserFromSession(req.cookies.session).then(user => {
+      if (user && (user.subscription_status === 'active' || user.subscription_status === 'trialing')) {
+        return res.redirect(user.onboarding_completed ? '/dashboard' : '/onboarding');
+      }
+      return send(res, 'rewards-landing.html');
+    }).catch(() => send(res, 'rewards-landing.html'));
+  }
+  send(res, 'rewards-landing.html');
+});
+
 // Authed pages
 router.get('/onboarding', auth.requireAuth, (req, res) => send(res, 'onboarding.html'));
 router.get('/dashboard', auth.requireAuth, (req, res) => {
