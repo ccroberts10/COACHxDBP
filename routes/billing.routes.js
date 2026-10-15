@@ -30,7 +30,7 @@ router.get('/success', async (req, res) => {
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>${title} — DBP Coach</title>
+<title>${title} — FIT Coach</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,700;12..96,800&display=swap" rel="stylesheet">
@@ -68,7 +68,7 @@ ol li strong { color: var(--ink); font-weight: 500; }
 <body>
 <div class="container">
   <div class="nav">
-    <div class="brand">DBP <span class="accent">COACH</span></div>
+    <div class="brand">FIT <span class="accent">COACH</span></div>
   </div>
   <div class="section-tag"><span class="num">01</span>WELCOME</div>
   <div class="hero">
@@ -77,7 +77,7 @@ ol li strong { color: var(--ink); font-weight: 500; }
     ${body}
   </div>
   ${cta ? `<a class="btn btn-primary" href="${ctaUrl}">${cta}</a>` : ''}
-  <div class="footer">DBP COACH · 225 E 8TH AVE · DURANGO, CO 81301</div>
+  <div class="footer">FIT COACH · DURANGO, CO</div>
 </div>
 </body>
 </html>`;

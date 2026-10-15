@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>DBP — Durango Bike Project Rewards &amp; Coach</title>
-<meta name="description" content="DBP membership: free Sunday recovery drinks, 10% off retail, free flat repairs, annual tune-up. AI training coach for cyclists and runners. By Durango Bike Project."><link rel="preconnect" href="https://fonts.googleapis.com">
+<title>FIT Coach — AI Training for Cyclists &amp; Runners</title>
+<meta name="description" content="FIT Coach: a daily AI workout and nutrition plan for cyclists and runners, built from your WHOOP recovery and Strava training load."><link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,700;12..96,800&display=swap" rel="stylesheet">
 <style>
@@ -333,6 +333,8 @@ a { color: inherit; text-decoration: none; }
 .price-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  max-width: 820px;
+  margin: 0 auto;
   gap: 1px;
   background: var(--line);
   border: 1px solid var(--ink);
@@ -571,7 +573,7 @@ a { color: inherit; text-decoration: none; }
 
 <!-- ============= NAV ============= -->
 <nav class="nav container">
-  <div class="brand-mark">DBP <span class="accent">COACH</span></div>
+  <div class="brand-mark">FIT <span class="accent">COACH</span></div>
   <div class="nav-actions">
     <a class="btn" href="/login">Log in</a>
   </div>
@@ -580,20 +582,15 @@ a { color: inherit; text-decoration: none; }
 <!-- ============= HERO ============= -->
 <section class="hero">
   <div class="container">
-    <div class="hero-meta"><span class="num">01</span> DBP MEMBERSHIP &amp; AI COACH</div>
-    <h1>Ride more.<br>Drink free<br><span class="pop">coffee</span>.</h1>
-    <p class="lede">DBP Rewards is a loyalty membership for the Durango Bike Project — free Sunday recovery drinks, 10% off retail, free flat repairs, free annual tune-ups, and a punch card on top. AI training coach for cyclists and runners — now in limited beta.</p>
+    <div class="hero-meta"><span class="num">01</span> AI TRAINING COACH</div>
+    <h1>Train smarter.<br>Recover<br><span class="pop">better</span>.</h1>
+    <p class="lede">FIT Coach reads your WHOOP recovery and Strava training load every morning and hands you one specific workout and nutrition plan for the day. Built for cyclists and runners — now in limited beta.</p>
     <div class="hero-cta">
-      <a class="btn btn-primary btn-lg" href="#pricing">See membership</a>
+      <a class="btn btn-primary btn-lg" href="#pricing">See pricing</a>
       <a class="btn btn-lg" href="#how" style="background:transparent;color:var(--paper);border-color:rgba(250,250,247,0.4)">How it works</a>
     </div>
 
     <div class="hero-stats">
-      <div class="hero-stat">
-        <div class="label">Rewards</div>
-        <div class="value">$19/mo</div>
-        <div class="sub">first month free with DBPFRIENDS</div>
-      </div>
       <div class="hero-stat">
         <div class="label">Coach</div>
         <div class="value">$29/mo</div>
@@ -602,7 +599,7 @@ a { color: inherit; text-decoration: none; }
       <div class="hero-stat">
         <div class="label">Made In</div>
         <div class="value">Durango, CO</div>
-        <div class="sub">by Durango Bike Project</div>
+        <div class="sub">built on local terrain</div>
       </div>
     </div>
   </div>
@@ -695,7 +692,6 @@ a { color: inherit; text-decoration: none; }
 
     <div class="price-grid">
       <!-- FREE -->
-      <!-- FREE -->
       <div class="price-card">
         <div class="price-card-meta">TIER 01</div>
         <h3>Free</h3>
@@ -705,50 +701,24 @@ a { color: inherit; text-decoration: none; }
           <span class="per">/mo forever</span>
         </div>
         <ul>
-          <li>DBP newsletter</li>
-          <li>Member directory</li>
+          <li>Newsletter</li>
           <li>Strava club access</li>
           <li class="muted">No AI coach</li>
-          <li class="muted">No member rewards</li>
         </ul>
         <button class="btn btn-ink" onclick="signupFree()">Sign up free</button>
-      </div>
-
-      <!-- REWARDS -->
-      <div class="price-card popular">
-        <span class="popular-badge">Available Now</span>
-        <div class="price-card-meta">TIER 02 · LAUNCH OFFER</div>
-        <h3>Rewards</h3>
-        <div class="price-tag-line">DBP loyalty membership · First month free.</div>
-        <div class="price-row">
-          <span class="price-amount" data-price="rewards">$19</span>
-          <span class="per" data-per="rewards">/mo</span>
-        </div>
-        <ul>
-          <li>Free 12oz Sunday drink (drip — or upgrade to any milk drink for $2)</li>
-          <li>10% off all retail and consignment</li>
-          <li>Free flat repair, up to 4×/year (tube extra)</li>
-          <li>Priority service appointments</li>
-          <li>1 free tune-up per year (Oct–Mar)</li>
-          <li>Monthly DBP group ride</li>
-          <li>Birthday month: free 12oz drink</li>
-          <li>Punch card: 10th drink free</li>
-        </ul>
-        <button class="btn btn-primary" onclick="checkout('rewards')">Start 30-day free trial</button>
       </div>
 
       <!-- COACH (LIVE — Strava approved May 31, 2026) -->
       <div class="price-card">
         <span class="popular-badge">New · Limited Beta</span>
-        <div class="price-card-meta">TIER 03 · LIVE</div>
+        <div class="price-card-meta">TIER 02 · LIVE</div>
         <h3>Coach</h3>
-        <div class="price-tag-line">AI training + all rewards.</div>
+        <div class="price-tag-line">Your daily AI training plan.</div>
         <div class="price-row">
           <span class="price-amount" data-price="coach">$29</span>
           <span class="per" data-per="coach">/mo</span>
         </div>
         <ul>
-          <li>Everything in Rewards</li>
           <li>Daily AI workout + nutrition prescription</li>
           <li>Tailored for cyclists AND runners</li>
           <li>Strava required, WHOOP optional</li>
@@ -766,27 +736,11 @@ a { color: inherit; text-decoration: none; }
   </div>
 </section>
 
-<!-- ============= MEMBERSHIP CALLOUT ============= -->
-<section class="membership">
-  <div class="container">
-    <div class="section-header" style="border-color:rgba(250,250,247,0.15);color:rgba(250,250,247,0.55)">
-      <span class="num" style="color:var(--hi-vis)">05</span>
-      <span class="name" style="color:var(--paper)">Why DBP</span>
-      <span class="right">DURANGO, CO</span>
-    </div>
-
-    <div class="quote-block">
-      Most coaching apps are run from a server farm in Delaware. <span class="pop">DBP Coach</span> is run out of a bike shop on 8th Avenue. The recovery latte is real. The mechanic is real. The members are your neighbors.
-    </div>
-    <div class="signature">— DURANGO BIKE PROJECT · 225 E 8TH AVE</div>
-  </div>
-</section>
-
 <!-- ============= FAQ ============= -->
 <section class="faq">
   <div class="container">
     <div class="section-header">
-      <span class="num">06</span>
+      <span class="num">05</span>
       <span class="name">Common Questions</span>
       <span class="right"></span>
     </div>
@@ -797,28 +751,16 @@ a { color: inherit; text-decoration: none; }
         <div class="faq-a">Yes. Coach is live in limited beta — we have room for 10 athletes during early access. Sign up directly from the Coach card above. 30-day free trial, cancel anytime. Once we hit 10 beta athletes we'll open a waitlist for the next batch.</div>
       </div>
       <div class="faq-item">
-        <div class="faq-q">What's the difference between Rewards and Coach?</div>
-        <div class="faq-a">Rewards ($19/mo) is the loyalty membership — free Sunday recovery drink, 10% off retail, free flat fixes, free annual tune-up, group rides, punch card. Coach ($29/mo) includes everything in Rewards PLUS the AI training and nutrition coach. Pick Rewards if you just want DBP perks. Pick Coach if you also want training help.</div>
-      </div>
-      <div class="faq-item">
-        <div class="faq-q">Do I have to live in Durango?</div>
-        <div class="faq-a">For the AI Coach prescriptions: no — works anywhere. For the Rewards (free coffee, service, group rides, punch card): yes, those are redeemed in person at DBP, 225 E 8th Ave. Most members are Durango locals. If you don't live here, Rewards probably isn't right for you.</div>
-      </div>
-      <div class="faq-item">
         <div class="faq-q">Can I cancel anytime?</div>
         <div class="faq-a">Yes. Cancel from your account settings — takes one tap. You keep access through the end of your billing period. No "are you sure" voicemail.</div>
       </div>
       <div class="faq-item">
         <div class="faq-q">What if I'm not a hardcore cyclist?</div>
-        <div class="faq-a">Coach is built for anyone who rides — commuters, weekend riders, racers. Set your weekly hours target and primary focus, and the AI calibrates. "Aerobic base" focus is great for newer riders. Rewards is good for anyone who's a regular at DBP, training or not.</div>
+        <div class="faq-a">Coach is built for anyone who rides — commuters, weekend riders, racers. Set your weekly hours target and primary focus, and the AI calibrates. "Aerobic base" focus is great for newer riders.</div>
       </div>
       <div class="faq-item">
         <div class="faq-q">Does Coach work for runners too?</div>
         <div class="faq-a">Yes. Coach supports running with pace zones from your 5K time, weekly mileage targets, scheduled long runs, and injury-aware progression rules. Pick "Running" or "Multisport" as your focus during signup. Strava activity required (WHOOP optional but adds HRV-based recovery precision).</div>
-      </div>
-      <div class="faq-item">
-        <div class="faq-q">How does the punch card work?</div>
-        <div class="faq-a">Every 10th drink purchase earns a free 12oz drink. Show your member code (DBP-YOURNAME) to staff at checkout, they log it, and after 10 logged purchases you get an automatic free drink reward in the app. No paper card to lose. (The free Sunday recovery drink doesn't count toward punches.)</div>
       </div>
       <div class="faq-item">
         <div class="faq-q">Is my data private?</div>
@@ -826,7 +768,7 @@ a { color: inherit; text-decoration: none; }
       </div>
       <div class="faq-item">
         <div class="faq-q">Who built this?</div>
-        <div class="faq-a">Casey Roberts, DBP owner. Real cycling experience, real Durango terrain knowledge, real bike shop service backing the whole thing.</div>
+        <div class="faq-a">Casey Roberts — PA-C in orthopedics and sports medicine, longtime Durango rider. Real cycling experience and real clinical judgment behind the training logic.</div>
       </div>
     </div>
   </div>
@@ -835,7 +777,7 @@ a { color: inherit; text-decoration: none; }
 <!-- ============= CTA STRIP ============= -->
 <section class="cta-strip">
   <div class="container">
-    <h2>See you Sunday</h2>
+    <h2>Start training smarter</h2>
     <p>30-day free trial · Cancel anytime · No password</p>
     <a class="btn btn-ink btn-lg" href="#pricing">Pick a plan</a>
   </div>
@@ -846,13 +788,12 @@ a { color: inherit; text-decoration: none; }
   <div class="container">
     <div class="footer-inner">
       <div>
-        <div class="footer-brand">DBP COACH</div>
-        <div class="footer-meta" style="margin-top:6px">DURANGO BIKE PROJECT · 225 E 8TH AVE · DURANGO, CO 81301</div>
+        <div class="footer-brand">FIT COACH</div>
+        <div class="footer-meta" style="margin-top:6px">MADE IN DURANGO, CO</div>
       </div>
       <div class="footer-links">
         <a href="/privacy">Privacy</a>
         <a href="/terms">Terms</a>
-        <a href="https://durangobikeproject.com">DBP Site</a>
         <a href="mailto:coach@durangobikeproject.com">Contact</a>
       </div>
     </div>
@@ -877,10 +818,9 @@ a { color: inherit; text-decoration: none; }
 <script>
 let billing = 'monthly';
 const prices = {
-  rewards: { monthly: { amount: '$19', per: '/mo' }, annual: { amount: '$14.92', per: '/mo, billed annually' } },
   coach:   { monthly: { amount: '$29', per: '/mo' }, annual: { amount: '$20.75', per: '/mo, billed annually' } },
 };
-const tierLabels = { rewards: 'Rewards', coach: 'Coach' };
+const tierLabels = { coach: 'Coach' };
 function setBilling(mode){
   billing = mode;
   document.getElementById('bill-monthly').classList.toggle('active', mode === 'monthly');
@@ -897,7 +837,7 @@ function setBilling(mode){
 
 async function checkout(tier){
   const label = tierLabels[tier] || tier;
-  const email = prompt(`Sign up for DBP ${label} — what's your email?`);
+  const email = prompt(`Sign up for FIT ${label} — what's your email?`);
   if (!email) return;
   const priceKey = `${tier}_${billing}`;
   try {
@@ -913,7 +853,7 @@ async function checkout(tier){
 }
 
 async function signupFree(){
-  const email = prompt('Sign up for a free DBP account — what\'s your email?');
+  const email = prompt('Sign up for a free FIT Coach account — what\'s your email?');
   if (!email) return;
   try {
     const r = await fetch('/auth/signup-free', {

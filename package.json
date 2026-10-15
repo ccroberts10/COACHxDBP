@@ -1,7 +1,7 @@
 {
   "name": "dbp-coach",
   "version": "1.0.0",
-  "description": "DBP Coach — AI training & nutrition coach with Elite member perks",
+  "description": "FIT Coach — AI training & nutrition coach for cyclists and runners",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",

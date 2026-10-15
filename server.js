@@ -1,5 +1,5 @@
 // server.js
-// DBP Coach — main Express entry point
+// FIT Coach — main Express entry point
 
 require('dotenv').config();
 const express = require('express');
@@ -61,38 +61,41 @@ cron.schedule('30 6 * * *', async () => {
   }
 }, { timezone: TZ });
 
-// Sunday morning drinks: 8am MST every Sunday for Elite tier
-cron.schedule('0 8 * * 0', async () => {
-  const { issueSundayDrinks } = require('./lib/perks');
-  console.log('[cron] Sunday drinks');
-  try {
-    await issueSundayDrinks();
-  } catch (e) {
-    console.error('[cron] Sunday drinks error:', e);
-  }
-}, { timezone: TZ });
+// Loyalty program hidden — perk cron disabled.
+// // Sunday morning drinks: 8am MST every Sunday for Elite tier
+// cron.schedule('0 8 * * 0', async () => {
+//   const { issueSundayDrinks } = require('./lib/perks');
+//   console.log('[cron] Sunday drinks');
+//   try {
+//     await issueSundayDrinks();
+//   } catch (e) {
+//     console.error('[cron] Sunday drinks error:', e);
+//   }
+// }, { timezone: TZ });
 
-// Birthday check: 9am MST daily — issue birthday perks to users whose birthday is today
-cron.schedule('0 9 * * *', async () => {
-  const { issueBirthdayPerks } = require('./lib/perks');
-  console.log('[cron] Birthday check');
-  try {
-    await issueBirthdayPerks();
-  } catch (e) {
-    console.error('[cron] Birthday error:', e);
-  }
-}, { timezone: TZ });
+// Loyalty program hidden — perk cron disabled.
+// // Birthday check: 9am MST daily — issue birthday perks to users whose birthday is today
+// cron.schedule('0 9 * * *', async () => {
+//   const { issueBirthdayPerks } = require('./lib/perks');
+//   console.log('[cron] Birthday check');
+//   try {
+//     await issueBirthdayPerks();
+//   } catch (e) {
+//     console.error('[cron] Birthday error:', e);
+//   }
+// }, { timezone: TZ });
 
-// Service reminders: 10am MST daily — check km accumulation
-cron.schedule('0 10 * * *', async () => {
-  const { checkServiceReminders } = require('./lib/perks');
-  console.log('[cron] Service reminders');
-  try {
-    await checkServiceReminders();
-  } catch (e) {
-    console.error('[cron] Service reminders error:', e);
-  }
-}, { timezone: TZ });
+// Loyalty program hidden — perk cron disabled.
+// // Service reminders: 10am MST daily — check km accumulation
+// cron.schedule('0 10 * * *', async () => {
+//   const { checkServiceReminders } = require('./lib/perks');
+//   console.log('[cron] Service reminders');
+//   try {
+//     await checkServiceReminders();
+//   } catch (e) {
+//     console.error('[cron] Service reminders error:', e);
+//   }
+// }, { timezone: TZ });
 
 // Cleanup expired auth tokens / sessions: hourly
 cron.schedule('0 * * * *', async () => {
@@ -100,22 +103,23 @@ cron.schedule('0 * * * *', async () => {
   await db.query(`DELETE FROM sessions WHERE expires_at < NOW()`);
 }, { timezone: TZ });
 
-// Auto-trigger scanner: every 15 minutes — issue rewards for activities matching triggers
-cron.schedule('*/15 * * * *', async () => {
-  try {
-    const autoTriggers = require('./lib/auto-triggers');
-    await autoTriggers.processUnprocessedActivities();
-  } catch (e) {
-    console.error('[cron] auto-triggers error:', e);
-  }
-}, { timezone: TZ });
+// Loyalty program hidden — perk cron disabled.
+// // Auto-trigger scanner: every 15 minutes — issue rewards for activities matching triggers
+// cron.schedule('*/15 * * * *', async () => {
+//   try {
+//     const autoTriggers = require('./lib/auto-triggers');
+//     await autoTriggers.processUnprocessedActivities();
+//   } catch (e) {
+//     console.error('[cron] auto-triggers error:', e);
+//   }
+// }, { timezone: TZ });
 
 // ===== Boot =====
 (async () => {
   try {
     await db.ensureSchema();
     app.listen(PORT, () => {
-      console.log(`[server] DBP Coach running on port ${PORT}`);
+      console.log(`[server] FIT Coach running on port ${PORT}`);
       console.log(`[server] Public URL: ${process.env.PUBLIC_URL}`);
       console.log(`[server] Timezone: ${TZ}`);
     });

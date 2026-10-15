@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>DBP Coach</title>
+<title>FIT Coach</title>
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#FAFAF7">
@@ -1271,26 +1271,12 @@ html, body { background: var(--bone); color: var(--ink); font-family: var(--maxi
 </head>
 <body>
 
-<!-- QR Modal -->
-<div class="qr-modal-backdrop" id="qrModal" onclick="if(event.target===this)hideMemberQR()">
-  <div class="qr-modal">
-    <h2 id="qrModalTitle">Member QR</h2>
-    <div class="qr-name" id="qrModalName">—</div>
-    <div class="qr-canvas-wrap">
-      <canvas id="memberQrCanvas" width="240" height="240"></canvas>
-    </div>
-    <div class="qr-code-text" id="qrModalCode">—</div>
-    <div class="qr-instruction" id="qrModalInstruction">Show this to DBP staff at checkout. They'll scan it.</div>
-    <button class="qr-modal-close" onclick="hideMemberQR()">Close</button>
-  </div>
-</div>
-
 <div class="container">
 
   <!-- HEADER -->
   <div class="header">
     <div class="header-l">
-      <div class="brand">DBP <span class="accent">Coach</span></div>
+      <div class="brand">FIT <span class="accent">Coach</span></div>
       <div class="header-meta" id="dateDisplay">—</div>
     </div>
     <div class="header-actions">
@@ -1317,59 +1303,6 @@ html, body { background: var(--bone); color: var(--ink); font-family: var(--maxi
   <button class="tab coach-tab" data-view="trends" onclick="switchView('trends')"><span class="tab-indicator"></span>Trends</button>
   <button class="tab coach-tab" data-view="history" onclick="switchView('history')"><span class="tab-indicator"></span>History</button>
 </div>
-
-<!-- QRious: tiny QR code library, ~6KB minified -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
-<script>
-function showMemberQR() {
-  const code = appData?.user?.member_code;
-  const name = appData?.user?.name || 'Member';
-  if (!code) { alert('Member code not yet generated. Refresh and try again.'); return; }
-  document.getElementById('qrModalTitle').textContent = 'Member QR';
-  document.getElementById('qrModalName').textContent = name;
-  document.getElementById('qrModalCode').textContent = code;
-  document.getElementById('qrModalInstruction').textContent = "Show this to DBP staff at checkout. They'll scan it.";
-  document.getElementById('qrModal').classList.add('show');
-  // Generate QR
-  try {
-    new QRious({
-      element: document.getElementById('memberQrCanvas'),
-      value: code,
-      size: 240,
-      level: 'H',                 // High error correction (works through scratched phone screens)
-      foreground: '#0A0A0A',
-      background: '#FFFFFF',
-    });
-  } catch (e) {
-    console.error('QR generation failed:', e);
-  }
-}
-
-function showRewardQR(code, description) {
-  if (!code) return;
-  document.getElementById('qrModalTitle').textContent = 'Reward QR';
-  document.getElementById('qrModalName').textContent = description || 'Reward';
-  document.getElementById('qrModalCode').textContent = code;
-  document.getElementById('qrModalInstruction').textContent = "Show at checkout. Staff will scan to redeem.";
-  document.getElementById('qrModal').classList.add('show');
-  try {
-    new QRious({
-      element: document.getElementById('memberQrCanvas'),
-      value: code,
-      size: 240,
-      level: 'H',
-      foreground: '#0A0A0A',
-      background: '#FFFFFF',
-    });
-  } catch (e) {
-    console.error('QR generation failed:', e);
-  }
-}
-
-function hideMemberQR() {
-  document.getElementById('qrModal').classList.remove('show');
-}
-</script>
 
 <script>
 let appData = null;
@@ -1674,131 +1607,14 @@ function sectionHeader(num, name, meta) {
 }
 
 function renderFreeDashboard(tier = 'free') {
-  const isRewards = tier === 'rewards';
-  const tierLabel = isRewards ? 'REWARDS' : 'FREE';
-  const memberCode = appData.user?.member_code || '—';
-  const userName = appData.user?.name || 'Member';
-  const punch = appData.punch || { current: 0, target: 10, lifetime: 0, away_from_free: 10 };
   const streak = appData.streak || { current: 0, longest: 0 };
-  const punchDots = Array.from({length: 10}, (_, i) =>
-    `<div class="punch-dot${i < punch.current ? ' filled' : ''}"></div>`
-  ).join('');
-
-  // Active rewards (birthday drink, punch card free drinks)
-  const hasActiveRewards = appData.perks && appData.perks.length > 0;
-  const rewardsBlock = hasActiveRewards ? `
-    <div class="section">
-      ${sectionHeader('03', 'Active Rewards', `${appData.perks.length}`)}
-      <div class="active-rewards-list">
-        ${appData.perks.map(p => `
-          <div class="active-reward-item">
-            <div class="ar-desc">${p.description || 'Reward'}</div>
-            <div class="ar-actions">
-              <div class="ar-code">${p.code}</div>
-              <button class="perk-qr-btn" onclick="showRewardQR('${p.code}','${(p.description||'Reward').replace(/'/g,"\\'")}')">📱 QR</button>
-            </div>
-          </div>
-        `).join('')}
-      </div>
-    </div>` : '';
-
-  // Perks summary section — different for Rewards vs Free
-  const perksSummary = isRewards ? `
-    <div class="section">
-      ${sectionHeader(hasActiveRewards ? '04' : '03', 'Your Member Perks', 'ACTIVE')}
-      <div class="perks-summary">
-        <div class="perk-line">☕ Free 12oz Sunday recovery drink (drip · $2 milk upgrade) · 4/mo</div>
-        <div class="perk-line">🚴 10% off all retail + consignment</div>
-        <div class="perk-line">🔧 Free flat repair · 4/year (member pays for tube)</div>
-        <div class="perk-line">🛠 Free annual tune-up · Oct–Mar</div>
-        <div class="perk-line">🎂 Free birthday drink</div>
-        <div class="perk-line">✊ Punch card: every 10th drink free</div>
-        <div class="perks-footer">Show your member code at the shop to use.</div>
-      </div>
-    </div>
-  ` : '';
-
-  // Upsell card — different for each tier
-  const upsellSection = isRewards ? `
-    <!-- Coach upgrade for Rewards users -->
-    <div class="section">
-      ${sectionHeader(hasActiveRewards ? '05' : '04', 'Upgrade', 'COACH')}
-      <div class="upsell-card upsell-coach">
-        <div class="upsell-header">
-          <div class="upsell-tier">DBP Coach</div>
-          <div class="upsell-price">$29<span class="upsell-per">/mo</span></div>
-        </div>
-        <div class="upsell-perks">
-          + Everything in Rewards<br>
-          + Daily AI training prescription (cycling + running)<br>
-          + Strava + WHOOP integration<br>
-          + Workout history with feedback<br>
-          + Weather-aware route suggestions
-        </div>
-        <button class="upsell-btn upsell-btn-coach" onclick="upgradeFromFree('coach')">Add Coach →</button>
-        <div style="font-family:var(--maxi-mono);font-size:0.72rem;color:rgba(10,10,10,0.55);margin-top:10px;letter-spacing:0.02em;line-height:1.5;">
-          30-day free trial · cancel anytime · limited beta
-        </div>
-      </div>
-    </div>
-  ` : `
-    <!-- UPSELL for Free users: Rewards + Coach waitlist -->
-    <div class="section">
-      ${sectionHeader(hasActiveRewards ? '05' : '04', 'Want More?', 'UPGRADE')}
-      <div class="upsell-card">
-        <div class="upsell-header">
-          <div class="upsell-tier">DBP Rewards</div>
-          <div class="upsell-price">$19<span class="upsell-per">/mo</span></div>
-        </div>
-        <div class="upsell-perks">
-          + Free 12oz Sunday drink (drip — milk drink upgrade $2)<br>
-          + 10% off all retail and consignment<br>
-          + Free flat repair (4×/year)<br>
-          + 1 free annual tune-up<br>
-          + Priority service appointments<br>
-          + Monthly DBP group ride
-        </div>
-        <button class="upsell-btn" onclick="upgradeFromFree('rewards')">Upgrade to Rewards →</button>
-      </div>
-
-      <div class="upsell-card upsell-coach">
-        <div class="upsell-header">
-          <div class="upsell-tier">DBP Coach</div>
-          <div class="upsell-price">$29<span class="upsell-per">/mo</span></div>
-        </div>
-        <div class="upsell-perks">
-          + Everything in Rewards<br>
-          + Daily AI training prescription<br>
-          + Recovery tracking (WHOOP optional)<br>
-          + Strava integration<br>
-          + Workout history with feedback<br>
-          + Weather-aware route suggestions
-        </div>
-        <button class="upsell-btn upsell-btn-coach" onclick="upgradeFromFree('coach')">Upgrade to Coach →</button>
-        <div style="font-family:var(--maxi-mono);font-size:0.72rem;color:rgba(10,10,10,0.55);margin-top:10px;letter-spacing:0.02em;">
-          30-day free trial · cancel anytime
-        </div>
-      </div>
-    </div>
-  `;
+  // Legacy paid (non-Coach) subscribers already have a Stripe subscription — upgrade goes via the portal
+  const ctaLabel = tier === 'free' ? 'Upgrade to Coach →' : 'Add Coach →';
 
   return `
     <div class="section">
-      ${sectionHeader('01', 'Member Card', tierLabel)}
-      <div class="member-code-hero">
-        <div class="mch-label">YOUR MEMBER CODE</div>
-        <div class="mch-code">${memberCode}</div>
-        <div class="mch-sub">Show at DBP for purchases · earn punches</div>
-        <button class="mch-qr-btn" onclick="showMemberQR()">📱 Show QR Code</button>
-      </div>
-
+      ${sectionHeader('01', 'Your Account', tier === 'free' ? 'FREE' : 'MEMBER')}
       <div class="rewards-stat-row">
-        <div class="rewards-stat">
-          <div class="rs-label">Punch Card</div>
-          <div class="rs-value">${punch.current}<span style="opacity:0.5">/${punch.target}</span></div>
-          <div class="punch-bar">${punchDots}</div>
-          <div class="rs-sub">${punch.away_from_free === 0 ? '🎉 Award ready!' : punch.away_from_free + ' away from free drink'}</div>
-        </div>
         <div class="rewards-stat">
           <div class="rs-label">Check-in Streak</div>
           <div class="rs-value">${streak.current} <span style="font-size:0.8rem">days</span></div>
@@ -1807,10 +1623,26 @@ function renderFreeDashboard(tier = 'free') {
       </div>
     </div>
 
-    ${rewardsBlock}
-    ${perksSummary}
-
-    ${upsellSection}
+    <div class="section">
+      ${sectionHeader('02', 'Get Coached', 'UPGRADE')}
+      <div class="upsell-card upsell-coach">
+        <div class="upsell-header">
+          <div class="upsell-tier">FIT Coach</div>
+          <div class="upsell-price">$29<span class="upsell-per">/mo</span></div>
+        </div>
+        <div class="upsell-perks">
+          + Daily AI training prescription (cycling + running)<br>
+          + Recovery tracking (WHOOP optional)<br>
+          + Strava integration<br>
+          + Workout history with feedback<br>
+          + Weather-aware route suggestions
+        </div>
+        <button class="upsell-btn upsell-btn-coach" onclick="upgradeFromFree('coach')">${ctaLabel}</button>
+        <div style="font-family:var(--maxi-mono);font-size:0.72rem;color:rgba(10,10,10,0.55);margin-top:10px;letter-spacing:0.02em;line-height:1.5;">
+          30-day free trial · cancel anytime · limited beta
+        </div>
+      </div>
+    </div>
   `;
 }
 
@@ -1852,7 +1684,7 @@ function renderToday(){
   const runBtn = document.getElementById('refreshBtn');
   if (runBtn) runBtn.style.display = (tier === 'coach') ? '' : 'none';
 
-  // FREE + REWARDS TIERS — simplified dashboard: member code, punch card, streak, perks
+  // FREE (and legacy non-Coach) TIERS — simplified dashboard: streak + Coach upsell
   // (Both have no Coach access — no prescription, no Strava/WHOOP data)
   if (tier === 'free' || tier === 'rewards') {
     el.innerHTML = renderFreeDashboard(tier);
@@ -1934,108 +1766,7 @@ function renderToday(){
     }
   }
 
-  let perksHtml = '';
-  const savings = appData.savings || {};
-  const punch = appData.punch;
-  const streak = appData.streak;
-  const memberCode = appData.user?.member_code;
-  const hasMembership = ['rewards', 'coach'].includes(appData.user?.tier);
-  const hasSavings = (savings.month_cents || 0) > 0 || (savings.lifetime_cents || 0) > 0;
-  const hasPerks = appData.perks?.length > 0;
-
-  if (hasMembership) {
-    // Build the member rewards card
-    const punchDots = punch ? Array.from({length: 10}, (_, i) =>
-      `<span class="punch-dot${i < (punch.current||0) ? ' filled' : ''}"></span>`).join('') : '';
-
-    const streakNext = streak?.next_milestone;
-    const streakLabel = streak?.current
-      ? `${streak.current} day${streak.current === 1 ? '' : 's'}${streakNext ? ` · ${streakNext - streak.current} more for ${streak.next_milestone_reward}` : ''}`
-      : 'Check in to start';
-
-    perksHtml = `<div class="section">
-      ${sectionHeader('05', 'Member Rewards', hasPerks ? `${appData.perks.length} active` : '')}
-      <div class="perks-card">
-
-        <!-- Member Code Hero -->
-        ${memberCode ? `
-        <div class="member-code-hero">
-          <div class="mch-label">YOUR MEMBER CODE</div>
-          <div class="mch-code">${memberCode}</div>
-          <div class="mch-sub">Show at DBP for purchases · earn punches · redeem rewards</div>
-          <button class="mch-qr-btn" onclick="showMemberQR()">📱 Show QR Code</button>
-        </div>` : ''}
-
-        <!-- Punch + Streak Row -->
-        ${(punch || streak) ? `
-        <div class="rewards-stat-row">
-          ${punch ? `
-          <div class="rewards-stat">
-            <div class="rs-label">Punch Card</div>
-            <div class="rs-value">${punch.current || 0}<span class="rs-sub">/10</span></div>
-            <div class="punch-bar">${punchDots}</div>
-            <div class="rs-meta">${(punch.away_from_free || 10) === 0 ? '🎉 Free drink ready!' : (punch.away_from_free || 10) + ' away from free drink'}</div>
-          </div>` : ''}
-          ${streak ? `
-          <div class="rewards-stat">
-            <div class="rs-label">Check-in Streak</div>
-            <div class="rs-value">${streak.current || 0}<span class="rs-sub">days</span></div>
-            <div class="rs-meta">${streakLabel}</div>
-          </div>` : ''}
-        </div>` : ''}
-
-        <!-- Savings Numbers -->
-        ${hasSavings ? `
-        <div class="rewards-savings">
-          <div>
-            <div class="rs-label">Saved this month</div>
-            <div class="rs-value-big">$${((savings.month_cents||0)/100).toFixed(2)}</div>
-          </div>
-          ${(savings.lifetime_cents||0) > (savings.month_cents||0) ? `
-          <div style="text-align:right">
-            <div class="rs-label">Lifetime</div>
-            <div class="rs-value-mid">$${((savings.lifetime_cents||0)/100).toFixed(2)}</div>
-          </div>` : ''}
-        </div>` : ''}
-
-        <!-- Active Rewards List -->
-        ${hasPerks ? `
-        <div class="rewards-active-list">
-          <div style="font-family:var(--maxi-mono);font-size:0.65rem;letter-spacing:0.15em;text-transform:uppercase;color:rgba(10,10,10,0.6);margin-bottom:8px">${appData.perks.length} ACTIVE REWARD${appData.perks.length > 1 ? 'S' : ''}</div>
-          ${appData.perks.map(perk => `<div class="perk-item">
-            <div class="perk-info"><strong>${perk.description||perk.perk_type}</strong><span>Show at DBP · ${perk.expires_at?'expires '+new Date(perk.expires_at).toLocaleDateString():'no expiration'}</span></div>
-            <div class="perk-actions">
-              <div class="perk-code">${perk.code}</div>
-              <button class="perk-qr-btn" onclick="showRewardQR('${perk.code}','${(perk.description||perk.perk_type||'').replace(/'/g,"\\'")}')">📱 QR</button>
-            </div>
-          </div>`).join('')}
-        </div>` : ''}
-      </div>
-    </div>`;
-  }
-
-  // Detect new unseen rewards
-  const seenCodes = JSON.parse(localStorage.getItem('seen_reward_codes') || '[]');
-  const unseenRewards = (appData.perks || []).filter(p => !p.redeemed_at && !seenCodes.includes(p.code));
-  let bannerHtml = '';
-  if (unseenRewards.length > 0) {
-    const r = unseenRewards[0]; // show top one
-    const moreText = unseenRewards.length > 1 ? ` (+${unseenRewards.length - 1} more)` : '';
-    bannerHtml = `
-      <div class="reward-banner" id="rewardBanner">
-        <div class="reward-banner-inner">
-          <div>
-            <div class="reward-banner-label">🎁 New Reward${moreText}</div>
-            <div class="reward-banner-desc">${r.description || r.perk_type}</div>
-          </div>
-          <div class="reward-banner-code">${r.code}</div>
-        </div>
-        <button class="reward-banner-dismiss" onclick="dismissRewardBanner()" aria-label="Dismiss">×</button>
-      </div>`;
-  }
-
   el.innerHTML = `
-    ${bannerHtml}
     <div class="section">
       ${sectionHeader('01', 'Recovery', recStateLabel.toUpperCase())}
       <div class="recovery-hero ${recCol}">
@@ -2075,8 +1806,6 @@ function renderToday(){
       ${sectionHeader('02', 'Daily Check-in', appData.today_checkin?'COMPLETE':'PENDING')}
       ${renderCheckinCard()}
     </div>
-
-    ${perksHtml}
 
     ${p?.workout ? `
     <div class="section">

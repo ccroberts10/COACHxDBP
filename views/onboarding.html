@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Set up — DBP Coach</title>
+<title>Set up — FIT Coach</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,700;12..96,800&display=swap" rel="stylesheet">
@@ -82,7 +82,7 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--i
 <body>
 <div class="container">
   <div class="nav">
-    <div class="brand">DBP <span class="accent">COACH</span></div>
+    <div class="brand">FIT <span class="accent">COACH</span></div>
   </div>
 
   <div class="progress-row" id="progress">
@@ -101,12 +101,12 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--i
     </div>
 
     <h1>About<br>you.</h1>
-    <p class="step-sub">Quick basics so DBP can personalize.</p>
+    <p class="step-sub">Quick basics so Coach can personalize.</p>
 
     <label>Full name</label>
     <input type="text" id="name" placeholder="Your name" autocomplete="name">
 
-    <label>Birthdate <span class="lite">(unlocks birthday rewards)</span></label>
+    <label>Birthdate <span class="lite">(optional)</span></label>
     <input type="date" id="birthdate">
 
     <div class="row coach-only" id="bodyweightRow">
@@ -135,7 +135,7 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--i
     </div>
 
     <h1>Connect<br>your data.</h1>
-    <p class="step-sub" id="connectSubtitle">DBP Coach reads your activity and recovery to personalize prescriptions.</p>
+    <p class="step-sub" id="connectSubtitle">FIT Coach reads your activity and recovery to personalize prescriptions.</p>
 
     <div class="integration-card" id="strava-card">
       <div class="integration-info">
@@ -291,10 +291,10 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--i
     </div>
 
     <h1>You're<br>set.</h1>
-    <p class="step-sub" id="doneSubtext">Your DBP membership is active. Your member code unlocks rewards in person at the shop.</p>
+    <p class="step-sub" id="doneSubtext">Your account is set up.</p>
 
     <div class="notice" id="doneUpsell">
-      <strong>Want training too?</strong> Upgrade to Coach anytime from Settings — adds AI training prescriptions to your membership for $20 more per month.
+      <strong>Want training?</strong> Upgrade to Coach ($29/mo) anytime from Settings for a daily AI workout and nutrition prescription.
     </div>
 
     <div class="actions">
@@ -509,13 +509,8 @@ function goTo(n){
     // Customize done screen by tier
     const subtext = document.getElementById('doneSubtext');
     const upsell = document.getElementById('doneUpsell');
-    if (userTier === 'free') {
-      subtext.textContent = 'Your free DBP account is set up. Your member code earns punches at the shop — every 10th drink free, plus a free drink on your birthday.';
-      upsell.innerHTML = '<strong>Want more?</strong> Upgrade to <strong>Rewards</strong> ($19/mo) for a free Sunday recovery drink (drip + $2 milk drink upgrade), 10% off retail, free flat fixes, and more — or <strong>Coach</strong> ($29/mo) for AI training plus all rewards. Anytime, from Settings.';
-    } else if (userTier === 'rewards') {
-      subtext.textContent = 'Your DBP membership is active. Your member code unlocks rewards in person at the shop.';
-      upsell.innerHTML = '<strong>Want training too?</strong> Upgrade to Coach anytime from Settings — adds AI training prescriptions to your membership for $20 more per month.';
-    }
+    subtext.textContent = 'Your free FIT Coach account is set up.';
+    upsell.innerHTML = '<strong>Want training?</strong> Upgrade to <strong>Coach</strong> ($29/mo) anytime from Settings for a daily AI workout and nutrition prescription built from your recovery and training load.';
     document.getElementById('stepRewardsDone').style.display = 'block';
     document.querySelectorAll('#progress .progress-pip').forEach(d => d.classList.add('active'));
     currentStep = 'rewardsDone';
