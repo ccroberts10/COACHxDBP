@@ -518,3 +518,11 @@ CREATE TABLE IF NOT EXISTS coach_waitlist (
 );
 CREATE INDEX IF NOT EXISTS idx_waitlist_email ON coach_waitlist(email);
 CREATE INDEX IF NOT EXISTS idx_waitlist_notified ON coach_waitlist(notified) WHERE notified = FALSE;
+
+-- ============= COACH MEMORY (standing instructions + work schedule) =============
+-- Persistent context the coach reads every day. Unlike check-in/feedback notes
+-- (which age out after 1–14 days), these never expire until the user edits them.
+ALTER TABLE user_benchmarks ADD COLUMN IF NOT EXISTS coach_notes TEXT;
+-- { "monday": { "status": "work", "start": "07:00", "end": "17:30", "note": "" }, ... }
+-- status: 'off' | 'work' | 'call'
+ALTER TABLE user_benchmarks ADD COLUMN IF NOT EXISTS work_schedule JSONB DEFAULT '{}'::jsonb;

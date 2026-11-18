@@ -44,7 +44,7 @@ html, body { background: var(--bone); color: var(--ink); font-family: var(--maxi
 .row-value.red { color: var(--rec-red); }
 
 label { display: block; font-family: var(--maxi-mono); font-size: 0.62rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; font-weight: 500; }
-input[type="text"], input[type="number"], input[type="date"], select { width: 100%; padding: 11px 12px; font-family: var(--maxi-mono); font-size: 0.92rem; background: var(--bone); border: 1px solid var(--line-strong); color: var(--ink); }
+input[type="text"], input[type="number"], input[type="date"], input[type="time"], select { width: 100%; padding: 11px 12px; font-family: var(--maxi-mono); font-size: 0.92rem; background: var(--bone); border: 1px solid var(--line-strong); color: var(--ink); }
 input:focus, select:focus { outline: none; border-color: var(--ink); background: var(--paper); }
 .form-row { margin-bottom: 12px; }
 .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
@@ -63,6 +63,16 @@ input:focus, select:focus { outline: none; border-color: var(--ink); background:
 .danger-zone { margin-top: 38px; padding: 20px; border: 1px dashed var(--rec-red); background: var(--paper); }
 .danger-zone h3 { font-family: var(--maxi-round); font-weight: 700; font-size: 0.95rem; letter-spacing: -0.01em; text-transform: uppercase; color: var(--rec-red); margin-bottom: 6px; }
 .danger-zone p { font-family: var(--maxi-mono); font-size: 0.78rem; color: var(--muted); margin-bottom: 14px; line-height: 1.5; }
+
+textarea { width: 100%; min-height: 120px; padding: 11px 12px; font-family: var(--maxi-mono); font-size: 0.88rem; line-height: 1.5; background: var(--bone); border: 1px solid var(--line-strong); color: var(--ink); resize: vertical; }
+textarea:focus { outline: none; border-color: var(--ink); background: var(--paper); }
+.hint { font-family: var(--maxi-mono); font-size: 0.72rem; color: var(--muted); line-height: 1.5; margin-top: 6px; }
+.sched-row { display: grid; grid-template-columns: 40px 92px minmax(0,1fr) minmax(0,1fr); gap: 8px; align-items: center; padding: 6px 0; border-bottom: 1px solid var(--line); }
+.sched-row:last-child { border-bottom: none; }
+.sched-day { font-family: var(--maxi-round); font-weight: 700; font-size: 0.85rem; text-transform: uppercase; }
+.sched-row select, .sched-row input { padding: 8px 4px; font-size: 0.78rem; min-width: 0; }
+.sched-row input:disabled { opacity: 0.35; }
+.sched-head { font-family: var(--maxi-mono); font-size: 0.58rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); border-bottom: 1px solid var(--line-strong); }
 
 .tier-badge { display: inline-block; padding: 3px 10px; font-family: var(--maxi-mono); font-size: 0.62rem; letter-spacing: 0.18em; text-transform: uppercase; font-weight: 600; }
 .tier-badge.coach { background: var(--hi-vis); color: var(--ink); }
@@ -86,7 +96,6 @@ input:focus, select:focus { outline: none; border-color: var(--ink); background:
     <div class="card">
       <div class="row"><div class="row-label">Email</div><div class="row-value" id="email">—</div></div>
       <div class="row"><div class="row-label">Name</div><div class="row-value" id="name">—</div></div>
-      <div class="row"><div class="row-label">Member code</div><div class="row-value" id="memberCode">—</div></div>
       <div class="row"><div class="row-label">Plan</div><div class="row-value" id="tier">—</div></div>
       <div class="row"><div class="row-label">Status</div><div class="row-value" id="status">—</div></div>
     </div>
@@ -120,6 +129,27 @@ input:focus, select:focus { outline: none; border-color: var(--ink); background:
   <div class="section">
     <div class="section-header">
       <span class="num">03</span>
+      <span class="name">Coach Memory <span class="saved" id="mSaved">✓ saved</span></span>
+      <span class="num">ALWAYS ON</span>
+    </div>
+    <div class="card">
+      <div class="form-row">
+        <label>Standing instructions</label>
+        <textarea id="coach_notes" placeholder="Things Coach should always follow, one per line. e.g.&#10;- Strength 3x/week&#10;- Tuesday night group ride&#10;- No running — left knee" onblur="saveMemory()"></textarea>
+        <div class="hint">Coach reads this every day and it never expires. When you write a lasting change in a check-in or workout note, Coach adds it here automatically. Edit or delete lines anytime.</div>
+      </div>
+    </div>
+    <div class="card" style="margin-top:12px">
+      <label>Weekly work schedule</label>
+      <div class="sched-row sched-head"><span>Day</span><span>Status</span><span>Start</span><span>End</span></div>
+      <div id="schedRows"></div>
+      <div class="hint">Coach fits workouts into your free windows on work days and saves the long sessions for days off.</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header">
+      <span class="num">04</span>
       <span class="name">Benchmarks <span class="saved" id="bSaved">✓ saved</span></span>
       <span class="num">PERFORMANCE</span>
     </div>
@@ -138,7 +168,7 @@ input:focus, select:focus { outline: none; border-color: var(--ink); background:
         <div class="form-row">
           <label>Strength/week</label>
           <select id="strength_target_per_week" onchange="saveBenchmarks()">
-            <option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option>
+            <option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option>
           </select>
         </div>
         <div class="form-row">
@@ -174,7 +204,7 @@ input:focus, select:focus { outline: none; border-color: var(--ink); background:
 
   <div class="section">
     <div class="section-header">
-      <span class="num">04</span>
+      <span class="num">05</span>
       <span class="name">Event Mode</span>
       <span class="num">RACE PREP</span>
     </div>
@@ -231,7 +261,7 @@ async function load(){
 function render(){
   document.getElementById('email').textContent = data.user.email;
   document.getElementById('name').textContent = data.user.name || '—';
-  document.getElementById('memberCode').textContent = data.user.member_code || '—';
+
 
   const tier = data.user.tier || 'free';
   const tierEl = document.getElementById('tier');
@@ -253,6 +283,8 @@ function render(){
   else { sEl2.textContent = '✗ Disconnected'; sEl2.classList.add('red'); }
 
   const b = data.benchmarks || {};
+  document.getElementById('coach_notes').value = b.coach_notes || '';
+  renderSchedule(b.work_schedule || {});
   ['ftp_watts','max_hr','lthr','bodyweight_kg','rhr_baseline','hrv_baseline','squat_1rm_lb','deadlift_1rm_lb','bench_1rm_lb','weekly_hours_target','strength_target_per_week','primary_focus','five_k_time','weekly_miles_target','long_run_day','current_event_name','current_event_date','current_event_type','current_event_distance_km','current_event_elevation_m'].forEach(k => {
     const el = document.getElementById(k);
     if (el && b[k] != null) {
@@ -289,6 +321,62 @@ async function saveBenchmarks(){
     s.classList.add('show');
     setTimeout(() => s.classList.remove('show'), 1500);
   } catch(e) { console.error(e); }
+}
+
+const DAYS = ['monday','tuesday','wednesday','thursday','friday','saturday','sunday'];
+
+function renderSchedule(sched) {
+  document.getElementById('schedRows').innerHTML = DAYS.map(d => {
+    const e = sched[d] || {};
+    const st = e.status || 'off';
+    const dis = st === 'off' ? 'disabled' : '';
+    return `<div class="sched-row" data-day="${d}">
+      <span class="sched-day">${d.slice(0,3)}</span>
+      <select class="s-status" onchange="onSchedChange(this)">
+        <option value="off" ${st==='off'?'selected':''}>Off</option>
+        <option value="work" ${st==='work'?'selected':''}>Work</option>
+        <option value="call" ${st==='call'?'selected':''}>On call</option>
+      </select>
+      <input type="time" class="s-start" value="${e.start || ''}" ${dis} onchange="saveMemory()">
+      <input type="time" class="s-end" value="${e.end || ''}" ${dis} onchange="saveMemory()">
+    </div>`;
+  }).join('');
+}
+
+function onSchedChange(sel) {
+  const row = sel.closest('.sched-row');
+  const off = sel.value === 'off';
+  row.querySelectorAll('input').forEach(i => { i.disabled = off; });
+  if (!off) {
+    const s = row.querySelector('.s-start'), e = row.querySelector('.s-end');
+    if (!s.value) s.value = '07:00';
+    if (!e.value) e.value = '17:00';
+  }
+  saveMemory();
+}
+
+function readSchedule() {
+  const out = {};
+  document.querySelectorAll('#schedRows .sched-row').forEach(r => {
+    const status = r.querySelector('.s-status').value;
+    out[r.dataset.day] = status === 'off'
+      ? { status: 'off' }
+      : { status, start: r.querySelector('.s-start').value || null, end: r.querySelector('.s-end').value || null };
+  });
+  return out;
+}
+
+async function saveMemory() {
+  try {
+    await fetch('/onboarding/save', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ coach_notes: document.getElementById('coach_notes').value, work_schedule: readSchedule() }),
+    });
+    const s = document.getElementById('mSaved');
+    s.classList.add('show');
+    setTimeout(() => s.classList.remove('show'), 1500);
+  } catch (e) { console.error(e); }
 }
 
 load();

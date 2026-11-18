@@ -34,6 +34,8 @@ router.post('/save', async (req, res) => {
     current_event_name, current_event_date, current_event_type, current_event_distance_km, current_event_elevation_m,
     // Running benchmarks
     five_k_time, weekly_miles_target, long_run_day,
+    // Coach memory
+    coach_notes, work_schedule,
   } = req.body;
 
   // Update user table
@@ -62,6 +64,9 @@ router.post('/save', async (req, res) => {
     current_event_name, current_event_date, current_event_type, current_event_distance_km, current_event_elevation_m,
     // Running benchmarks
     five_k_time, weekly_miles_target, long_run_day,
+    // Coach memory
+    coach_notes: typeof coach_notes === 'string' ? coach_notes.slice(0, 4000) : coach_notes,
+    work_schedule: work_schedule ? JSON.stringify(work_schedule) : undefined,
   };
   for (const [key, val] of Object.entries(fields)) {
     if (val === undefined) continue;
