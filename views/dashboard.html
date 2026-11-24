@@ -1267,6 +1267,17 @@ html, body { background: var(--bone); color: var(--ink); font-family: var(--maxi
 
 .view { display: none; }
 .view.active { display: block; }
+.energy-card { background: var(--paper); border: 1px solid var(--line-strong); padding: 16px 18px; }
+.energy-top { display: flex; justify-content: space-between; align-items: flex-end; padding-bottom: 12px; border-bottom: 1px solid var(--line); margin-bottom: 8px; }
+.energy-debt { font-family: var(--maxi-round); font-weight: 800; font-size: 2.2rem; line-height: 1; letter-spacing: -0.03em; }
+.energy-debt span { font-size: 1rem; margin-left: 2px; }
+.energy-bed { font-family: var(--maxi-round); font-weight: 800; font-size: 1.4rem; line-height: 1.1; }
+.energy-row { display: flex; justify-content: space-between; font-family: var(--maxi-mono); font-size: 0.8rem; padding: 7px 0; border-bottom: 1px solid var(--line); }
+.energy-row:last-child { border-bottom: none; }
+.energy-row.muted { color: var(--muted); }
+.energy-row.peak { font-weight: 500; }
+.energy-row.peak span:first-child::before { content: ''; display: inline-block; width: 8px; height: 8px; background: var(--hi-vis); border: 1px solid var(--ink); margin-right: 8px; vertical-align: 0; }
+.energy-row.sleep { color: var(--info-blue, #6B92B5); }
 </style>
 </head>
 <body>
@@ -1606,6 +1617,33 @@ function sectionHeader(num, name, meta) {
   return `<div class="section-header"><span class="section-num">${num}</span><span class="section-name">${name}</span><span class="section-meta">${meta || ''}</span></div>`;
 }
 
+function renderEnergyCard(e) {
+  if (!e || !e.energy_schedule) return '';
+  const s = e.energy_schedule;
+  const debtCol = { low: 'var(--rec-green)', moderate: 'var(--rec-yellow)', high: 'var(--rec-red)' }[e.sleep_debt_level] || 'var(--ink)';
+  const rows = [
+    ['Grogginess', s.grogginess, 'muted'],
+    ['Morning peak', s.morning_peak, 'peak'],
+    ['Afternoon dip', s.afternoon_dip, 'muted'],
+    ['Evening peak', s.evening_peak, 'peak'],
+    ['Wind down', s.wind_down, 'muted'],
+    ['Melatonin window', s.melatonin_window, 'sleep'],
+  ];
+  return `
+    <div class="section">
+      ${sectionHeader('01B', 'Sleep Debt & Energy', (e.sleep_debt_level || '').toUpperCase())}
+      <div class="energy-card">
+        <div class="energy-top">
+          <div><div class="stat-label">Sleep debt</div><div class="energy-debt" style="color:${debtCol}">${e.sleep_debt_h ?? '—'}<span>h</span></div><div class="stat-sub">last ${e.nights_counted} nights · need ${e.sleep_need_h}h</div></div>
+          <div style="text-align:right"><div class="stat-label">Bed tonight</div><div class="energy-bed">${e.bedtime_target || '—'}</div><div class="stat-sub">wake ~${s.typical_wake}</div></div>
+        </div>
+        <div class="energy-rows">
+          ${rows.map(([n, w, k]) => `<div class="energy-row ${k}"><span>${n}</span><span>${w.start} – ${w.end}</span></div>`).join('')}
+        </div>
+      </div>
+    </div>`;
+}
+
 function renderFreeDashboard(tier = 'free') {
   const streak = appData.streak || { current: 0, longest: 0 };
   // Legacy paid (non-Coach) subscribers already have a Stripe subscription — upgrade goes via the portal
@@ -1802,6 +1840,8 @@ function renderToday(){
       </div>` : ''}
     </div>
 
+    ${renderEnergyCard(snap?.energy)}
+
     <div class="section">
       ${sectionHeader('02', 'Daily Check-in', appData.today_checkin?'COMPLETE':'PENDING')}
       ${renderCheckinCard()}
@@ -1821,6 +1861,7 @@ function renderToday(){
             ${p.workout.duration_min ? '<span class="workout-tag">⏱ '+p.workout.duration_min+'min</span>' : ''}
           </div>
           <div class="workout-detail">${p.workout.specific_workout || ''}</div>
+          ${p.workout.timing ? `<div class="workout-route">🕓 ${p.workout.timing}</div>` : ''}
           ${p.workout.route_suggestion ? `<div class="workout-route">📍 ${p.workout.route_suggestion}</div>` : ''}
           ${p.workout.alternates ? `<div class="workout-route"><strong style="font-weight:500;color:var(--ink);text-transform:uppercase;letter-spacing:0.1em;font-size:0.7rem">Alternates:</strong> ${p.workout.alternates}</div>` : ''}
           ${p.workout.skip_if ? `<div class="workout-skip">⚠ Skip if: ${p.workout.skip_if}</div>` : ''}

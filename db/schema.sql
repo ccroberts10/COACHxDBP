@@ -526,3 +526,6 @@ ALTER TABLE user_benchmarks ADD COLUMN IF NOT EXISTS coach_notes TEXT;
 -- { "monday": { "status": "work", "start": "07:00", "end": "17:30", "note": "" }, ... }
 -- status: 'off' | 'work' | 'call'
 ALTER TABLE user_benchmarks ADD COLUMN IF NOT EXISTS work_schedule JSONB DEFAULT '{}'::jsonb;
+
+-- ============= SLEEP DEBT + ENERGY SCHEDULE =============
+ALTER TABLE daily_snapshots ADD COLUMN IF NOT EXISTS energy JSONB;
