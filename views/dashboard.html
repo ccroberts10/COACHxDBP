@@ -1546,14 +1546,14 @@ function renderCheckinCard(){
     </div>
 
     <div class="checkin-row">
-      <div class="checkin-row-label">Garmin metrics (optional)</div>
+      <div class="checkin-row-label">Watch metrics (optional) · Garmin, Fitbit, Oura</div>
       <div class="garmin-inputs">
         <div class="garmin-input">
           <label class="garmin-label">Sleep score</label>
           <input type="number" min="0" max="100" inputmode="numeric" placeholder="0–100" value="${pendingCheckin.garmin_sleep_score ?? ''}" oninput="pendingCheckin.garmin_sleep_score = this.value === '' ? null : parseInt(this.value)">
         </div>
         <div class="garmin-input">
-          <label class="garmin-label">Body battery</label>
+          <label class="garmin-label">Body Battery / Readiness</label>
           <input type="number" min="0" max="100" inputmode="numeric" placeholder="0–100" value="${pendingCheckin.garmin_body_battery ?? ''}" oninput="pendingCheckin.garmin_body_battery = this.value === '' ? null : parseInt(this.value)">
         </div>
       </div>
